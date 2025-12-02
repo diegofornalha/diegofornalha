@@ -36,6 +36,7 @@ export class GanttModel extends Model {
             "name",
             archInfo.dateStartField || "date_assign",
             archInfo.dateStopField || "date_deadline",
+            archInfo.dependencyField || "depend_on_ids",
             "priority",
             "create_date",
         ]);

@@ -7,7 +7,7 @@
         <field name="arch" type="xml">
             <gantt date_start="date_assign"
                    date_stop="date_deadline"
-                   default_scale="Day"
+                   default_scale="Half Day"
                    progress="progress"
                    dependency_field="depend_on_ids"
                    string="Tasks Gantt">
