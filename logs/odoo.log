@@ -23177,3 +23177,1230 @@ Traceback (most recent call last):
     raise ValueError(f"Invalid field {field_name!r} on {self._name!r}") from e
 ValueError: Invalid field 'progress' on 'project.task'
 2025-12-02 14:57:09,730 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 14:57:09] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 7 0.005 0.018
+2025-12-02 14:59:21,304 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 14:59:21] "POST /web/action/load HTTP/1.1" 200 - 11 0.009 0.036
+2025-12-02 14:59:21,405 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 14:59:21] "POST /web/dataset/call_kw/project.project/get_views#project.project.get_views HTTP/1.1" 200 - 36 0.023 0.054
+2025-12-02 14:59:21,434 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 14:59:21] "POST /web/dataset/call_kw/project.project/search_read#project.project.search_read HTTP/1.1" 200 - 8 0.007 0.007
+2025-12-02 14:59:21,480 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 14:59:21] "POST /web/dataset/call_kw/project.project/web_search_read#project.project.web_search_read HTTP/1.1" 200 - 26 0.034 0.027
+2025-12-02 14:59:22,506 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 14:59:22] "POST /web/dataset/call_button/project.project/action_view_tasks#project.project.action_view_tasks HTTP/1.1" 200 - 24 0.023 0.031
+2025-12-02 14:59:22,563 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 14:59:22] "POST /web/dataset/call_kw/project.task/read_progress_bar#project.task.read_progress_bar HTTP/1.1" 200 - 8 0.027 0.020
+2025-12-02 14:59:22,563 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 14:59:22] "POST /web/dataset/call_kw/project.project/get_template_tasks#project.project.get_template_tasks HTTP/1.1" 200 - 7 0.032 0.013
+2025-12-02 14:59:22,606 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 14:59:22] "POST /web/dataset/call_kw/project.task/web_read_group#project.task.web_read_group HTTP/1.1" 200 - 38 0.047 0.042
+2025-12-02 14:59:22,663 30416 INFO diegofornalha odoo.addons.base.models.ir_attachment: _read_file reading /Users/2a/Desktop/odoo19framework/diegofornalha/filestore/filestore/diegofornalha/66/66ae48cdda39173a7c40302137fd7fe47b649b16 
+Traceback (most recent call last):
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/addons/base/models/ir_attachment.py", line 138, in _file_read
+    with open(full_path, 'rb') as f:
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/2a/Desktop/odoo19framework/diegofornalha/filestore/filestore/diegofornalha/66/66ae48cdda39173a7c40302137fd7fe47b649b16'
+2025-12-02 14:59:22,666 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 14:59:22] "GET /web/image/res.users/2/avatar_128 HTTP/1.1" 304 - 19 0.015 0.023
+2025-12-02 14:59:37,118 30416 ERROR diegofornalha odoo.http: Exception during request handling. 
+Traceback (most recent call last):
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/orm/models.py", line 3848, in _determine_fields_to_fetch
+    field = self._fields[field_name]
+KeyError: 'progress'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2802, in __call__
+    response = request._serve_db()
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2277, in _serve_db
+    raise self._update_served_exception(exc)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2275, in _serve_db
+    return service_model.retrying(serve_func, env=self.env)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/service/model.py", line 184, in retrying
+    result = func()
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2330, in _serve_ir_http
+    response = self.dispatcher.dispatch(rule.endpoint, args)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2545, in dispatch
+    result = self.request.registry['ir.http']._dispatch(endpoint)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/addons/base/models/ir_http.py", line 355, in _dispatch
+    result = endpoint(**request.params)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 788, in route_wrapper
+    result = endpoint(self, *args, **params_ok)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/addons/web/controllers/dataset.py", line 32, in call_kw
+    return call_kw(request.env[model], method, args, kwargs)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/service/model.py", line 93, in call_kw
+    result = method(recs, *args, **kwargs)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/orm/models.py", line 5768, in search_read
+    records = self.search_fetch(domain or [], fields, offset=offset, limit=limit, order=order)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/orm/models.py", line 1416, in search_fetch
+    fields_to_fetch = self._determine_fields_to_fetch(field_names)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/orm/models.py", line 3850, in _determine_fields_to_fetch
+    raise ValueError(f"Invalid field {field_name!r} on {self._name!r}") from e
+ValueError: Invalid field 'progress' on 'project.task'
+2025-12-02 14:59:37,119 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 14:59:37] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 7 0.009 0.031
+2025-12-02 14:59:45,529 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 14:59:45] "GET /odoo/project/2/tasks?view_type=gantt HTTP/1.1" 303 - 1 0.001 0.006
+2025-12-02 14:59:45,633 30416 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='error' in template 189. Replace by @t-out 
+2025-12-02 14:59:45,634 30416 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='message' in template 189. Replace by @t-out 
+2025-12-02 14:59:45,650 30416 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='error' in template 189. Replace by @t-out 
+2025-12-02 14:59:45,651 30416 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='message' in template 189. Replace by @t-out 
+2025-12-02 14:59:45,665 30416 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc="title or 'Odoo'" in template 185. Replace by @t-out 
+2025-12-02 14:59:45,666 30416 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='request.csrf_token(None)' in template 185. Replace by @t-out 
+2025-12-02 14:59:45,666 30416 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='debug' in template 185. Replace by @t-out 
+2025-12-02 14:59:45,748 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 14:59:45] "GET /web/login?redirect=/odoo/project/2/tasks?view_type%3Dgantt HTTP/1.1" 200 - 46 0.025 0.190
+2025-12-02 14:59:45,760 30416 INFO ? werkzeug: 127.0.0.1 - - [02/Dec/2025 14:59:45] "GET /web/static/src/libs/fontawesome/fonts/fontawesome-webfont.woff2?v=4.7.0 HTTP/1.1" 304 - 0 0.000 0.002
+2025-12-02 14:59:45,765 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 14:59:45] "GET /web/binary/company_logo HTTP/1.1" 200 - 2 0.002 0.003
+2025-12-02 14:59:45,772 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 14:59:45] "GET /web/assets/fa1225f/web.assets_frontend.min.css HTTP/1.1" 200 - 4 0.010 0.004
+2025-12-02 14:59:45,791 30416 INFO ? werkzeug: 127.0.0.1 - - [02/Dec/2025 14:59:45] "GET /web/static/img/favicon.ico HTTP/1.1" 304 - 0 0.000 0.001
+2025-12-02 14:59:45,795 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 14:59:45] "GET /web/assets/37fac8c/web.assets_frontend_lazy.min.js HTTP/1.1" 200 - 4 0.002 0.003
+2025-12-02 14:59:45,884 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 14:59:45] "GET /website/translations?hash=&lang= HTTP/1.1" 200 - 5 0.003 0.015
+2025-12-02 14:59:50,257 30416 INFO diegofornalha odoo.addons.base.models.res_users: Login successful for login:diegofornalha@gmail.com from 127.0.0.1 
+2025-12-02 14:59:50,266 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 14:59:50] "POST /web/login HTTP/1.1" 303 - 17 0.014 0.196
+2025-12-02 14:59:50,271 30416 INFO diegofornalha odoo.addons.base.models.res_device: User 2 inserts device log (M0z9LEroiZEZPK3_Gtr7anVcnArit-GC6XonT3kEfc) 
+2025-12-02 14:59:50,564 30416 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc="title or 'Odoo'" in template 184. Replace by @t-out 
+2025-12-02 14:59:50,564 30416 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='request.csrf_token(None)' in template 184. Replace by @t-out 
+2025-12-02 14:59:50,564 30416 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='debug' in template 184. Replace by @t-out 
+2025-12-02 14:59:50,566 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 14:59:50] "GET /odoo/project/2/tasks?view_type=gantt HTTP/1.1" 200 - 64 0.028 0.270
+2025-12-02 14:59:50,582 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 14:59:50] "GET /web/webclient/load_menus HTTP/1.1" 200 - 1 0.002 0.003
+2025-12-02 14:59:50,584 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 14:59:50] "GET /web/assets/c9ceb72/web.assets_web.min.css HTTP/1.1" 200 - 3 0.003 0.006
+2025-12-02 14:59:50,593 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 14:59:50] "GET /web/assets/bc82532/web.assets_web_print.min.css HTTP/1.1" 200 - 3 0.002 0.002
+2025-12-02 14:59:52,026 30416 INFO diegofornalha odoo.addons.attachment_indexation.models.ir_attachment: openpyxl is not installed. 
+2025-12-02 14:59:52,031 30416 INFO diegofornalha odoo.addons.base.models.assetsbundle: Generating a new asset bundle attachment /web/assets/bb54e9d/web.assets_web.min.js (id:930) 
+2025-12-02 14:59:52,032 30416 INFO diegofornalha odoo.addons.base.models.assetsbundle: Deleting attachments [925] (matching /web/assets/_______/web.assets_web.min.js) because it was replaced with /web/assets/bb54e9d/web.assets_web.min.js 
+2025-12-02 14:59:52,143 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 14:59:52] "GET /web/assets/bb54e9d/web.assets_web.min.js HTTP/1.1" 200 - 25 0.022 1.546
+2025-12-02 14:59:52,345 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 14:59:52] "GET /web/webclient/translations?hash=&lang=pt_BR HTTP/1.1" 200 - 1 0.002 0.028
+2025-12-02 14:59:52,351 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 14:59:52] "GET /web/manifest.webmanifest HTTP/1.1" 200 - 9 0.031 0.006
+2025-12-02 14:59:52,362 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 14:59:52] "GET /bus/websocket_worker_bundle?v=19.0-2 HTTP/1.1" 200 - 4 0.002 0.003
+2025-12-02 14:59:52,433 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 14:59:52] "GET /web/service-worker.js HTTP/1.1" 200 - 1 0.001 0.004
+2025-12-02 14:59:52,442 30416 INFO ? werkzeug: 127.0.0.1 - - [02/Dec/2025 14:59:52] "GET /mail/static/lib/idb-keyval/idb-keyval.js HTTP/1.1" 304 - 0 0.000 0.002
+2025-12-02 14:59:52,473 30416 INFO ? werkzeug: 127.0.0.1 - - [02/Dec/2025 14:59:52] "GET /web/static/lib/odoo_ui_icons/fonts/odoo_ui_icons.woff2 HTTP/1.1" 304 - 0 0.000 0.012
+2025-12-02 14:59:52,492 30416 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc="title or 'Odoo'" in template 184. Replace by @t-out 
+2025-12-02 14:59:52,494 30416 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='request.csrf_token(None)' in template 184. Replace by @t-out 
+2025-12-02 14:59:52,495 30416 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='debug' in template 184. Replace by @t-out 
+2025-12-02 14:59:52,495 30416 INFO diegofornalha odoo.addons.base.models.ir_attachment: _read_file reading /Users/2a/Desktop/odoo19framework/diegofornalha/filestore/filestore/diegofornalha/66/66ae48cdda39173a7c40302137fd7fe47b649b16 
+Traceback (most recent call last):
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/addons/base/models/ir_attachment.py", line 138, in _file_read
+    with open(full_path, 'rb') as f:
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/2a/Desktop/odoo19framework/diegofornalha/filestore/filestore/diegofornalha/66/66ae48cdda39173a7c40302137fd7fe47b649b16'
+2025-12-02 14:59:52,502 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 14:59:52] "GET /web/image?model=res.users&field=avatar_128&id=2 HTTP/1.1" 304 - 19 0.020 0.023
+2025-12-02 14:59:52,502 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 14:59:52] "GET /odoo/offline HTTP/1.1" 200 - 10 0.015 0.039
+2025-12-02 14:59:52,510 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 14:59:52] "POST /web/action/load_breadcrumbs HTTP/1.1" 200 - 20 0.033 0.021
+2025-12-02 14:59:52,529 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 14:59:52] "POST /mail/data HTTP/1.1" 200 - 31 0.046 0.015
+2025-12-02 14:59:52,540 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 14:59:52] "POST /web/action/load HTTP/1.1" 200 - 22 0.016 0.007
+2025-12-02 14:59:52,679 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 14:59:52] "POST /web/dataset/call_kw/project.task/get_views#project.task.get_views HTTP/1.1" 200 - 78 0.049 0.086
+2025-12-02 14:59:52,698 30416 ERROR diegofornalha odoo.http: Exception during request handling. 
+Traceback (most recent call last):
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/orm/models.py", line 3848, in _determine_fields_to_fetch
+    field = self._fields[field_name]
+KeyError: 'progress'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2802, in __call__
+    response = request._serve_db()
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2277, in _serve_db
+    raise self._update_served_exception(exc)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2275, in _serve_db
+    return service_model.retrying(serve_func, env=self.env)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/service/model.py", line 184, in retrying
+    result = func()
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2330, in _serve_ir_http
+    response = self.dispatcher.dispatch(rule.endpoint, args)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2545, in dispatch
+    result = self.request.registry['ir.http']._dispatch(endpoint)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/addons/base/models/ir_http.py", line 355, in _dispatch
+    result = endpoint(**request.params)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 788, in route_wrapper
+    result = endpoint(self, *args, **params_ok)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/addons/web/controllers/dataset.py", line 32, in call_kw
+    return call_kw(request.env[model], method, args, kwargs)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/service/model.py", line 93, in call_kw
+    result = method(recs, *args, **kwargs)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/orm/models.py", line 5768, in search_read
+    records = self.search_fetch(domain or [], fields, offset=offset, limit=limit, order=order)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/orm/models.py", line 1416, in search_fetch
+    fields_to_fetch = self._determine_fields_to_fetch(field_names)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/orm/models.py", line 3850, in _determine_fields_to_fetch
+    raise ValueError(f"Invalid field {field_name!r} on {self._name!r}") from e
+ValueError: Invalid field 'progress' on 'project.task'
+2025-12-02 14:59:52,698 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 14:59:52] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 7 0.007 0.005
+2025-12-02 14:59:52,893 30416 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc="title or 'Odoo'" in template 184. Replace by @t-out 
+2025-12-02 14:59:52,893 30416 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='request.csrf_token(None)' in template 184. Replace by @t-out 
+2025-12-02 14:59:52,893 30416 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='debug' in template 184. Replace by @t-out 
+2025-12-02 14:59:52,896 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 14:59:52] "GET /odoo HTTP/1.1" 200 - 64 0.043 0.407
+2025-12-02 14:59:52,908 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 14:59:52] "POST /web/dataset/call_kw/mail.push.device/get_web_push_vapid_public_key#mail.push.device.get_web_push_vapid_public_key HTTP/1.1" 200 - 1 0.001 0.001
+2025-12-02 14:59:53,475 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 14:59:53] "POST /web/dataset/call_kw/mail.push.device/register_devices#mail.push.device.register_devices HTTP/1.1" 200 - 6 0.007 0.008
+2025-12-02 14:59:58,872 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 14:59:58] "POST /web/dataset/call_kw/project.task/get_views#project.task.get_views HTTP/1.1" 200 - 78 0.044 0.146
+2025-12-02 14:59:58,908 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 14:59:58] "GET /web/bundle/web.assets_backend_lazy?lang=pt_BR HTTP/1.1" 200 - 6 0.002 0.028
+2025-12-02 14:59:58,916 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 14:59:58] "GET /web/assets/24a296e/web.assets_backend_lazy.min.css HTTP/1.1" 200 - 3 0.002 0.004
+2025-12-02 14:59:58,917 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 14:59:58] "GET /web/assets/f6e9fb2/web.assets_backend_lazy.min.js HTTP/1.1" 200 - 3 0.003 0.004
+2025-12-02 14:59:58,951 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 14:59:58] "POST /web/dataset/call_kw/project.task/formatted_read_group#project.task.formatted_read_group HTTP/1.1" 200 - 15 0.011 0.010
+2025-12-02 14:59:58,971 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 14:59:58] "GET /web/bundle/web.chartjs_lib?lang=pt_BR HTTP/1.1" 200 - 2 0.001 0.002
+2025-12-02 14:59:58,976 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 14:59:58] "GET /web/assets/8ca8106/web.chartjs_lib.min.js HTTP/1.1" 200 - 3 0.001 0.003
+2025-12-02 15:00:02,152 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:02] "POST /web/dataset/call_kw/project.task/formatted_read_group#project.task.formatted_read_group HTTP/1.1" 200 - 15 0.014 0.032
+2025-12-02 15:00:05,532 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:05] "POST /web/dataset/call_kw/project.task/formatted_read_grouping_sets#project.task.formatted_read_grouping_sets HTTP/1.1" 200 - 15 0.011 0.029
+2025-12-02 15:00:06,952 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:06] "POST /web/dataset/call_kw/project.task/web_search_read#project.task.web_search_read HTTP/1.1" 200 - 8 0.010 0.017
+2025-12-02 15:00:06,962 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:06] "POST /web/dataset/call_kw/mail.activity/get_activity_data#mail.activity.get_activity_data HTTP/1.1" 200 - 16 0.023 0.015
+2025-12-02 15:00:08,150 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:08] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 8 0.014 0.015
+2025-12-02 15:00:08,152 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:08] "POST /web/dataset/call_kw/project.task/web_search_read#project.task.web_search_read HTTP/1.1" 200 - 8 0.015 0.016
+2025-12-02 15:00:08,159 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:08] "POST /web/dataset/call_kw/project.task/get_unusual_days#project.task.get_unusual_days HTTP/1.1" 200 - 16 0.021 0.017
+2025-12-02 15:00:08,172 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:08] "GET /web/bundle/web.fullcalendar_lib?lang=pt_BR HTTP/1.1" 200 - 2 0.001 0.003
+2025-12-02 15:00:08,938 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:08] "POST /web/dataset/call_kw/project.project/get_template_tasks#project.project.get_template_tasks HTTP/1.1" 200 - 7 0.012 0.014
+2025-12-02 15:00:08,940 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:08] "POST /web/dataset/call_kw/project.task/web_read_group#project.task.web_read_group HTTP/1.1" 200 - 8 0.015 0.016
+2025-12-02 15:00:08,960 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:08] "POST /web/dataset/call_kw/project.project/get_template_tasks#project.project.get_template_tasks HTTP/1.1" 200 - 7 0.004 0.010
+2025-12-02 15:00:09,773 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:09] "POST /web/dataset/call_kw/project.task/read_progress_bar#project.task.read_progress_bar HTTP/1.1" 200 - 8 0.016 0.014
+2025-12-02 15:00:09,775 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:09] "POST /web/dataset/call_kw/project.project/get_template_tasks#project.project.get_template_tasks HTTP/1.1" 200 - 7 0.019 0.011
+2025-12-02 15:00:09,777 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:09] "POST /web/dataset/call_kw/project.task/web_read_group#project.task.web_read_group HTTP/1.1" 200 - 12 0.018 0.014
+2025-12-02 15:00:09,784 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:09] "POST /web/dataset/call_kw/res.users/has_group#res.users.has_group HTTP/1.1" 200 - 1 0.001 0.003
+2025-12-02 15:00:13,990 30416 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc="title or 'Odoo'" in template 184. Replace by @t-out 
+2025-12-02 15:00:13,990 30416 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='request.csrf_token(None)' in template 184. Replace by @t-out 
+2025-12-02 15:00:13,990 30416 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='debug' in template 184. Replace by @t-out 
+2025-12-02 15:00:13,993 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:13] "GET /odoo/project/2/tasks HTTP/1.1" 200 - 64 0.029 0.361
+2025-12-02 15:00:14,009 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:14] "GET /web/webclient/load_menus HTTP/1.1" 200 - 1 0.001 0.003
+2025-12-02 15:00:14,013 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:14] "GET /web/assets/c9ceb72/web.assets_web.min.css HTTP/1.1" 200 - 3 0.002 0.006
+2025-12-02 15:00:14,025 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:14] "GET /web/assets/bc82532/web.assets_web_print.min.css HTTP/1.1" 200 - 3 0.002 0.003
+2025-12-02 15:00:15,642 30416 INFO diegofornalha odoo.addons.attachment_indexation.models.ir_attachment: openpyxl is not installed. 
+2025-12-02 15:00:15,647 30416 INFO diegofornalha odoo.addons.base.models.assetsbundle: Generating a new asset bundle attachment /web/assets/1792087/web.assets_web.min.js (id:931) 
+2025-12-02 15:00:15,647 30416 INFO diegofornalha odoo.addons.base.models.assetsbundle: Deleting attachments [930] (matching /web/assets/_______/web.assets_web.min.js) because it was replaced with /web/assets/1792087/web.assets_web.min.js 
+2025-12-02 15:00:15,665 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:15] "GET /web/assets/1792087/web.assets_web.min.js HTTP/1.1" 200 - 25 0.015 1.650
+2025-12-02 15:00:15,878 30416 INFO ? werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:15] "GET /web/static/img/favicon.ico HTTP/1.1" 200 - 0 0.000 0.004
+2025-12-02 15:00:15,885 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:15] "GET /web/webclient/translations?hash=6d5e38fbafef73e62fe29ff9a799ffdde0431a87&lang=pt_BR HTTP/1.1" 200 - 1 0.001 0.006
+2025-12-02 15:00:15,894 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:15] "GET /web/manifest.webmanifest HTTP/1.1" 200 - 9 0.011 0.015
+2025-12-02 15:00:15,894 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:15] "GET /bus/websocket_worker_bundle?v=19.0-2 HTTP/1.1" 304 - 4 0.004 0.011
+2025-12-02 15:00:16,006 30416 INFO ? werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:16] "GET /web/static/lib/odoo_ui_icons/fonts/odoo_ui_icons.woff2 HTTP/1.1" 200 - 0 0.000 0.011
+2025-12-02 15:00:16,019 30416 INFO ? werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:16] "GET /web/static/src/libs/fontawesome/fonts/fontawesome-webfont.woff2?v=4.7.0 HTTP/1.1" 200 - 0 0.000 0.022
+2025-12-02 15:00:16,032 30416 INFO diegofornalha odoo.addons.base.models.ir_attachment: _read_file reading /Users/2a/Desktop/odoo19framework/diegofornalha/filestore/filestore/diegofornalha/66/66ae48cdda39173a7c40302137fd7fe47b649b16 
+Traceback (most recent call last):
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/addons/base/models/ir_attachment.py", line 138, in _file_read
+    with open(full_path, 'rb') as f:
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/2a/Desktop/odoo19framework/diegofornalha/filestore/filestore/diegofornalha/66/66ae48cdda39173a7c40302137fd7fe47b649b16'
+2025-12-02 15:00:16,043 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:16] "GET /web/image?model=res.users&field=avatar_128&id=2 HTTP/1.1" 304 - 19 0.030 0.024
+2025-12-02 15:00:16,045 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:16] "POST /web/dataset/call_kw/project.task/read_progress_bar#project.task.read_progress_bar HTTP/1.1" 200 - 8 0.013 0.020
+2025-12-02 15:00:16,053 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:16] "POST /web/dataset/call_kw/project.task/web_read_group#project.task.web_read_group HTTP/1.1" 200 - 12 0.021 0.012
+2025-12-02 15:00:16,055 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:16] "POST /web/dataset/call_kw/project.project/get_template_tasks#project.project.get_template_tasks HTTP/1.1" 200 - 7 0.019 0.011
+2025-12-02 15:00:16,061 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:16] "POST /web/dataset/call_kw/res.users/has_group#res.users.has_group HTTP/1.1" 200 - 1 0.001 0.002
+2025-12-02 15:00:16,065 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:16] "POST /mail/data HTTP/1.1" 200 - 31 0.047 0.019
+2025-12-02 15:00:16,177 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:16] "POST /web/dataset/call_kw/project.task/get_views#project.task.get_views HTTP/1.1" 200 - 78 0.062 0.121
+2025-12-02 15:00:16,201 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:16] "POST /web/dataset/call_kw/mail.push.device/register_devices#mail.push.device.register_devices HTTP/1.1" 200 - 6 0.003 0.004
+2025-12-02 15:00:17,613 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:17] "POST /web/action/load HTTP/1.1" 200 - 12 0.010 0.020
+2025-12-02 15:00:17,741 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:17] "POST /web/dataset/call_kw/project.project/get_views#project.project.get_views HTTP/1.1" 200 - 36 0.027 0.096
+2025-12-02 15:00:17,766 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:17] "POST /web/dataset/call_kw/project.project/search_read#project.project.search_read HTTP/1.1" 200 - 8 0.005 0.005
+2025-12-02 15:00:17,786 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:17] "POST /web/dataset/call_kw/project.project/web_search_read#project.project.web_search_read HTTP/1.1" 200 - 26 0.019 0.015
+2025-12-02 15:00:18,901 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:18] "POST /web/dataset/call_button/project.project/action_view_tasks#project.project.action_view_tasks HTTP/1.1" 200 - 24 0.015 0.032
+2025-12-02 15:00:19,098 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:19] "POST /web/dataset/call_kw/project.task/get_views#project.task.get_views HTTP/1.1" 200 - 78 0.044 0.143
+2025-12-02 15:00:19,123 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:19] "POST /web/dataset/call_kw/project.task/read_progress_bar#project.task.read_progress_bar HTTP/1.1" 200 - 8 0.009 0.008
+2025-12-02 15:00:19,126 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:19] "POST /web/dataset/call_kw/project.project/get_template_tasks#project.project.get_template_tasks HTTP/1.1" 200 - 7 0.010 0.008
+2025-12-02 15:00:19,129 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:19] "POST /web/dataset/call_kw/project.task/web_read_group#project.task.web_read_group HTTP/1.1" 200 - 12 0.013 0.010
+2025-12-02 15:00:20,185 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:20] "POST /web/dataset/call_kw/project.project/search_read#project.project.search_read HTTP/1.1" 200 - 8 0.007 0.010
+2025-12-02 15:00:20,218 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:20] "POST /web/dataset/call_kw/project.project/web_search_read#project.project.web_search_read HTTP/1.1" 200 - 26 0.020 0.031
+2025-12-02 15:00:21,279 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:21] "POST /web/dataset/call_button/project.project/action_view_tasks#project.project.action_view_tasks HTTP/1.1" 200 - 24 0.015 0.031
+2025-12-02 15:00:21,324 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:21] "POST /web/dataset/call_kw/project.project/get_template_tasks#project.project.get_template_tasks HTTP/1.1" 200 - 7 0.014 0.016
+2025-12-02 15:00:21,324 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:21] "POST /web/dataset/call_kw/project.task/read_progress_bar#project.task.read_progress_bar HTTP/1.1" 200 - 8 0.019 0.013
+2025-12-02 15:00:21,330 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:21] "POST /web/dataset/call_kw/project.task/web_read_group#project.task.web_read_group HTTP/1.1" 200 - 12 0.021 0.015
+2025-12-02 15:00:32,066 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:32] "POST /web/dataset/call_kw/project.task.type/name_create#project.task.type.name_create HTTP/1.1" 200 - 16 0.017 0.028
+2025-12-02 15:00:34,881 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:34] "POST /web/dataset/call_kw/project.task.type/name_create#project.task.type.name_create HTTP/1.1" 200 - 15 0.010 0.018
+2025-12-02 15:00:34,905 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:34] "POST /web/dataset/call_kw/project.task.type/web_resequence#project.task.type.web_resequence HTTP/1.1" 200 - 11 0.007 0.012
+2025-12-02 15:00:44,603 30416 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc="title or 'Odoo'" in template 184. Replace by @t-out 
+2025-12-02 15:00:44,604 30416 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='request.csrf_token(None)' in template 184. Replace by @t-out 
+2025-12-02 15:00:44,604 30416 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='debug' in template 184. Replace by @t-out 
+2025-12-02 15:00:44,607 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:44] "GET /odoo/project HTTP/1.1" 200 - 64 0.038 0.383
+2025-12-02 15:00:44,623 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:44] "GET /web/webclient/load_menus HTTP/1.1" 200 - 1 0.001 0.008
+2025-12-02 15:00:44,769 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:44] "GET /web/webclient/translations?hash=6d5e38fbafef73e62fe29ff9a799ffdde0431a87&lang=pt_BR HTTP/1.1" 200 - 1 0.003 0.003
+2025-12-02 15:00:44,773 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:44] "GET /web/manifest.webmanifest HTTP/1.1" 200 - 9 0.007 0.005
+2025-12-02 15:00:44,776 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:44] "GET /bus/websocket_worker_bundle?v=19.0-2 HTTP/1.1" 304 - 4 0.005 0.004
+2025-12-02 15:00:44,869 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:44] "POST /web/dataset/call_kw/res.users/has_group#res.users.has_group HTTP/1.1" 200 - 1 0.001 0.016
+2025-12-02 15:00:44,880 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:44] "POST /web/action/load HTTP/1.1" 200 - 12 0.025 0.025
+2025-12-02 15:00:44,885 30416 INFO diegofornalha odoo.addons.base.models.ir_attachment: _read_file reading /Users/2a/Desktop/odoo19framework/diegofornalha/filestore/filestore/diegofornalha/66/66ae48cdda39173a7c40302137fd7fe47b649b16 
+Traceback (most recent call last):
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/addons/base/models/ir_attachment.py", line 138, in _file_read
+    with open(full_path, 'rb') as f:
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/2a/Desktop/odoo19framework/diegofornalha/filestore/filestore/diegofornalha/66/66ae48cdda39173a7c40302137fd7fe47b649b16'
+2025-12-02 15:00:44,886 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:44] "GET /web/image?model=res.users&field=avatar_128&id=2 HTTP/1.1" 304 - 19 0.039 0.018
+2025-12-02 15:00:44,896 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:44] "POST /web/dataset/call_kw/project.project/search_read#project.project.search_read HTTP/1.1" 200 - 8 0.005 0.008
+2025-12-02 15:00:44,901 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:44] "POST /mail/data HTTP/1.1" 200 - 31 0.039 0.026
+2025-12-02 15:00:44,910 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:44] "POST /web/dataset/call_kw/project.project/web_search_read#project.project.web_search_read HTTP/1.1" 200 - 26 0.034 0.026
+2025-12-02 15:00:44,944 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:44] "POST /web/dataset/call_kw/project.project/get_views#project.project.get_views HTTP/1.1" 200 - 36 0.027 0.079
+2025-12-02 15:00:45,013 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:45] "POST /web/dataset/call_kw/mail.push.device/register_devices#mail.push.device.register_devices HTTP/1.1" 200 - 6 0.006 0.003
+2025-12-02 15:00:46,453 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:46] "GET /web/service-worker.js HTTP/1.1" 200 - 1 0.001 0.006
+2025-12-02 15:00:47,287 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:47] "POST /web/dataset/call_button/project.project/action_view_tasks#project.project.action_view_tasks HTTP/1.1" 200 - 24 0.016 0.034
+2025-12-02 15:00:47,345 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:47] "POST /web/dataset/call_kw/project.task/read_progress_bar#project.task.read_progress_bar HTTP/1.1" 200 - 8 0.015 0.020
+2025-12-02 15:00:47,347 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:47] "POST /web/dataset/call_kw/project.project/get_template_tasks#project.project.get_template_tasks HTTP/1.1" 200 - 7 0.017 0.015
+2025-12-02 15:00:47,354 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:47] "POST /web/dataset/call_kw/project.task/web_read_group#project.task.web_read_group HTTP/1.1" 200 - 13 0.026 0.016
+2025-12-02 15:00:47,468 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:47] "POST /web/dataset/call_kw/project.task/get_views#project.task.get_views HTTP/1.1" 200 - 78 0.047 0.123
+2025-12-02 15:00:50,839 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:50] "POST /web/dataset/call_kw/project.task/get_views#project.task.get_views HTTP/1.1" 200 - 14 0.009 0.029
+2025-12-02 15:00:50,862 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:50] "POST /web/dataset/call_kw/project.task/onchange#project.task.onchange HTTP/1.1" 200 - 10 0.005 0.013
+2025-12-02 15:00:54,377 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:54] "POST /web/dataset/call_kw/project.task/web_save#project.task.web_save HTTP/1.1" 200 - 44 0.096 0.080
+2025-12-02 15:00:54,412 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:54] "POST /web/dataset/call_kw/project.task/onchange#project.task.onchange HTTP/1.1" 200 - 8 0.018 0.013
+2025-12-02 15:00:54,437 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:54] "POST /web/dataset/call_kw/project.task/web_read#project.task.web_read HTTP/1.1" 200 - 24 0.023 0.031
+2025-12-02 15:00:54,463 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:54] "POST /web/dataset/call_kw/project.task/formatted_read_group#project.task.formatted_read_group HTTP/1.1" 200 - 9 0.008 0.010
+2025-12-02 15:00:54,463 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:54] "POST /web/dataset/call_kw/project.task/read_progress_bar#project.task.read_progress_bar HTTP/1.1" 200 - 8 0.009 0.010
+2025-12-02 15:00:56,711 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:00:56] "POST /web/dataset/call_kw/project.task/onchange#project.task.onchange HTTP/1.1" 200 - 8 0.006 0.018
+2025-12-02 15:01:03,633 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:01:03] "POST /web/dataset/call_kw/project.task/web_save#project.task.web_save HTTP/1.1" 200 - 38 0.025 0.058
+2025-12-02 15:01:03,667 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:01:03] "POST /web/dataset/call_kw/project.task/onchange#project.task.onchange HTTP/1.1" 200 - 8 0.018 0.013
+2025-12-02 15:01:03,687 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:01:03] "POST /web/dataset/call_kw/project.task/web_read#project.task.web_read HTTP/1.1" 200 - 24 0.018 0.033
+2025-12-02 15:01:03,706 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:01:03] "POST /web/dataset/call_kw/project.task/read_progress_bar#project.task.read_progress_bar HTTP/1.1" 200 - 8 0.007 0.009
+2025-12-02 15:01:03,708 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:01:03] "POST /web/dataset/call_kw/project.task/formatted_read_group#project.task.formatted_read_group HTTP/1.1" 200 - 9 0.009 0.009
+2025-12-02 15:01:05,814 30416 ERROR diegofornalha odoo.http: Exception during request handling. 
+Traceback (most recent call last):
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/orm/models.py", line 3848, in _determine_fields_to_fetch
+    field = self._fields[field_name]
+KeyError: 'progress'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2802, in __call__
+    response = request._serve_db()
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2277, in _serve_db
+    raise self._update_served_exception(exc)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2275, in _serve_db
+    return service_model.retrying(serve_func, env=self.env)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/service/model.py", line 184, in retrying
+    result = func()
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2330, in _serve_ir_http
+    response = self.dispatcher.dispatch(rule.endpoint, args)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2545, in dispatch
+    result = self.request.registry['ir.http']._dispatch(endpoint)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/addons/base/models/ir_http.py", line 355, in _dispatch
+    result = endpoint(**request.params)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 788, in route_wrapper
+    result = endpoint(self, *args, **params_ok)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/addons/web/controllers/dataset.py", line 32, in call_kw
+    return call_kw(request.env[model], method, args, kwargs)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/service/model.py", line 93, in call_kw
+    result = method(recs, *args, **kwargs)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/orm/models.py", line 5768, in search_read
+    records = self.search_fetch(domain or [], fields, offset=offset, limit=limit, order=order)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/orm/models.py", line 1416, in search_fetch
+    fields_to_fetch = self._determine_fields_to_fetch(field_names)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/orm/models.py", line 3850, in _determine_fields_to_fetch
+    raise ValueError(f"Invalid field {field_name!r} on {self._name!r}") from e
+ValueError: Invalid field 'progress' on 'project.task'
+2025-12-02 15:01:05,815 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:01:05] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 7 0.004 0.022
+2025-12-02 15:01:06,814 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:01:06] "GET /web/bundle/web.assets_backend_lazy?lang=pt_BR HTTP/1.1" 200 - 6 0.004 0.041
+2025-12-02 15:01:06,844 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:01:06] "POST /web/dataset/call_kw/project.task/formatted_read_group#project.task.formatted_read_group HTTP/1.1" 200 - 16 0.010 0.009
+2025-12-02 15:01:06,850 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:01:06] "GET /web/bundle/web.chartjs_lib?lang=pt_BR HTTP/1.1" 200 - 2 0.001 0.002
+2025-12-02 15:01:07,723 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:01:07] "POST /web/dataset/call_kw/project.task/formatted_read_grouping_sets#project.task.formatted_read_grouping_sets HTTP/1.1" 200 - 16 0.009 0.022
+2025-12-02 15:01:08,418 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:01:08] "POST /web/dataset/call_kw/project.task/web_search_read#project.task.web_search_read HTTP/1.1" 200 - 8 0.013 0.020
+2025-12-02 15:01:08,426 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:01:08] "POST /web/dataset/call_kw/mail.activity/get_activity_data#mail.activity.get_activity_data HTTP/1.1" 200 - 16 0.022 0.019
+2025-12-02 15:01:09,171 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:01:09] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 8 0.014 0.015
+2025-12-02 15:01:09,179 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:01:09] "POST /web/dataset/call_kw/project.task/web_search_read#project.task.web_search_read HTTP/1.1" 200 - 12 0.021 0.016
+2025-12-02 15:01:09,182 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:01:09] "POST /web/dataset/call_kw/project.task/get_unusual_days#project.task.get_unusual_days HTTP/1.1" 200 - 16 0.026 0.016
+2025-12-02 15:01:09,198 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:01:09] "GET /web/bundle/web.fullcalendar_lib?lang=pt_BR HTTP/1.1" 200 - 2 0.001 0.003
+2025-12-02 15:01:09,937 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:01:09] "POST /web/dataset/call_kw/project.project/get_template_tasks#project.project.get_template_tasks HTTP/1.1" 200 - 7 0.010 0.015
+2025-12-02 15:01:09,983 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:01:09] "POST /web/dataset/call_kw/project.task/web_read_group#project.task.web_read_group HTTP/1.1" 200 - 38 0.029 0.042
+2025-12-02 15:01:11,088 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:01:11] "POST /web/dataset/call_kw/project.project/get_template_tasks#project.project.get_template_tasks HTTP/1.1" 200 - 7 0.012 0.021
+2025-12-02 15:01:11,088 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:01:11] "POST /web/dataset/call_kw/project.task/read_progress_bar#project.task.read_progress_bar HTTP/1.1" 200 - 8 0.017 0.016
+2025-12-02 15:01:11,124 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:01:11] "POST /web/dataset/call_kw/project.task/web_read_group#project.task.web_read_group HTTP/1.1" 200 - 37 0.040 0.029
+2025-12-02 15:01:13,565 30416 ERROR diegofornalha odoo.http: Exception during request handling. 
+Traceback (most recent call last):
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/orm/models.py", line 3848, in _determine_fields_to_fetch
+    field = self._fields[field_name]
+KeyError: 'progress'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2802, in __call__
+    response = request._serve_db()
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2277, in _serve_db
+    raise self._update_served_exception(exc)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2275, in _serve_db
+    return service_model.retrying(serve_func, env=self.env)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/service/model.py", line 184, in retrying
+    result = func()
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2330, in _serve_ir_http
+    response = self.dispatcher.dispatch(rule.endpoint, args)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2545, in dispatch
+    result = self.request.registry['ir.http']._dispatch(endpoint)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/addons/base/models/ir_http.py", line 355, in _dispatch
+    result = endpoint(**request.params)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 788, in route_wrapper
+    result = endpoint(self, *args, **params_ok)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/addons/web/controllers/dataset.py", line 32, in call_kw
+    return call_kw(request.env[model], method, args, kwargs)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/service/model.py", line 93, in call_kw
+    result = method(recs, *args, **kwargs)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/orm/models.py", line 5768, in search_read
+    records = self.search_fetch(domain or [], fields, offset=offset, limit=limit, order=order)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/orm/models.py", line 1416, in search_fetch
+    fields_to_fetch = self._determine_fields_to_fetch(field_names)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/orm/models.py", line 3850, in _determine_fields_to_fetch
+    raise ValueError(f"Invalid field {field_name!r} on {self._name!r}") from e
+ValueError: Invalid field 'progress' on 'project.task'
+2025-12-02 15:01:13,566 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:01:13] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 7 0.004 0.014
+2025-12-02 15:01:15,953 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:01:15] "POST /web/action/load HTTP/1.1" 200 - 11 0.015 0.020
+2025-12-02 15:01:15,998 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:01:15] "POST /web/dataset/call_kw/project.project/search_read#project.project.search_read HTTP/1.1" 200 - 8 0.008 0.013
+2025-12-02 15:01:16,027 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:01:16] "POST /web/dataset/call_kw/project.project/web_search_read#project.project.web_search_read HTTP/1.1" 200 - 26 0.019 0.033
+2025-12-02 15:01:23,770 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:01:23] "POST /web/dataset/call_button/project.project/action_view_tasks#project.project.action_view_tasks HTTP/1.1" 200 - 24 0.015 0.033
+2025-12-02 15:01:23,810 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:01:23] "POST /web/dataset/call_kw/project.task/read_progress_bar#project.task.read_progress_bar HTTP/1.1" 200 - 8 0.018 0.015
+2025-12-02 15:01:23,810 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:01:23] "POST /web/dataset/call_kw/project.project/get_template_tasks#project.project.get_template_tasks HTTP/1.1" 200 - 7 0.017 0.014
+2025-12-02 15:01:23,842 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:01:23] "POST /web/dataset/call_kw/project.task/web_read_group#project.task.web_read_group HTTP/1.1" 200 - 37 0.035 0.030
+2025-12-02 15:01:23,897 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:01:23] "GET /web/image/res.users/5/avatar_128 HTTP/1.1" 304 - 5 0.006 0.015
+2025-12-02 15:01:23,918 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:01:23] "GET /web/image/res.users/1/avatar_128 HTTP/1.1" 304 - 20 0.026 0.015
+2025-12-02 15:01:23,919 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:01:23] "GET /web/image/res.users/3/avatar_128 HTTP/1.1" 304 - 20 0.031 0.014
+2025-12-02 15:01:23,920 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:01:23] "GET /web/image/res.users/4/avatar_128 HTTP/1.1" 304 - 20 0.029 0.013
+2025-12-02 15:01:23,921 30416 INFO diegofornalha odoo.addons.base.models.ir_attachment: _read_file reading /Users/2a/Desktop/odoo19framework/diegofornalha/filestore/filestore/diegofornalha/66/66ae48cdda39173a7c40302137fd7fe47b649b16 
+Traceback (most recent call last):
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/addons/base/models/ir_attachment.py", line 138, in _file_read
+    with open(full_path, 'rb') as f:
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/2a/Desktop/odoo19framework/diegofornalha/filestore/filestore/diegofornalha/66/66ae48cdda39173a7c40302137fd7fe47b649b16'
+2025-12-02 15:01:23,922 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:01:23] "GET /web/image/res.users/2/avatar_128 HTTP/1.1" 304 - 19 0.023 0.020
+2025-12-02 15:01:31,055 30416 ERROR diegofornalha odoo.http: Exception during request handling. 
+Traceback (most recent call last):
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/orm/models.py", line 3848, in _determine_fields_to_fetch
+    field = self._fields[field_name]
+KeyError: 'progress'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2802, in __call__
+    response = request._serve_db()
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2277, in _serve_db
+    raise self._update_served_exception(exc)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2275, in _serve_db
+    return service_model.retrying(serve_func, env=self.env)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/service/model.py", line 184, in retrying
+    result = func()
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2330, in _serve_ir_http
+    response = self.dispatcher.dispatch(rule.endpoint, args)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2545, in dispatch
+    result = self.request.registry['ir.http']._dispatch(endpoint)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/addons/base/models/ir_http.py", line 355, in _dispatch
+    result = endpoint(**request.params)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 788, in route_wrapper
+    result = endpoint(self, *args, **params_ok)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/addons/web/controllers/dataset.py", line 32, in call_kw
+    return call_kw(request.env[model], method, args, kwargs)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/service/model.py", line 93, in call_kw
+    result = method(recs, *args, **kwargs)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/orm/models.py", line 5768, in search_read
+    records = self.search_fetch(domain or [], fields, offset=offset, limit=limit, order=order)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/orm/models.py", line 1416, in search_fetch
+    fields_to_fetch = self._determine_fields_to_fetch(field_names)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/orm/models.py", line 3850, in _determine_fields_to_fetch
+    raise ValueError(f"Invalid field {field_name!r} on {self._name!r}") from e
+ValueError: Invalid field 'progress' on 'project.task'
+2025-12-02 15:01:31,057 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:01:31] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 7 0.008 0.033
+2025-12-02 15:01:45,446 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:01:45] "POST /web/dataset/call_kw/project.task/read_progress_bar#project.task.read_progress_bar HTTP/1.1" 200 - 8 0.015 0.015
+2025-12-02 15:01:45,448 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:01:45] "POST /web/dataset/call_kw/project.project/get_template_tasks#project.project.get_template_tasks HTTP/1.1" 200 - 7 0.017 0.012
+2025-12-02 15:01:45,482 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:01:45] "POST /web/dataset/call_kw/project.task/web_read_group#project.task.web_read_group HTTP/1.1" 200 - 37 0.035 0.029
+2025-12-02 15:01:46,607 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:01:46] "POST /web/dataset/call_kw/project.task/web_read#project.task.web_read HTTP/1.1" 200 - 37 0.042 0.071
+2025-12-02 15:01:46,639 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:01:46] "POST /web/dataset/call_kw/project.project/get_template_tasks#project.project.get_template_tasks HTTP/1.1" 200 - 7 0.007 0.017
+2025-12-02 15:01:46,648 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:01:46] "POST /web/dataset/call_kw/project.task.type/search_read#project.task.type.search_read HTTP/1.1" 200 - 6 0.003 0.014
+2025-12-02 15:01:46,675 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:01:46] "POST /html_editor/get_ice_servers HTTP/1.1" 200 - 2 0.002 0.004
+2025-12-02 15:01:46,748 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:01:46] "POST /mail/thread/messages HTTP/1.1" 200 - 26 0.029 0.026
+2025-12-02 15:01:46,770 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:01:46] "POST /mail/data HTTP/1.1" 200 - 51 0.044 0.030
+2025-12-02 15:01:46,786 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:01:46] "GET /web/bundle/web.assets_emoji?lang=pt_BR HTTP/1.1" 200 - 2 0.003 0.006
+2025-12-02 15:01:55,156 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:01:55] "POST /web/dataset/call_kw/project.task/web_save#project.task.web_save HTTP/1.1" 200 - 46 0.058 0.111
+2025-12-02 15:01:55,213 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:01:55] "POST /mail/thread/messages HTTP/1.1" 200 - 28 0.023 0.028
+2025-12-02 15:01:55,261 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:01:55] "POST /mail/data HTTP/1.1" 200 - 51 0.041 0.037
+2025-12-02 15:01:56,112 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:01:56] "POST /web/dataset/call_kw/project.project/search_read#project.project.search_read HTTP/1.1" 200 - 8 0.009 0.011
+2025-12-02 15:01:56,142 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:01:56] "POST /web/dataset/call_kw/project.project/web_search_read#project.project.web_search_read HTTP/1.1" 200 - 26 0.020 0.031
+2025-12-02 15:01:57,143 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:01:57] "POST /web/dataset/call_button/project.project/action_view_tasks#project.project.action_view_tasks HTTP/1.1" 200 - 24 0.026 0.035
+2025-12-02 15:01:57,187 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:01:57] "POST /web/dataset/call_kw/project.project/get_template_tasks#project.project.get_template_tasks HTTP/1.1" 200 - 7 0.015 0.018
+2025-12-02 15:01:57,187 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:01:57] "POST /web/dataset/call_kw/project.task/read_progress_bar#project.task.read_progress_bar HTTP/1.1" 200 - 8 0.020 0.014
+2025-12-02 15:01:57,230 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:01:57] "POST /web/dataset/call_kw/project.task/web_read_group#project.task.web_read_group HTTP/1.1" 200 - 37 0.040 0.037
+2025-12-02 15:01:58,435 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:01:58] "POST /web/dataset/call_kw/project.task/web_read#project.task.web_read HTTP/1.1" 200 - 37 0.028 0.069
+2025-12-02 15:01:58,464 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:01:58] "POST /web/dataset/call_kw/project.task.type/search_read#project.task.type.search_read HTTP/1.1" 200 - 6 0.011 0.010
+2025-12-02 15:01:58,465 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:01:58] "POST /web/dataset/call_kw/project.project/get_template_tasks#project.project.get_template_tasks HTTP/1.1" 200 - 7 0.010 0.015
+2025-12-02 15:01:58,531 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:01:58] "POST /mail/thread/messages HTTP/1.1" 200 - 26 0.027 0.016
+2025-12-02 15:01:58,544 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:01:58] "POST /mail/data HTTP/1.1" 200 - 51 0.031 0.024
+2025-12-02 15:02:01,493 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:02:01] "POST /web/dataset/call_kw/project.project/search_read#project.project.search_read HTTP/1.1" 200 - 8 0.012 0.014
+2025-12-02 15:02:01,527 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:02:01] "POST /web/dataset/call_kw/project.project/web_search_read#project.project.web_search_read HTTP/1.1" 200 - 26 0.028 0.034
+2025-12-02 15:02:02,347 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:02:02] "POST /web/dataset/call_button/project.project/action_view_tasks#project.project.action_view_tasks HTTP/1.1" 200 - 24 0.014 0.030
+2025-12-02 15:02:02,413 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:02:02] "POST /web/dataset/call_kw/project.project/get_template_tasks#project.project.get_template_tasks HTTP/1.1" 200 - 7 0.014 0.041
+2025-12-02 15:02:02,416 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:02:02] "POST /web/dataset/call_kw/project.task/read_progress_bar#project.task.read_progress_bar HTTP/1.1" 200 - 8 0.043 0.015
+2025-12-02 15:02:02,447 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:02:02] "POST /web/dataset/call_kw/project.task/web_read_group#project.task.web_read_group HTTP/1.1" 200 - 37 0.048 0.039
+2025-12-02 15:02:05,085 30416 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc="title or 'Odoo'" in template 184. Replace by @t-out 
+2025-12-02 15:02:05,085 30416 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='request.csrf_token(None)' in template 184. Replace by @t-out 
+2025-12-02 15:02:05,085 30416 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='debug' in template 184. Replace by @t-out 
+2025-12-02 15:02:05,088 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:02:05] "GET /odoo/project/2/tasks HTTP/1.1" 200 - 64 0.027 0.359
+2025-12-02 15:02:05,104 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:02:05] "GET /web/webclient/load_menus HTTP/1.1" 200 - 1 0.001 0.002
+2025-12-02 15:02:05,175 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:02:05] "GET /web/webclient/translations?hash=6d5e38fbafef73e62fe29ff9a799ffdde0431a87&lang=pt_BR HTTP/1.1" 200 - 1 0.001 0.002
+2025-12-02 15:02:05,180 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:02:05] "GET /web/manifest.webmanifest HTTP/1.1" 200 - 9 0.006 0.005
+2025-12-02 15:02:05,182 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:02:05] "GET /bus/websocket_worker_bundle?v=19.0-2 HTTP/1.1" 304 - 4 0.001 0.004
+2025-12-02 15:02:05,306 30416 INFO diegofornalha odoo.addons.base.models.ir_attachment: _read_file reading /Users/2a/Desktop/odoo19framework/diegofornalha/filestore/filestore/diegofornalha/66/66ae48cdda39173a7c40302137fd7fe47b649b16 
+Traceback (most recent call last):
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/addons/base/models/ir_attachment.py", line 138, in _file_read
+    with open(full_path, 'rb') as f:
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/2a/Desktop/odoo19framework/diegofornalha/filestore/filestore/diegofornalha/66/66ae48cdda39173a7c40302137fd7fe47b649b16'
+2025-12-02 15:02:05,311 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:02:05] "GET /web/image?model=res.users&field=avatar_128&id=2 HTTP/1.1" 304 - 19 0.017 0.016
+2025-12-02 15:02:05,316 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:02:05] "POST /web/dataset/call_kw/project.project/get_template_tasks#project.project.get_template_tasks HTTP/1.1" 200 - 7 0.014 0.009
+2025-12-02 15:02:05,318 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:02:05] "POST /web/dataset/call_kw/project.task/read_progress_bar#project.task.read_progress_bar HTTP/1.1" 200 - 8 0.018 0.011
+2025-12-02 15:02:05,343 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:02:05] "POST /mail/data HTTP/1.1" 200 - 31 0.047 0.012
+2025-12-02 15:02:05,357 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:02:05] "POST /web/dataset/call_kw/project.task/web_read_group#project.task.web_read_group HTTP/1.1" 200 - 37 0.043 0.024
+2025-12-02 15:02:05,369 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:02:05] "POST /web/dataset/call_kw/res.users/has_group#res.users.has_group HTTP/1.1" 200 - 1 0.001 0.002
+2025-12-02 15:02:05,463 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:02:05] "POST /web/dataset/call_kw/project.task/get_views#project.task.get_views HTTP/1.1" 200 - 78 0.061 0.122
+2025-12-02 15:02:05,479 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:02:05] "POST /web/dataset/call_kw/mail.push.device/register_devices#mail.push.device.register_devices HTTP/1.1" 200 - 6 0.004 0.003
+2025-12-02 15:02:06,945 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:02:06] "GET /web/service-worker.js HTTP/1.1" 200 - 1 0.001 0.008
+2025-12-02 15:02:07,013 30416 ERROR diegofornalha odoo.http: Exception during request handling. 
+Traceback (most recent call last):
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/orm/models.py", line 3848, in _determine_fields_to_fetch
+    field = self._fields[field_name]
+KeyError: 'progress'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2802, in __call__
+    response = request._serve_db()
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2277, in _serve_db
+    raise self._update_served_exception(exc)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2275, in _serve_db
+    return service_model.retrying(serve_func, env=self.env)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/service/model.py", line 184, in retrying
+    result = func()
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2330, in _serve_ir_http
+    response = self.dispatcher.dispatch(rule.endpoint, args)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2545, in dispatch
+    result = self.request.registry['ir.http']._dispatch(endpoint)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/addons/base/models/ir_http.py", line 355, in _dispatch
+    result = endpoint(**request.params)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 788, in route_wrapper
+    result = endpoint(self, *args, **params_ok)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/addons/web/controllers/dataset.py", line 32, in call_kw
+    return call_kw(request.env[model], method, args, kwargs)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/service/model.py", line 93, in call_kw
+    result = method(recs, *args, **kwargs)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/orm/models.py", line 5768, in search_read
+    records = self.search_fetch(domain or [], fields, offset=offset, limit=limit, order=order)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/orm/models.py", line 1416, in search_fetch
+    fields_to_fetch = self._determine_fields_to_fetch(field_names)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/orm/models.py", line 3850, in _determine_fields_to_fetch
+    raise ValueError(f"Invalid field {field_name!r} on {self._name!r}") from e
+ValueError: Invalid field 'progress' on 'project.task'
+2025-12-02 15:02:07,014 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:02:07] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 7 0.006 0.021
+2025-12-02 15:02:42,898 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:02:42] "GET /odoo/project/2/tasks?view_type=gantt HTTP/1.1" 303 - 1 0.002 0.011
+2025-12-02 15:02:42,984 30416 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='error' in template 189. Replace by @t-out 
+2025-12-02 15:02:42,984 30416 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='message' in template 189. Replace by @t-out 
+2025-12-02 15:02:43,000 30416 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='error' in template 189. Replace by @t-out 
+2025-12-02 15:02:43,001 30416 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='message' in template 189. Replace by @t-out 
+2025-12-02 15:02:43,015 30416 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc="title or 'Odoo'" in template 185. Replace by @t-out 
+2025-12-02 15:02:43,016 30416 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='request.csrf_token(None)' in template 185. Replace by @t-out 
+2025-12-02 15:02:43,016 30416 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='debug' in template 185. Replace by @t-out 
+2025-12-02 15:02:43,101 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:02:43] "GET /web/login?redirect=/odoo/project/2/tasks?view_type%3Dgantt HTTP/1.1" 200 - 46 0.023 0.179
+2025-12-02 15:02:43,113 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:02:43] "GET /web/binary/company_logo HTTP/1.1" 304 - 2 0.002 0.002
+2025-12-02 15:02:43,214 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:02:43] "GET /website/translations?hash=&lang= HTTP/1.1" 200 - 5 0.003 0.015
+2025-12-02 15:02:46,269 30416 INFO diegofornalha odoo.addons.base.models.res_users: Login successful for login:diegofornalha@gmail.com from 127.0.0.1 
+2025-12-02 15:02:46,275 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:02:46] "POST /web/login HTTP/1.1" 303 - 17 0.011 0.191
+2025-12-02 15:02:46,281 30416 INFO diegofornalha odoo.addons.base.models.res_device: User 2 inserts device log (sZk50COD0sFiTM83E90527vtri1wpGaIc051Od-VL1) 
+2025-12-02 15:02:46,567 30416 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc="title or 'Odoo'" in template 184. Replace by @t-out 
+2025-12-02 15:02:46,568 30416 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='request.csrf_token(None)' in template 184. Replace by @t-out 
+2025-12-02 15:02:46,568 30416 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='debug' in template 184. Replace by @t-out 
+2025-12-02 15:02:46,570 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:02:46] "GET /odoo/project/2/tasks?view_type=gantt HTTP/1.1" 200 - 64 0.022 0.270
+2025-12-02 15:02:46,592 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:02:46] "GET /web/webclient/load_menus HTTP/1.1" 200 - 1 0.001 0.005
+2025-12-02 15:02:46,669 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:02:46] "GET /web/webclient/translations?hash=&lang=pt_BR HTTP/1.1" 200 - 1 0.002 0.014
+2025-12-02 15:02:46,671 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:02:46] "GET /web/manifest.webmanifest HTTP/1.1" 200 - 9 0.017 0.004
+2025-12-02 15:02:46,685 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:02:46] "GET /bus/websocket_worker_bundle?v=19.0-2 HTTP/1.1" 304 - 4 0.002 0.004
+2025-12-02 15:02:46,722 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:02:46] "GET /web/service-worker.js HTTP/1.1" 200 - 1 0.001 0.002
+2025-12-02 15:02:46,727 30416 INFO ? werkzeug: 127.0.0.1 - - [02/Dec/2025 15:02:46] "GET /mail/static/lib/idb-keyval/idb-keyval.js HTTP/1.1" 304 - 0 0.000 0.001
+2025-12-02 15:02:46,779 30416 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc="title or 'Odoo'" in template 184. Replace by @t-out 
+2025-12-02 15:02:46,781 30416 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='request.csrf_token(None)' in template 184. Replace by @t-out 
+2025-12-02 15:02:46,782 30416 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='debug' in template 184. Replace by @t-out 
+2025-12-02 15:02:46,782 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:02:46] "POST /web/action/load_breadcrumbs HTTP/1.1" 200 - 20 0.031 0.012
+2025-12-02 15:02:46,788 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:02:46] "GET /odoo/offline HTTP/1.1" 200 - 10 0.024 0.034
+2025-12-02 15:02:46,789 30416 INFO diegofornalha odoo.addons.base.models.ir_attachment: _read_file reading /Users/2a/Desktop/odoo19framework/diegofornalha/filestore/filestore/diegofornalha/66/66ae48cdda39173a7c40302137fd7fe47b649b16 
+Traceback (most recent call last):
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/addons/base/models/ir_attachment.py", line 138, in _file_read
+    with open(full_path, 'rb') as f:
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/2a/Desktop/odoo19framework/diegofornalha/filestore/filestore/diegofornalha/66/66ae48cdda39173a7c40302137fd7fe47b649b16'
+2025-12-02 15:02:46,793 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:02:46] "GET /web/image?model=res.users&field=avatar_128&id=2 HTTP/1.1" 304 - 19 0.027 0.024
+2025-12-02 15:02:46,810 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:02:46] "POST /mail/data HTTP/1.1" 200 - 31 0.044 0.022
+2025-12-02 15:02:46,817 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:02:46] "POST /web/action/load HTTP/1.1" 200 - 22 0.016 0.008
+2025-12-02 15:02:46,941 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:02:46] "POST /web/dataset/call_kw/project.task/get_views#project.task.get_views HTTP/1.1" 200 - 78 0.043 0.078
+2025-12-02 15:02:46,955 30416 ERROR diegofornalha odoo.http: Exception during request handling. 
+Traceback (most recent call last):
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/orm/models.py", line 3848, in _determine_fields_to_fetch
+    field = self._fields[field_name]
+KeyError: 'progress'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2802, in __call__
+    response = request._serve_db()
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2277, in _serve_db
+    raise self._update_served_exception(exc)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2275, in _serve_db
+    return service_model.retrying(serve_func, env=self.env)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/service/model.py", line 184, in retrying
+    result = func()
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2330, in _serve_ir_http
+    response = self.dispatcher.dispatch(rule.endpoint, args)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2545, in dispatch
+    result = self.request.registry['ir.http']._dispatch(endpoint)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/addons/base/models/ir_http.py", line 355, in _dispatch
+    result = endpoint(**request.params)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 788, in route_wrapper
+    result = endpoint(self, *args, **params_ok)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/addons/web/controllers/dataset.py", line 32, in call_kw
+    return call_kw(request.env[model], method, args, kwargs)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/service/model.py", line 93, in call_kw
+    result = method(recs, *args, **kwargs)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/orm/models.py", line 5768, in search_read
+    records = self.search_fetch(domain or [], fields, offset=offset, limit=limit, order=order)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/orm/models.py", line 1416, in search_fetch
+    fields_to_fetch = self._determine_fields_to_fetch(field_names)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/orm/models.py", line 3850, in _determine_fields_to_fetch
+    raise ValueError(f"Invalid field {field_name!r} on {self._name!r}") from e
+ValueError: Invalid field 'progress' on 'project.task'
+2025-12-02 15:02:46,955 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:02:46] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 7 0.005 0.005
+2025-12-02 15:02:47,155 30416 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc="title or 'Odoo'" in template 184. Replace by @t-out 
+2025-12-02 15:02:47,156 30416 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='request.csrf_token(None)' in template 184. Replace by @t-out 
+2025-12-02 15:02:47,156 30416 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='debug' in template 184. Replace by @t-out 
+2025-12-02 15:02:47,158 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:02:47] "GET /odoo HTTP/1.1" 200 - 64 0.047 0.383
+2025-12-02 15:02:47,171 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:02:47] "POST /web/dataset/call_kw/mail.push.device/get_web_push_vapid_public_key#mail.push.device.get_web_push_vapid_public_key HTTP/1.1" 200 - 1 0.001 0.001
+2025-12-02 15:02:48,047 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:02:48] "POST /web/dataset/call_kw/mail.push.device/register_devices#mail.push.device.register_devices HTTP/1.1" 200 - 5 0.003 0.007
+2025-12-02 15:02:49,425 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:02:49] "POST /web/dataset/call_kw/project.task/get_views#project.task.get_views HTTP/1.1" 200 - 78 0.065 0.114
+2025-12-02 15:02:49,448 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:02:49] "POST /web/dataset/call_kw/project.project/get_template_tasks#project.project.get_template_tasks HTTP/1.1" 200 - 7 0.006 0.009
+2025-12-02 15:02:49,479 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:02:49] "POST /web/dataset/call_kw/project.task/web_read_group#project.task.web_read_group HTTP/1.1" 200 - 37 0.025 0.021
+2025-12-02 15:02:49,488 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:02:49] "POST /web/dataset/call_kw/res.users/has_group#res.users.has_group HTTP/1.1" 200 - 1 0.001 0.003
+2025-12-02 15:02:49,586 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:02:49] "POST /web/dataset/call_kw/project.task/read_progress_bar#project.task.read_progress_bar HTTP/1.1" 200 - 8 0.136 0.018
+2025-12-02 15:02:51,385 30416 ERROR diegofornalha odoo.http: Exception during request handling. 
+Traceback (most recent call last):
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/orm/models.py", line 3848, in _determine_fields_to_fetch
+    field = self._fields[field_name]
+KeyError: 'progress'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2802, in __call__
+    response = request._serve_db()
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2277, in _serve_db
+    raise self._update_served_exception(exc)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2275, in _serve_db
+    return service_model.retrying(serve_func, env=self.env)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/service/model.py", line 184, in retrying
+    result = func()
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2330, in _serve_ir_http
+    response = self.dispatcher.dispatch(rule.endpoint, args)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2545, in dispatch
+    result = self.request.registry['ir.http']._dispatch(endpoint)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/addons/base/models/ir_http.py", line 355, in _dispatch
+    result = endpoint(**request.params)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 788, in route_wrapper
+    result = endpoint(self, *args, **params_ok)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/addons/web/controllers/dataset.py", line 32, in call_kw
+    return call_kw(request.env[model], method, args, kwargs)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/service/model.py", line 93, in call_kw
+    result = method(recs, *args, **kwargs)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/orm/models.py", line 5768, in search_read
+    records = self.search_fetch(domain or [], fields, offset=offset, limit=limit, order=order)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/orm/models.py", line 1416, in search_fetch
+    fields_to_fetch = self._determine_fields_to_fetch(field_names)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/orm/models.py", line 3850, in _determine_fields_to_fetch
+    raise ValueError(f"Invalid field {field_name!r} on {self._name!r}") from e
+ValueError: Invalid field 'progress' on 'project.task'
+2025-12-02 15:02:51,385 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:02:51] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 7 0.005 0.017
+2025-12-02 15:02:52,713 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:02:52] "POST /web/dataset/call_kw/project.task/read_progress_bar#project.task.read_progress_bar HTTP/1.1" 200 - 8 0.016 0.014
+2025-12-02 15:02:52,715 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:02:52] "POST /web/dataset/call_kw/project.project/get_template_tasks#project.project.get_template_tasks HTTP/1.1" 200 - 7 0.017 0.011
+2025-12-02 15:02:52,749 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:02:52] "POST /web/dataset/call_kw/project.task/web_read_group#project.task.web_read_group HTTP/1.1" 200 - 37 0.033 0.032
+2025-12-02 15:02:53,998 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:02:53] "POST /web/dataset/call_kw/project.task/read_progress_bar#project.task.read_progress_bar HTTP/1.1" 200 - 8 0.013 0.018
+2025-12-02 15:02:54,051 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:02:54] "POST /web/dataset/call_kw/project.task/web_read_group#project.task.web_read_group HTTP/1.1" 200 - 37 0.033 0.051
+2025-12-02 15:02:55,624 30416 ERROR diegofornalha odoo.http: Exception during request handling. 
+Traceback (most recent call last):
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/orm/models.py", line 3848, in _determine_fields_to_fetch
+    field = self._fields[field_name]
+KeyError: 'progress'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2802, in __call__
+    response = request._serve_db()
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2277, in _serve_db
+    raise self._update_served_exception(exc)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2275, in _serve_db
+    return service_model.retrying(serve_func, env=self.env)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/service/model.py", line 184, in retrying
+    result = func()
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2330, in _serve_ir_http
+    response = self.dispatcher.dispatch(rule.endpoint, args)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2545, in dispatch
+    result = self.request.registry['ir.http']._dispatch(endpoint)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/addons/base/models/ir_http.py", line 355, in _dispatch
+    result = endpoint(**request.params)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 788, in route_wrapper
+    result = endpoint(self, *args, **params_ok)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/addons/web/controllers/dataset.py", line 32, in call_kw
+    return call_kw(request.env[model], method, args, kwargs)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/service/model.py", line 93, in call_kw
+    result = method(recs, *args, **kwargs)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/orm/models.py", line 5768, in search_read
+    records = self.search_fetch(domain or [], fields, offset=offset, limit=limit, order=order)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/orm/models.py", line 1416, in search_fetch
+    fields_to_fetch = self._determine_fields_to_fetch(field_names)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/orm/models.py", line 3850, in _determine_fields_to_fetch
+    raise ValueError(f"Invalid field {field_name!r} on {self._name!r}") from e
+ValueError: Invalid field 'progress' on 'project.task'
+2025-12-02 15:02:55,625 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:02:55] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 7 0.005 0.020
+2025-12-02 15:03:26,890 30416 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc="title or 'Odoo'" in template 184. Replace by @t-out 
+2025-12-02 15:03:26,891 30416 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='request.csrf_token(None)' in template 184. Replace by @t-out 
+2025-12-02 15:03:26,891 30416 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='debug' in template 184. Replace by @t-out 
+2025-12-02 15:03:26,894 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:03:26] "GET /odoo/project/2/tasks?view_type=gantt HTTP/1.1" 200 - 64 0.025 0.376
+2025-12-02 15:03:26,913 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:03:26] "GET /web/webclient/load_menus HTTP/1.1" 200 - 1 0.002 0.003
+2025-12-02 15:03:27,904 30416 INFO diegofornalha odoo.addons.attachment_indexation.models.ir_attachment: openpyxl is not installed. 
+2025-12-02 15:03:27,943 30416 INFO diegofornalha odoo.addons.base.models.assetsbundle: Generating a new asset bundle attachment /web/assets/c9ceb72/web.assets_web.min.css (id:932) 
+2025-12-02 15:03:27,969 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:03:27] "GET /web/assets/c9ceb72/web.assets_web.min.css HTTP/1.1" 200 - 23 0.049 1.012
+2025-12-02 15:03:29,811 30416 INFO diegofornalha odoo.addons.attachment_indexation.models.ir_attachment: openpyxl is not installed. 
+2025-12-02 15:03:29,854 30416 INFO diegofornalha odoo.addons.base.models.assetsbundle: Generating a new asset bundle attachment /web/assets/bc82532/web.assets_web_print.min.css (id:933) 
+2025-12-02 15:03:29,857 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:03:29] "GET /web/assets/bc82532/web.assets_web_print.min.css HTTP/1.1" 200 - 20 0.050 1.827
+2025-12-02 15:03:29,973 30416 INFO diegofornalha odoo.addons.attachment_indexation.models.ir_attachment: openpyxl is not installed. 
+2025-12-02 15:03:29,977 30416 INFO diegofornalha odoo.addons.base.models.assetsbundle: Generating a new asset bundle attachment /web/assets/bd4ce3c/web.assets_web.min.js (id:934) 
+2025-12-02 15:03:29,988 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:03:29] "GET /web/assets/bd4ce3c/web.assets_web.min.js HTTP/1.1" 200 - 23 0.012 3.069
+2025-12-02 15:03:30,154 30416 INFO ? werkzeug: 127.0.0.1 - - [02/Dec/2025 15:03:30] "GET /web/static/img/favicon.ico HTTP/1.1" 200 - 0 0.000 0.001
+2025-12-02 15:03:30,158 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:03:30] "GET /web/webclient/translations?hash=6d5e38fbafef73e62fe29ff9a799ffdde0431a87&lang=pt_BR HTTP/1.1" 200 - 1 0.001 0.002
+2025-12-02 15:03:30,161 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:03:30] "GET /web/manifest.webmanifest HTTP/1.1" 200 - 9 0.005 0.004
+2025-12-02 15:03:30,166 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:03:30] "GET /bus/websocket_worker_bundle?v=19.0-2 HTTP/1.1" 304 - 4 0.001 0.003
+2025-12-02 15:03:30,267 30416 INFO ? werkzeug: 127.0.0.1 - - [02/Dec/2025 15:03:30] "GET /web/static/lib/odoo_ui_icons/fonts/odoo_ui_icons.woff2 HTTP/1.1" 200 - 0 0.000 0.012
+2025-12-02 15:03:30,271 30416 INFO ? werkzeug: 127.0.0.1 - - [02/Dec/2025 15:03:30] "GET /web/static/src/libs/fontawesome/fonts/fontawesome-webfont.woff2?v=4.7.0 HTTP/1.1" 200 - 0 0.000 0.015
+2025-12-02 15:03:30,292 30416 ERROR diegofornalha odoo.http: Exception during request handling. 
+Traceback (most recent call last):
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/orm/models.py", line 3848, in _determine_fields_to_fetch
+    field = self._fields[field_name]
+KeyError: 'progress'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2802, in __call__
+    response = request._serve_db()
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2277, in _serve_db
+    raise self._update_served_exception(exc)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2275, in _serve_db
+    return service_model.retrying(serve_func, env=self.env)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/service/model.py", line 184, in retrying
+    result = func()
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2330, in _serve_ir_http
+    response = self.dispatcher.dispatch(rule.endpoint, args)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2545, in dispatch
+    result = self.request.registry['ir.http']._dispatch(endpoint)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/addons/base/models/ir_http.py", line 355, in _dispatch
+    result = endpoint(**request.params)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 788, in route_wrapper
+    result = endpoint(self, *args, **params_ok)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/addons/web/controllers/dataset.py", line 32, in call_kw
+    return call_kw(request.env[model], method, args, kwargs)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/service/model.py", line 93, in call_kw
+    result = method(recs, *args, **kwargs)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/orm/models.py", line 5768, in search_read
+    records = self.search_fetch(domain or [], fields, offset=offset, limit=limit, order=order)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/orm/models.py", line 1416, in search_fetch
+    fields_to_fetch = self._determine_fields_to_fetch(field_names)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/orm/models.py", line 3850, in _determine_fields_to_fetch
+    raise ValueError(f"Invalid field {field_name!r} on {self._name!r}") from e
+ValueError: Invalid field 'progress' on 'project.task'
+2025-12-02 15:03:30,292 30416 INFO diegofornalha odoo.addons.base.models.ir_attachment: _read_file reading /Users/2a/Desktop/odoo19framework/diegofornalha/filestore/filestore/diegofornalha/66/66ae48cdda39173a7c40302137fd7fe47b649b16 
+Traceback (most recent call last):
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/addons/base/models/ir_attachment.py", line 138, in _file_read
+    with open(full_path, 'rb') as f:
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/2a/Desktop/odoo19framework/diegofornalha/filestore/filestore/diegofornalha/66/66ae48cdda39173a7c40302137fd7fe47b649b16'
+2025-12-02 15:03:30,293 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:03:30] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 7 0.008 0.012
+2025-12-02 15:03:30,295 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:03:30] "GET /web/image?model=res.users&field=avatar_128&id=2 HTTP/1.1" 304 - 19 0.026 0.016
+2025-12-02 15:03:30,308 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:03:30] "POST /mail/data HTTP/1.1" 200 - 31 0.028 0.020
+2025-12-02 15:03:30,414 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:03:30] "POST /web/dataset/call_kw/project.task/get_views#project.task.get_views HTTP/1.1" 200 - 78 0.052 0.109
+2025-12-02 15:03:30,456 30416 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:03:30] "POST /web/dataset/call_kw/mail.push.device/register_devices#mail.push.device.register_devices HTTP/1.1" 200 - 6 0.002 0.003
+2025-12-02 15:03:56,489 30416 INFO diegofornalha odoo.service.server: Initiating shutdown 
+2025-12-02 15:03:56,490 30416 INFO diegofornalha odoo.service.server: Hit CTRL-C again or send a second signal to force the shutdown. 
+2025-12-02 15:03:56,509 30416 INFO diegofornalha odoo.sql_db: ConnectionPool(read/write;used=0/count=0/max=64): Closed 9 connections  
+2025-12-02 15:03:58,873 42472 INFO ? odoo: Odoo version 19.0 
+2025-12-02 15:03:58,874 42472 INFO ? odoo: Using configuration file at /Users/2a/Desktop/odoo19framework/diegofornalha/odoo.conf 
+2025-12-02 15:03:58,874 42472 INFO ? odoo: addons paths: _NamespacePath(['/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/addons', '/Users/2a/Desktop/odoo19framework/diegofornalha/filestore/addons/19.0', '/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/addons', '/Users/2a/Desktop/odoo19framework/diegofornalha/custom_addons', '/Users/2a/Desktop/odoo19framework/diegofornalha/community_addons/web']) 
+2025-12-02 15:03:58,874 42472 INFO ? odoo: database: odoo@localhost:5432 
+2025-12-02 15:03:59,001 42472 WARNING ? py.warnings: /Users/2a/Desktop/odoo19framework/.venv/lib/python3.10/site-packages/PyPDF2/__init__.py:21: DeprecationWarning: PyPDF2 is deprecated. Please move to the pypdf library instead.
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo-bin", line 6, in <module>
+    odoo.cli.main()
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/cli/command.py", line 133, in main
+    command().run(args)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/cli/server.py", line 127, in run
+    main(args)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/cli/server.py", line 118, in main
+    rc = server.start(preload=config['db_name'], stop=stop)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/service/server.py", line 1550, in start
+    load_server_wide_modules()
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/service/server.py", line 1466, in load_server_wide_modules
+    load_openerp_module(m)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/modules/module.py", line 505, in load_openerp_module
+    __import__(qualname)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/addons/base/__init__.py", line 4, in <module>
+    from . import models
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/addons/base/models/__init__.py", line 12, in <module>
+    from . import ir_actions_report
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/addons/base/models/ir_actions_report.py", line 32, in <module>
+    from odoo.tools.pdf import PdfFileReader, PdfFileWriter, PdfReadError
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/tools/pdf/__init__.py", line 33, in <module>
+    import PyPDF2.filters  # needed after PyPDF2 2.0.0 and before 2.11.0
+  File "/Users/2a/Desktop/odoo19framework/.venv/lib/python3.10/site-packages/PyPDF2/__init__.py", line 21, in <module>
+    warnings.warn(
+ 
+2025-12-02 15:03:59,172 42472 WARNING ? odoo.service.server: 'watchdog' module not installed. Code autoreload feature is disabled 
+2025-12-02 15:03:59,179 42472 INFO ? odoo.service.server: HTTP service (werkzeug) running on 1.0.0.127.in-addr.arpa:8075 
+2025-12-02 15:03:59,256 42472 INFO ? odoo.modules.loading: loading 1 modules... 
+2025-12-02 15:03:59,259 42472 INFO ? odoo.modules.loading: 1 modules loaded in 0.00s, 0 queries (+0 extra) 
+2025-12-02 15:03:59,281 42472 INFO ? odoo.modules.loading: loading 50 modules... 
+2025-12-02 15:03:59,289 42472 WARNING ? odoo.addons.attachment_indexation.models.ir_attachment: Attachment indexation of PDF documents is unavailable because the 'pdfminer.six' Python library cannot be found on the system. You may install it from https://pypi.org/project/pdfminer.six/ (e.g. `pip3 install pdfminer.six`) 
+2025-12-02 15:03:59,601 42472 INFO ? odoo.modules.loading: 50 modules loaded in 0.32s, 0 queries (+0 extra) 
+2025-12-02 15:03:59,663 42472 INFO ? odoo.modules.loading: Modules loaded. 
+2025-12-02 15:03:59,680 42472 WARNING ? odoo.schema: Missing not-null constraint on mail.push.device.endpoint 
+2025-12-02 15:03:59,680 42472 WARNING ? odoo.schema: Missing not-null constraint on mail.push.device.keys 
+2025-12-02 15:03:59,680 42472 WARNING ? odoo.schema: Missing not-null constraint on mail.tracking.value.mail_message_id 
+2025-12-02 15:03:59,680 42472 WARNING ? odoo.schema: Missing not-null constraint on discuss.channel.name 
+2025-12-02 15:03:59,688 42472 INFO ? odoo.registry: Registry loaded in 0.467s 
+2025-12-02 15:03:59,689 42472 INFO diegofornalha odoo.addons.base.models.ir_http: Generating routing map for key None 
+2025-12-02 15:03:59,711 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:03:59] "POST /web/webclient/version_info HTTP/1.1" 200 - 20 0.050 0.441
+2025-12-02 15:04:01,298 42472 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc="title or 'Odoo'" in template 184. Replace by @t-out 
+2025-12-02 15:04:01,298 42472 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='request.csrf_token(None)' in template 184. Replace by @t-out 
+2025-12-02 15:04:01,298 42472 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='debug' in template 184. Replace by @t-out 
+2025-12-02 15:04:01,301 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:04:01] "GET /odoo/project/2/tasks?view_type=gantt HTTP/1.1" 200 - 97 0.063 0.360
+2025-12-02 15:04:01,345 42472 INFO diegofornalha odoo.addons.base.models.ir_attachment: _read_file reading /Users/2a/Desktop/odoo19framework/diegofornalha/filestore/filestore/diegofornalha/3d/3d7a7360fe4a73a90dd3b4ba554a9254ed61e864 
+Traceback (most recent call last):
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/addons/base/models/ir_attachment.py", line 138, in _file_read
+    with open(full_path, 'rb') as f:
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/2a/Desktop/odoo19framework/diegofornalha/filestore/filestore/diegofornalha/3d/3d7a7360fe4a73a90dd3b4ba554a9254ed61e864'
+2025-12-02 15:04:01,346 42472 INFO diegofornalha odoo.addons.base.models.ir_attachment: _read_file reading /Users/2a/Desktop/odoo19framework/diegofornalha/filestore/filestore/diegofornalha/b7/b73a9deb85def8a1a00e4d545c4f79747d78f487 
+Traceback (most recent call last):
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/addons/base/models/ir_attachment.py", line 138, in _file_read
+    with open(full_path, 'rb') as f:
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/2a/Desktop/odoo19framework/diegofornalha/filestore/filestore/diegofornalha/b7/b73a9deb85def8a1a00e4d545c4f79747d78f487'
+2025-12-02 15:04:01,348 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:04:01] "GET /web/webclient/load_menus HTTP/1.1" 200 - 16 0.027 0.013
+2025-12-02 15:04:01,457 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:04:01] "GET /web/manifest.webmanifest HTTP/1.1" 200 - 10 0.005 0.011
+2025-12-02 15:04:01,470 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:04:01] "GET /bus/websocket_worker_bundle?v=19.0-2 HTTP/1.1" 304 - 4 0.011 0.011
+2025-12-02 15:04:01,720 42472 INFO diegofornalha odoo.addons.base.models.ir_attachment: _read_file reading /Users/2a/Desktop/odoo19framework/diegofornalha/filestore/filestore/diegofornalha/66/66ae48cdda39173a7c40302137fd7fe47b649b16 
+Traceback (most recent call last):
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/addons/base/models/ir_attachment.py", line 138, in _file_read
+    with open(full_path, 'rb') as f:
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/2a/Desktop/odoo19framework/diegofornalha/filestore/filestore/diegofornalha/66/66ae48cdda39173a7c40302137fd7fe47b649b16'
+2025-12-02 15:04:01,729 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:04:01] "GET /web/image?model=res.users&field=avatar_128&id=2 HTTP/1.1" 304 - 19 0.148 0.039
+2025-12-02 15:04:01,852 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:04:01] "POST /web/dataset/call_kw/mail.push.device/register_devices#mail.push.device.register_devices HTTP/1.1" 200 - 7 0.114 0.043
+2025-12-02 15:04:01,963 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:04:01] "POST /mail/data HTTP/1.1" 200 - 32 0.352 0.067
+2025-12-02 15:04:02,596 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:04:02] "POST /web/dataset/call_kw/project.task/get_views#project.task.get_views HTTP/1.1" 200 - 113 0.396 0.657
+2025-12-02 15:04:02,803 42472 ERROR diegofornalha odoo.http: Exception during request handling. 
+Traceback (most recent call last):
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/orm/models.py", line 3848, in _determine_fields_to_fetch
+    field = self._fields[field_name]
+KeyError: 'progress'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2802, in __call__
+    response = request._serve_db()
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2277, in _serve_db
+    raise self._update_served_exception(exc)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2275, in _serve_db
+    return service_model.retrying(serve_func, env=self.env)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/service/model.py", line 184, in retrying
+    result = func()
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2330, in _serve_ir_http
+    response = self.dispatcher.dispatch(rule.endpoint, args)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2545, in dispatch
+    result = self.request.registry['ir.http']._dispatch(endpoint)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/addons/base/models/ir_http.py", line 355, in _dispatch
+    result = endpoint(**request.params)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 788, in route_wrapper
+    result = endpoint(self, *args, **params_ok)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/addons/web/controllers/dataset.py", line 32, in call_kw
+    return call_kw(request.env[model], method, args, kwargs)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/service/model.py", line 93, in call_kw
+    result = method(recs, *args, **kwargs)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/orm/models.py", line 5768, in search_read
+    records = self.search_fetch(domain or [], fields, offset=offset, limit=limit, order=order)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/orm/models.py", line 1416, in search_fetch
+    fields_to_fetch = self._determine_fields_to_fetch(field_names)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/orm/models.py", line 3850, in _determine_fields_to_fetch
+    raise ValueError(f"Invalid field {field_name!r} on {self._name!r}") from e
+ValueError: Invalid field 'progress' on 'project.task'
+2025-12-02 15:04:02,803 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:04:02] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 7 0.045 0.145
+2025-12-02 15:04:02,894 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:04:02] "GET /web/webclient/translations?hash=6d5e38fbafef73e62fe29ff9a799ffdde0431a87&lang=pt_BR HTTP/1.1" 200 - 2 0.007 1.442
+2025-12-02 15:04:03,502 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:04:03] "GET /web/service-worker.js HTTP/1.1" 200 - 1 0.001 0.002
+2025-12-02 15:04:04,410 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:04:04] "POST /web/dataset/call_kw/project.task/read_progress_bar#project.task.read_progress_bar HTTP/1.1" 200 - 8 0.011 0.010
+2025-12-02 15:04:04,417 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:04:04] "POST /web/dataset/call_kw/project.project/get_template_tasks#project.project.get_template_tasks HTTP/1.1" 200 - 7 0.011 0.011
+2025-12-02 15:04:04,461 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:04:04] "POST /web/dataset/call_kw/project.task/web_read_group#project.task.web_read_group HTTP/1.1" 200 - 40 0.047 0.025
+2025-12-02 15:04:04,471 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:04:04] "POST /web/dataset/call_kw/res.users/has_group#res.users.has_group HTTP/1.1" 200 - 1 0.001 0.002
+2025-12-02 15:04:06,112 42472 ERROR diegofornalha odoo.http: Exception during request handling. 
+Traceback (most recent call last):
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/orm/models.py", line 3848, in _determine_fields_to_fetch
+    field = self._fields[field_name]
+KeyError: 'progress'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2802, in __call__
+    response = request._serve_db()
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2277, in _serve_db
+    raise self._update_served_exception(exc)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2275, in _serve_db
+    return service_model.retrying(serve_func, env=self.env)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/service/model.py", line 184, in retrying
+    result = func()
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2330, in _serve_ir_http
+    response = self.dispatcher.dispatch(rule.endpoint, args)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2545, in dispatch
+    result = self.request.registry['ir.http']._dispatch(endpoint)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/addons/base/models/ir_http.py", line 355, in _dispatch
+    result = endpoint(**request.params)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 788, in route_wrapper
+    result = endpoint(self, *args, **params_ok)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/addons/web/controllers/dataset.py", line 32, in call_kw
+    return call_kw(request.env[model], method, args, kwargs)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/service/model.py", line 93, in call_kw
+    result = method(recs, *args, **kwargs)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/orm/models.py", line 5768, in search_read
+    records = self.search_fetch(domain or [], fields, offset=offset, limit=limit, order=order)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/orm/models.py", line 1416, in search_fetch
+    fields_to_fetch = self._determine_fields_to_fetch(field_names)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/orm/models.py", line 3850, in _determine_fields_to_fetch
+    raise ValueError(f"Invalid field {field_name!r} on {self._name!r}") from e
+ValueError: Invalid field 'progress' on 'project.task'
+2025-12-02 15:04:06,112 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:04:06] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 7 0.006 0.008
+2025-12-02 15:04:07,118 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:04:07] "GET /web/bundle/web.assets_backend_lazy?lang=pt_BR HTTP/1.1" 200 - 6 0.002 0.021
+2025-12-02 15:04:07,143 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:04:07] "POST /web/dataset/call_kw/project.task/formatted_read_group#project.task.formatted_read_group HTTP/1.1" 200 - 16 0.010 0.007
+2025-12-02 15:04:07,149 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:04:07] "GET /web/bundle/web.chartjs_lib?lang=pt_BR HTTP/1.1" 200 - 2 0.001 0.003
+2025-12-02 15:04:08,116 42472 ERROR diegofornalha odoo.http: Exception during request handling. 
+Traceback (most recent call last):
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/orm/models.py", line 3848, in _determine_fields_to_fetch
+    field = self._fields[field_name]
+KeyError: 'progress'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2802, in __call__
+    response = request._serve_db()
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2277, in _serve_db
+    raise self._update_served_exception(exc)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2275, in _serve_db
+    return service_model.retrying(serve_func, env=self.env)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/service/model.py", line 184, in retrying
+    result = func()
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2330, in _serve_ir_http
+    response = self.dispatcher.dispatch(rule.endpoint, args)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2545, in dispatch
+    result = self.request.registry['ir.http']._dispatch(endpoint)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/addons/base/models/ir_http.py", line 355, in _dispatch
+    result = endpoint(**request.params)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 788, in route_wrapper
+    result = endpoint(self, *args, **params_ok)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/addons/web/controllers/dataset.py", line 32, in call_kw
+    return call_kw(request.env[model], method, args, kwargs)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/service/model.py", line 93, in call_kw
+    result = method(recs, *args, **kwargs)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/orm/models.py", line 5768, in search_read
+    records = self.search_fetch(domain or [], fields, offset=offset, limit=limit, order=order)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/orm/models.py", line 1416, in search_fetch
+    fields_to_fetch = self._determine_fields_to_fetch(field_names)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/orm/models.py", line 3850, in _determine_fields_to_fetch
+    raise ValueError(f"Invalid field {field_name!r} on {self._name!r}") from e
+ValueError: Invalid field 'progress' on 'project.task'
+2025-12-02 15:04:08,116 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:04:08] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 7 0.005 0.013
+2025-12-02 15:04:09,308 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:04:09] "POST /web/dataset/call_kw/project.task/formatted_read_group#project.task.formatted_read_group HTTP/1.1" 200 - 16 0.012 0.013
+2025-12-02 15:04:10,961 42472 ERROR diegofornalha odoo.http: Exception during request handling. 
+Traceback (most recent call last):
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/orm/models.py", line 3848, in _determine_fields_to_fetch
+    field = self._fields[field_name]
+KeyError: 'progress'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2802, in __call__
+    response = request._serve_db()
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2277, in _serve_db
+    raise self._update_served_exception(exc)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2275, in _serve_db
+    return service_model.retrying(serve_func, env=self.env)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/service/model.py", line 184, in retrying
+    result = func()
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2330, in _serve_ir_http
+    response = self.dispatcher.dispatch(rule.endpoint, args)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2545, in dispatch
+    result = self.request.registry['ir.http']._dispatch(endpoint)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/addons/base/models/ir_http.py", line 355, in _dispatch
+    result = endpoint(**request.params)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 788, in route_wrapper
+    result = endpoint(self, *args, **params_ok)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/addons/web/controllers/dataset.py", line 32, in call_kw
+    return call_kw(request.env[model], method, args, kwargs)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/service/model.py", line 93, in call_kw
+    result = method(recs, *args, **kwargs)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/orm/models.py", line 5768, in search_read
+    records = self.search_fetch(domain or [], fields, offset=offset, limit=limit, order=order)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/orm/models.py", line 1416, in search_fetch
+    fields_to_fetch = self._determine_fields_to_fetch(field_names)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/orm/models.py", line 3850, in _determine_fields_to_fetch
+    raise ValueError(f"Invalid field {field_name!r} on {self._name!r}") from e
+ValueError: Invalid field 'progress' on 'project.task'
+2025-12-02 15:04:10,961 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:04:10] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 7 0.004 0.009
+2025-12-02 15:04:12,859 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:04:12] "POST /web/dataset/call_kw/project.task/formatted_read_group#project.task.formatted_read_group HTTP/1.1" 200 - 16 0.012 0.014
+2025-12-02 15:04:14,880 42472 ERROR diegofornalha odoo.http: Exception during request handling. 
+Traceback (most recent call last):
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/orm/models.py", line 3848, in _determine_fields_to_fetch
+    field = self._fields[field_name]
+KeyError: 'progress'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2802, in __call__
+    response = request._serve_db()
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2277, in _serve_db
+    raise self._update_served_exception(exc)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2275, in _serve_db
+    return service_model.retrying(serve_func, env=self.env)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/service/model.py", line 184, in retrying
+    result = func()
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2330, in _serve_ir_http
+    response = self.dispatcher.dispatch(rule.endpoint, args)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2545, in dispatch
+    result = self.request.registry['ir.http']._dispatch(endpoint)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/addons/base/models/ir_http.py", line 355, in _dispatch
+    result = endpoint(**request.params)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 788, in route_wrapper
+    result = endpoint(self, *args, **params_ok)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/addons/web/controllers/dataset.py", line 32, in call_kw
+    return call_kw(request.env[model], method, args, kwargs)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/service/model.py", line 93, in call_kw
+    result = method(recs, *args, **kwargs)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/orm/models.py", line 5768, in search_read
+    records = self.search_fetch(domain or [], fields, offset=offset, limit=limit, order=order)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/orm/models.py", line 1416, in search_fetch
+    fields_to_fetch = self._determine_fields_to_fetch(field_names)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/orm/models.py", line 3850, in _determine_fields_to_fetch
+    raise ValueError(f"Invalid field {field_name!r} on {self._name!r}") from e
+ValueError: Invalid field 'progress' on 'project.task'
+2025-12-02 15:04:14,881 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:04:14] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 7 0.006 0.009
+2025-12-02 15:04:23,619 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:04:23] "GET /web HTTP/1.1" 303 - 5 0.006 0.011
+2025-12-02 15:04:29,228 42472 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc="title or 'Odoo'" in template 184. Replace by @t-out 
+2025-12-02 15:04:29,229 42472 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='request.csrf_token(None)' in template 184. Replace by @t-out 
+2025-12-02 15:04:29,230 42472 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='debug' in template 184. Replace by @t-out 
+2025-12-02 15:04:29,232 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:04:29] "GET /odoo/project/2/tasks?view_type=gantt HTTP/1.1" 200 - 64 0.021 0.286
+2025-12-02 15:04:29,244 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:04:29] "GET /web/webclient/load_menus HTTP/1.1" 200 - 1 0.001 0.004
+2025-12-02 15:04:29,248 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:04:29] "GET /web/assets/bd4ce3c/web.assets_web.min.js HTTP/1.1" 200 - 3 0.003 0.003
+2025-12-02 15:04:29,248 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:04:29] "GET /web/assets/c9ceb72/web.assets_web.min.css HTTP/1.1" 200 - 3 0.004 0.004
+2025-12-02 15:04:29,263 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:04:29] "GET /web/assets/bc82532/web.assets_web_print.min.css HTTP/1.1" 200 - 3 0.003 0.004
+2025-12-02 15:04:29,335 42472 INFO ? werkzeug: 127.0.0.1 - - [02/Dec/2025 15:04:29] "GET /web/static/img/favicon.ico HTTP/1.1" 200 - 0 0.000 0.004
+2025-12-02 15:04:29,336 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:04:29] "GET /web/webclient/translations?hash=6d5e38fbafef73e62fe29ff9a799ffdde0431a87&lang=pt_BR HTTP/1.1" 200 - 1 0.001 0.003
+2025-12-02 15:04:29,341 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:04:29] "GET /web/manifest.webmanifest HTTP/1.1" 200 - 9 0.005 0.007
+2025-12-02 15:04:29,342 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:04:29] "GET /bus/websocket_worker_bundle?v=19.0-2 HTTP/1.1" 304 - 4 0.003 0.005
+2025-12-02 15:04:29,417 42472 INFO ? werkzeug: 127.0.0.1 - - [02/Dec/2025 15:04:29] "GET /web/static/src/libs/fontawesome/fonts/fontawesome-webfont.woff2?v=4.7.0 HTTP/1.1" 200 - 0 0.000 0.002
+2025-12-02 15:04:29,420 42472 INFO ? werkzeug: 127.0.0.1 - - [02/Dec/2025 15:04:29] "GET /web/static/lib/odoo_ui_icons/fonts/odoo_ui_icons.woff2 HTTP/1.1" 200 - 0 0.000 0.006
+2025-12-02 15:04:29,452 42472 ERROR diegofornalha odoo.http: Exception during request handling. 
+Traceback (most recent call last):
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/orm/models.py", line 3848, in _determine_fields_to_fetch
+    field = self._fields[field_name]
+KeyError: 'progress'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2802, in __call__
+    response = request._serve_db()
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2277, in _serve_db
+    raise self._update_served_exception(exc)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2275, in _serve_db
+    return service_model.retrying(serve_func, env=self.env)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/service/model.py", line 184, in retrying
+    result = func()
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2330, in _serve_ir_http
+    response = self.dispatcher.dispatch(rule.endpoint, args)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2545, in dispatch
+    result = self.request.registry['ir.http']._dispatch(endpoint)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/addons/base/models/ir_http.py", line 355, in _dispatch
+    result = endpoint(**request.params)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 788, in route_wrapper
+    result = endpoint(self, *args, **params_ok)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/addons/web/controllers/dataset.py", line 32, in call_kw
+    return call_kw(request.env[model], method, args, kwargs)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/service/model.py", line 93, in call_kw
+    result = method(recs, *args, **kwargs)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/orm/models.py", line 5768, in search_read
+    records = self.search_fetch(domain or [], fields, offset=offset, limit=limit, order=order)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/orm/models.py", line 1416, in search_fetch
+    fields_to_fetch = self._determine_fields_to_fetch(field_names)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/orm/models.py", line 3850, in _determine_fields_to_fetch
+    raise ValueError(f"Invalid field {field_name!r} on {self._name!r}") from e
+ValueError: Invalid field 'progress' on 'project.task'
+2025-12-02 15:04:29,452 42472 INFO diegofornalha odoo.addons.base.models.ir_attachment: _read_file reading /Users/2a/Desktop/odoo19framework/diegofornalha/filestore/filestore/diegofornalha/66/66ae48cdda39173a7c40302137fd7fe47b649b16 
+Traceback (most recent call last):
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/addons/base/models/ir_attachment.py", line 138, in _file_read
+    with open(full_path, 'rb') as f:
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/2a/Desktop/odoo19framework/diegofornalha/filestore/filestore/diegofornalha/66/66ae48cdda39173a7c40302137fd7fe47b649b16'
+2025-12-02 15:04:29,453 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:04:29] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 7 0.019 0.010
+2025-12-02 15:04:29,456 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:04:29] "GET /web/image?model=res.users&field=avatar_128&id=2 HTTP/1.1" 304 - 19 0.022 0.021
+2025-12-02 15:04:29,471 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:04:29] "POST /mail/data HTTP/1.1" 200 - 31 0.036 0.017
+2025-12-02 15:04:29,570 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:04:29] "POST /web/dataset/call_kw/project.task/get_views#project.task.get_views HTTP/1.1" 200 - 78 0.053 0.105
+2025-12-02 15:04:29,587 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:04:29] "POST /web/dataset/call_kw/mail.push.device/register_devices#mail.push.device.register_devices HTTP/1.1" 200 - 6 0.003 0.002
+2025-12-02 15:04:46,930 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:04:46] "GET /odoo/project/2/tasks?view_type=gantt HTTP/1.1" 303 - 2 0.008 0.058
+2025-12-02 15:04:47,005 42472 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='error' in template 189. Replace by @t-out 
+2025-12-02 15:04:47,005 42472 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='message' in template 189. Replace by @t-out 
+2025-12-02 15:04:47,014 42472 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='error' in template 189. Replace by @t-out 
+2025-12-02 15:04:47,014 42472 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='message' in template 189. Replace by @t-out 
+2025-12-02 15:04:47,025 42472 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc="title or 'Odoo'" in template 185. Replace by @t-out 
+2025-12-02 15:04:47,025 42472 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='request.csrf_token(None)' in template 185. Replace by @t-out 
+2025-12-02 15:04:47,026 42472 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='debug' in template 185. Replace by @t-out 
+2025-12-02 15:04:47,128 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:04:47] "GET /web/login?redirect=/odoo/project/2/tasks?view_type%3Dgantt HTTP/1.1" 200 - 51 0.039 0.155
+2025-12-02 15:04:47,184 42472 INFO ? werkzeug: 127.0.0.1 - - [02/Dec/2025 15:04:47] "GET /web/static/src/libs/fontawesome/fonts/fontawesome-webfont.woff2?v=4.7.0 HTTP/1.1" 200 - 1 0.002 0.011
+2025-12-02 15:04:47,190 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:04:47] "GET /web/binary/company_logo HTTP/1.1" 200 - 3 0.005 0.013
+2025-12-02 15:04:47,222 42472 INFO diegofornalha odoo.addons.attachment_indexation.models.ir_attachment: openpyxl is not installed. 
+2025-12-02 15:04:47,276 42472 INFO diegofornalha odoo.addons.base.models.assetsbundle: Generating a new asset bundle attachment /web/assets/112bb76/web.assets_frontend_minimal.min.js (id:935) 
+2025-12-02 15:04:47,288 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:04:47] "GET /web/assets/112bb76/web.assets_frontend_minimal.min.js HTTP/1.1" 200 - 14 0.051 0.044
+2025-12-02 15:04:47,780 42472 INFO diegofornalha odoo.addons.attachment_indexation.models.ir_attachment: openpyxl is not installed. 
+2025-12-02 15:04:47,808 42472 INFO diegofornalha odoo.addons.base.models.assetsbundle: Generating a new asset bundle attachment /web/assets/fa1225f/web.assets_frontend.min.css (id:936) 
+2025-12-02 15:04:47,810 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:04:47] "GET /web/assets/fa1225f/web.assets_frontend.min.css HTTP/1.1" 200 - 20 0.031 0.608
+2025-12-02 15:04:47,875 42472 INFO ? werkzeug: 127.0.0.1 - - [02/Dec/2025 15:04:47] "GET /web/static/img/favicon.ico HTTP/1.1" 200 - 1 0.003 0.011
+2025-12-02 15:04:48,314 42472 INFO diegofornalha odoo.addons.attachment_indexation.models.ir_attachment: openpyxl is not installed. 
+2025-12-02 15:04:48,321 42472 INFO diegofornalha odoo.addons.base.models.assetsbundle: Generating a new asset bundle attachment /web/assets/37fac8c/web.assets_frontend_lazy.min.js (id:937) 
+2025-12-02 15:04:48,323 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:04:48] "GET /web/assets/37fac8c/web.assets_frontend_lazy.min.js HTTP/1.1" 200 - 21 0.016 0.444
+2025-12-02 15:04:48,453 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:04:48] "GET /website/translations?hash=&lang= HTTP/1.1" 200 - 6 0.005 0.033
+2025-12-02 15:04:53,480 42472 INFO diegofornalha odoo.addons.base.models.res_users: Login successful for login:diegofornalha@gmail.com from 127.0.0.1 
+2025-12-02 15:04:53,487 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:04:53] "POST /web/login HTTP/1.1" 303 - 26 0.021 0.166
+2025-12-02 15:04:53,495 42472 INFO diegofornalha odoo.addons.base.models.res_device: User 2 inserts device log (aeYapCF-UgtDtgdp7IgTsFoFvKHai4zVDaiI0Agr-G) 
+2025-12-02 15:04:53,789 42472 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc="title or 'Odoo'" in template 184. Replace by @t-out 
+2025-12-02 15:04:53,790 42472 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='request.csrf_token(None)' in template 184. Replace by @t-out 
+2025-12-02 15:04:53,790 42472 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='debug' in template 184. Replace by @t-out 
+2025-12-02 15:04:53,792 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:04:53] "GET /odoo/project/2/tasks?view_type=gantt HTTP/1.1" 200 - 64 0.024 0.276
+2025-12-02 15:04:53,828 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:04:53] "GET /web/webclient/load_menus HTTP/1.1" 200 - 1 0.002 0.002
+2025-12-02 15:04:53,829 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:04:53] "GET /web/assets/bd4ce3c/web.assets_web.min.js HTTP/1.1" 200 - 3 0.002 0.004
+2025-12-02 15:04:53,829 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:04:53] "GET /web/assets/c9ceb72/web.assets_web.min.css HTTP/1.1" 200 - 3 0.002 0.005
+2025-12-02 15:04:53,847 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:04:53] "GET /web/assets/bc82532/web.assets_web_print.min.css HTTP/1.1" 200 - 3 0.003 0.005
+2025-12-02 15:04:53,997 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:04:53] "GET /web/webclient/translations?hash=&lang=pt_BR HTTP/1.1" 200 - 1 0.001 0.016
+2025-12-02 15:04:54,013 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:04:54] "GET /bus/websocket_worker_bundle?v=19.0-2 HTTP/1.1" 200 - 4 0.002 0.003
+2025-12-02 15:04:54,027 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:04:54] "GET /web/service-worker.js HTTP/1.1" 200 - 1 0.001 0.002
+2025-12-02 15:04:54,033 42472 INFO ? werkzeug: 127.0.0.1 - - [02/Dec/2025 15:04:54] "GET /mail/static/lib/idb-keyval/idb-keyval.js HTTP/1.1" 200 - 0 0.000 0.001
+2025-12-02 15:04:54,076 42472 INFO ? werkzeug: 127.0.0.1 - - [02/Dec/2025 15:04:54] "GET /web/static/lib/odoo_ui_icons/fonts/odoo_ui_icons.woff2 HTTP/1.1" 200 - 0 0.000 0.007
+2025-12-02 15:04:54,084 42472 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc="title or 'Odoo'" in template 184. Replace by @t-out 
+2025-12-02 15:04:54,085 42472 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='request.csrf_token(None)' in template 184. Replace by @t-out 
+2025-12-02 15:04:54,087 42472 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='debug' in template 184. Replace by @t-out 
+2025-12-02 15:04:54,088 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:04:54] "GET /websocket?version=19.0-2 HTTP/1.1" 101 - 1 0.006 0.012
+2025-12-02 15:04:54,095 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:04:54] "GET /odoo/offline HTTP/1.1" 200 - 10 0.022 0.036
+2025-12-02 15:04:54,115 42472 INFO diegofornalha odoo.addons.base.models.ir_attachment: _read_file reading /Users/2a/Desktop/odoo19framework/diegofornalha/filestore/filestore/diegofornalha/66/66ae48cdda39173a7c40302137fd7fe47b649b16 
+Traceback (most recent call last):
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/addons/base/models/ir_attachment.py", line 138, in _file_read
+    with open(full_path, 'rb') as f:
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/2a/Desktop/odoo19framework/diegofornalha/filestore/filestore/diegofornalha/66/66ae48cdda39173a7c40302137fd7fe47b649b16'
+2025-12-02 15:04:54,117 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:04:54] "GET /web/image?model=res.users&field=avatar_128&id=2 HTTP/1.1" 200 - 19 0.034 0.024
+2025-12-02 15:04:54,127 42472 INFO diegofornalha odoo.addons.base.models.ir_attachment: _read_file reading /Users/2a/Desktop/odoo19framework/diegofornalha/filestore/filestore/diegofornalha/66/66ae48cdda39173a7c40302137fd7fe47b649b16 
+Traceback (most recent call last):
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/addons/base/models/ir_attachment.py", line 138, in _file_read
+    with open(full_path, 'rb') as f:
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/2a/Desktop/odoo19framework/diegofornalha/filestore/filestore/diegofornalha/66/66ae48cdda39173a7c40302137fd7fe47b649b16'
+2025-12-02 15:04:54,140 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:04:54] "GET /web/image/res.partner/3/avatar_128?unique=1764668804000 HTTP/1.1" 200 - 17 0.043 0.029
+2025-12-02 15:04:54,289 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:04:54] "POST /mail/data HTTP/1.1" 200 - 31 0.192 0.018
+2025-12-02 15:04:54,293 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:04:54] "POST /web/action/load_breadcrumbs HTTP/1.1" 200 - 20 0.050 0.185
+2025-12-02 15:04:54,318 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:04:54] "POST /web/action/load HTTP/1.1" 200 - 22 0.015 0.006
+2025-12-02 15:04:54,414 42472 INFO ? odoo.addons.bus.models.bus: Bus.loop listen imbus on db postgres 
+2025-12-02 15:04:54,454 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:04:54] "POST /web/dataset/call_kw/project.task/get_views#project.task.get_views HTTP/1.1" 200 - 78 0.045 0.082
+2025-12-02 15:04:54,478 42472 ERROR diegofornalha odoo.http: Exception during request handling. 
+Traceback (most recent call last):
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/orm/models.py", line 3848, in _determine_fields_to_fetch
+    field = self._fields[field_name]
+KeyError: 'progress'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2802, in __call__
+    response = request._serve_db()
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2277, in _serve_db
+    raise self._update_served_exception(exc)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2275, in _serve_db
+    return service_model.retrying(serve_func, env=self.env)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/service/model.py", line 184, in retrying
+    result = func()
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2330, in _serve_ir_http
+    response = self.dispatcher.dispatch(rule.endpoint, args)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 2545, in dispatch
+    result = self.request.registry['ir.http']._dispatch(endpoint)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/addons/base/models/ir_http.py", line 355, in _dispatch
+    result = endpoint(**request.params)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/http.py", line 788, in route_wrapper
+    result = endpoint(self, *args, **params_ok)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/addons/web/controllers/dataset.py", line 32, in call_kw
+    return call_kw(request.env[model], method, args, kwargs)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/service/model.py", line 93, in call_kw
+    result = method(recs, *args, **kwargs)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/orm/models.py", line 5768, in search_read
+    records = self.search_fetch(domain or [], fields, offset=offset, limit=limit, order=order)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/orm/models.py", line 1416, in search_fetch
+    fields_to_fetch = self._determine_fields_to_fetch(field_names)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/orm/models.py", line 3850, in _determine_fields_to_fetch
+    raise ValueError(f"Invalid field {field_name!r} on {self._name!r}") from e
+ValueError: Invalid field 'progress' on 'project.task'
+2025-12-02 15:04:54,478 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:04:54] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 7 0.004 0.004
+2025-12-02 15:04:54,494 42472 INFO ? werkzeug: 127.0.0.1 - - [02/Dec/2025 15:04:54] "GET /web/static/img/smiling_face.svg HTTP/1.1" 200 - 0 0.000 0.003
+2025-12-02 15:04:54,637 42472 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc="title or 'Odoo'" in template 184. Replace by @t-out 
+2025-12-02 15:04:54,637 42472 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='request.csrf_token(None)' in template 184. Replace by @t-out 
+2025-12-02 15:04:54,637 42472 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='debug' in template 184. Replace by @t-out 
+2025-12-02 15:04:54,640 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:04:54] "GET /odoo HTTP/1.1" 200 - 64 0.054 0.550
+2025-12-02 15:04:57,947 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:04:57] "POST /web/dataset/call_kw/project.task/get_views#project.task.get_views HTTP/1.1" 200 - 78 0.051 0.131
+2025-12-02 15:04:57,985 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:04:57] "POST /web/dataset/call_kw/project.task/read_progress_bar#project.task.read_progress_bar HTTP/1.1" 200 - 8 0.011 0.010
+2025-12-02 15:04:57,987 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:04:57] "POST /web/dataset/call_kw/project.project/get_template_tasks#project.project.get_template_tasks HTTP/1.1" 200 - 7 0.012 0.006
+2025-12-02 15:04:58,035 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:04:58] "POST /web/dataset/call_kw/project.task/web_read_group#project.task.web_read_group HTTP/1.1" 200 - 37 0.043 0.028
+2025-12-02 15:04:58,047 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:04:58] "POST /web/dataset/call_kw/res.users/has_group#res.users.has_group HTTP/1.1" 200 - 1 0.001 0.002
+2025-12-02 15:05:00,810 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:05:00] "POST /web/action/load HTTP/1.1" 200 - 12 0.009 0.007
+2025-12-02 15:05:00,896 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:05:00] "POST /web/dataset/call_kw/project.project/get_views#project.project.get_views HTTP/1.1" 200 - 53 0.035 0.045
+2025-12-02 15:05:00,915 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:05:00] "POST /web/dataset/call_kw/project.project/check_features_enabled#project.project.check_features_enabled HTTP/1.1" 200 - 1 0.001 0.002
+2025-12-02 15:05:00,950 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:05:00] "POST /web/dataset/call_kw/project.project/web_read#project.project.web_read HTTP/1.1" 200 - 24 0.022 0.016
+2025-12-02 15:05:00,974 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:05:00] "POST /web/dataset/call_kw/project.project/search_read#project.project.search_read HTTP/1.1" 200 - 8 0.005 0.004
+2025-12-02 15:05:00,997 42472 INFO ? werkzeug: 127.0.0.1 - - [02/Dec/2025 15:05:00] "GET /partner_autocomplete/static/lib/jsvat.js HTTP/1.1" 200 - 0 0.000 0.001
+2025-12-02 15:05:01,093 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:05:01] "POST /mail/thread/messages HTTP/1.1" 200 - 11 0.008 0.008
+2025-12-02 15:05:01,141 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:05:01] "POST /mail/data HTTP/1.1" 200 - 53 0.046 0.014
+2025-12-02 15:05:03,487 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:05:03] "POST /web/dataset/call_button/project.project/action_view_tasks#project.project.action_view_tasks HTTP/1.1" 200 - 26 0.017 0.028
+2025-12-02 15:05:03,525 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:05:03] "POST /web/dataset/call_kw/project.project/get_template_tasks#project.project.get_template_tasks HTTP/1.1" 200 - 7 0.012 0.010
+2025-12-02 15:05:03,530 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:05:03] "POST /web/dataset/call_kw/project.task/read_progress_bar#project.task.read_progress_bar HTTP/1.1" 200 - 8 0.017 0.010
+2025-12-02 15:05:03,568 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:05:03] "POST /web/dataset/call_kw/project.task/web_read_group#project.task.web_read_group HTTP/1.1" 200 - 37 0.037 0.028
+2025-12-02 15:05:05,219 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:05:05] "POST /web/dataset/call_kw/project.task/read_progress_bar#project.task.read_progress_bar HTTP/1.1" 200 - 8 0.014 0.015
+2025-12-02 15:05:05,267 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:05:05] "POST /web/dataset/call_kw/project.task/web_read_group#project.task.web_read_group HTTP/1.1" 200 - 37 0.034 0.043
+2025-12-02 15:05:07,030 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:05:07] "POST /web/dataset/call_kw/project.task/web_read#project.task.web_read HTTP/1.1" 200 - 37 0.026 0.026
+2025-12-02 15:05:07,055 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:05:07] "POST /web/dataset/call_kw/project.project/get_template_tasks#project.project.get_template_tasks HTTP/1.1" 200 - 7 0.006 0.007
+2025-12-02 15:05:07,062 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:05:07] "POST /web/dataset/call_kw/project.task.type/search_read#project.task.type.search_read HTTP/1.1" 200 - 6 0.004 0.004
+2025-12-02 15:05:07,095 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:05:07] "POST /html_editor/get_ice_servers HTTP/1.1" 200 - 3 0.003 0.002
+2025-12-02 15:05:07,149 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:05:07] "POST /mail/thread/messages HTTP/1.1" 200 - 26 0.023 0.014
+2025-12-02 15:05:07,171 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:05:07] "POST /mail/data HTTP/1.1" 200 - 52 0.035 0.023
+2025-12-02 15:05:07,179 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:05:07] "GET /web/bundle/web.assets_emoji?lang=pt_BR HTTP/1.1" 200 - 2 0.001 0.003
+2025-12-02 15:05:07,286 42472 INFO diegofornalha odoo.addons.base.models.ir_attachment: _read_file reading /Users/2a/Desktop/odoo19framework/diegofornalha/filestore/filestore/diegofornalha/66/66ae48cdda39173a7c40302137fd7fe47b649b16 
+Traceback (most recent call last):
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/addons/base/models/ir_attachment.py", line 138, in _file_read
+    with open(full_path, 'rb') as f:
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/2a/Desktop/odoo19framework/diegofornalha/filestore/filestore/diegofornalha/66/66ae48cdda39173a7c40302137fd7fe47b649b16'
+2025-12-02 15:05:07,295 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:05:07] "GET /web/image/res.partner/3/avatar_128?unique=1764658004000 HTTP/1.1" 200 - 17 0.083 0.025
+2025-12-02 15:05:07,297 42472 INFO diegofornalha odoo.addons.attachment_indexation.models.ir_attachment: openpyxl is not installed. 
+2025-12-02 15:05:07,302 42472 INFO diegofornalha odoo.addons.base.models.assetsbundle: Generating a new asset bundle attachment /web/assets/bde9a21/web.assets_emoji.min.js (id:938) 
+2025-12-02 15:05:07,303 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:05:07] "GET /web/assets/bde9a21/web.assets_emoji.min.js HTTP/1.1" 200 - 9 0.008 0.106
+2025-12-02 15:05:09,415 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:05:09] "POST /web/dataset/call_kw/project.task/web_save#project.task.web_save HTTP/1.1" 200 - 50 0.054 0.084
+2025-12-02 15:05:09,463 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:05:09] "POST /mail/thread/messages HTTP/1.1" 200 - 28 0.021 0.019
+2025-12-02 15:05:09,511 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:05:09] "POST /mail/data HTTP/1.1" 200 - 51 0.034 0.028
+2025-12-02 15:05:11,898 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:05:11] "POST /web/dataset/call_kw/project.project/check_features_enabled#project.project.check_features_enabled HTTP/1.1" 200 - 1 0.001 0.006
+2025-12-02 15:05:11,922 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:05:11] "POST /web/dataset/call_kw/project.project/search_read#project.project.search_read HTTP/1.1" 200 - 8 0.008 0.011
+2025-12-02 15:05:11,936 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:05:11] "POST /web/dataset/call_kw/project.project/web_read#project.project.web_read HTTP/1.1" 200 - 24 0.021 0.024
+2025-12-02 15:05:11,955 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:05:11] "POST /mail/thread/messages HTTP/1.1" 200 - 11 0.007 0.006
+2025-12-02 15:05:11,987 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:05:11] "POST /mail/data HTTP/1.1" 200 - 53 0.027 0.017
+2025-12-02 15:05:13,540 42472 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc="title or 'Odoo'" in template 184. Replace by @t-out 
+2025-12-02 15:05:13,541 42472 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='request.csrf_token(None)' in template 184. Replace by @t-out 
+2025-12-02 15:05:13,541 42472 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='debug' in template 184. Replace by @t-out 
+2025-12-02 15:05:13,543 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:05:13] "GET /odoo/project/2/tasks?view_type=gantt HTTP/1.1" 200 - 64 0.030 0.274
+2025-12-02 15:05:13,564 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:05:13] "GET /web/webclient/load_menus HTTP/1.1" 200 - 1 0.005 0.003
+2025-12-02 15:05:13,564 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:05:13] "GET /web/assets/c9ceb72/web.assets_web.min.css HTTP/1.1" 200 - 3 0.004 0.005
+2025-12-02 15:05:13,573 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:05:13] "GET /web/assets/bc82532/web.assets_web_print.min.css HTTP/1.1" 200 - 3 0.001 0.002
+2025-12-02 15:05:13,621 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:05:13] "POST /web/action/load HTTP/1.1" 200 - 11 0.006 0.004
+2025-12-02 15:05:13,649 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:05:13] "POST /web/dataset/call_kw/project.project/search_read#project.project.search_read HTTP/1.1" 200 - 8 0.005 0.007
+2025-12-02 15:05:13,668 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:05:13] "POST /web/dataset/call_kw/project.project/web_search_read#project.project.web_search_read HTTP/1.1" 200 - 26 0.016 0.016
+2025-12-02 15:05:15,102 42472 INFO diegofornalha odoo.addons.attachment_indexation.models.ir_attachment: openpyxl is not installed. 
+2025-12-02 15:05:15,105 42472 INFO diegofornalha odoo.addons.base.models.assetsbundle: Generating a new asset bundle attachment /web/assets/8fac554/web.assets_web.min.js (id:939) 
+2025-12-02 15:05:15,106 42472 INFO diegofornalha odoo.addons.base.models.assetsbundle: Deleting attachments [934] (matching /web/assets/_______/web.assets_web.min.js) because it was replaced with /web/assets/8fac554/web.assets_web.min.js 
+2025-12-02 15:05:15,132 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:05:15] "GET /web/assets/8fac554/web.assets_web.min.js HTTP/1.1" 200 - 25 0.020 1.557
+2025-12-02 15:05:15,280 42472 INFO ? werkzeug: 127.0.0.1 - - [02/Dec/2025 15:05:15] "GET /web/static/img/favicon.ico HTTP/1.1" 200 - 0 0.000 0.002
+2025-12-02 15:05:15,282 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:05:15] "GET /web/webclient/translations?hash=6d5e38fbafef73e62fe29ff9a799ffdde0431a87&lang=pt_BR HTTP/1.1" 200 - 1 0.001 0.002
+2025-12-02 15:05:15,289 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:05:15] "GET /bus/websocket_worker_bundle?v=19.0-2 HTTP/1.1" 304 - 4 0.002 0.003
+2025-12-02 15:05:15,291 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:05:15] "GET /web/manifest.webmanifest HTTP/1.1" 200 - 9 0.009 0.005
+2025-12-02 15:05:15,359 42472 INFO ? werkzeug: 127.0.0.1 - - [02/Dec/2025 15:05:15] "GET /web/static/lib/odoo_ui_icons/fonts/odoo_ui_icons.woff2 HTTP/1.1" 200 - 0 0.000 0.002
+2025-12-02 15:05:15,363 42472 INFO ? werkzeug: 127.0.0.1 - - [02/Dec/2025 15:05:15] "GET /web/static/src/libs/fontawesome/fonts/fontawesome-webfont.woff2?v=4.7.0 HTTP/1.1" 200 - 0 0.000 0.004
+2025-12-02 15:05:15,375 42472 INFO diegofornalha odoo.addons.base.models.ir_attachment: _read_file reading /Users/2a/Desktop/odoo19framework/diegofornalha/filestore/filestore/diegofornalha/66/66ae48cdda39173a7c40302137fd7fe47b649b16 
+Traceback (most recent call last):
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/addons/base/models/ir_attachment.py", line 138, in _file_read
+    with open(full_path, 'rb') as f:
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/2a/Desktop/odoo19framework/diegofornalha/filestore/filestore/diegofornalha/66/66ae48cdda39173a7c40302137fd7fe47b649b16'
+2025-12-02 15:05:15,376 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:05:15] "GET /web/image?model=res.users&field=avatar_128&id=2 HTTP/1.1" 304 - 19 0.016 0.008
+2025-12-02 15:05:15,393 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:05:15] "POST /mail/data HTTP/1.1" 200 - 31 0.022 0.012
+2025-12-02 15:05:15,431 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:05:15] "POST /web/dataset/call_kw/mail.push.device/register_devices#mail.push.device.register_devices HTTP/1.1" 200 - 6 0.004 0.005
+2025-12-02 15:05:15,486 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:05:15] "POST /web/dataset/call_kw/project.task/get_views#project.task.get_views HTTP/1.1" 200 - 78 0.045 0.086
+2025-12-02 15:05:15,503 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:05:15] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 8 0.006 0.005
+2025-12-02 15:05:17,393 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:05:17] "POST /web/action/load HTTP/1.1" 200 - 11 0.013 0.015
+2025-12-02 15:05:17,505 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:05:17] "POST /web/dataset/call_kw/project.project/get_views#project.project.get_views HTTP/1.1" 200 - 37 0.025 0.065
+2025-12-02 15:05:17,532 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:05:17] "POST /web/dataset/call_kw/project.project/search_read#project.project.search_read HTTP/1.1" 200 - 8 0.008 0.005
+2025-12-02 15:05:17,539 42472 INFO diegofornalha werkzeug: 127.0.0.1 - - [02/Dec/2025 15:05:17] "POST /web/dataset/call_kw/project.project/web_search_read#project.project.web_search_read HTTP/1.1" 200 - 15 0.010 0.010
+2025-12-02 15:05:17,553 42472 INFO ? werkzeug: 127.0.0.1 - - [02/Dec/2025 15:05:17] "GET /web/static/img/openhand.cur HTTP/1.1" 200 - 0 0.000 0.002

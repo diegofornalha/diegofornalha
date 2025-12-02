@@ -85,9 +85,14 @@ export class GanttRenderer extends Component {
         const dateStartField = this.props.model.meta?.dateStartField || "date_assign";
         const dateStopField = this.props.model.meta?.dateStopField || "date_deadline";
 
+        console.log("[Gantt] Records:", records.length, records);
+        console.log("[Gantt] Fields:", dateStartField, dateStopField);
+
         return records.map((record) => {
             const startDate = record.data[dateStartField] || record.data.create_date;
             const endDate = record.data[dateStopField] || this.addDays(startDate, 1);
+
+            console.log("[Gantt] Task:", record.data.display_name, "start:", startDate, "end:", endDate);
 
             return {
                 id: String(record.resId),

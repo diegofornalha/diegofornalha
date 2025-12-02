@@ -36,18 +36,19 @@ export class GanttModel extends Model {
             "name",
             archInfo.dateStartField || "date_assign",
             archInfo.dateStopField || "date_deadline",
-            archInfo.progressField || "progress",
             "priority",
-            archInfo.dependencyField || "depend_on_ids",
             "create_date",
         ]);
         return [...fieldNames];
     }
 
-    async load(params = {}) {
-        Object.assign(this.meta, params);
-        const domain = params.domain || [];
-        const context = params.context || {};
+    async load(searchParams = {}) {
+        const domain = searchParams.domain || [];
+        const context = searchParams.context || {};
+
+        console.log("[GanttModel] load called with domain:", domain);
+        console.log("[GanttModel] resModel:", this.resModel);
+        console.log("[GanttModel] fieldNames:", this.meta.fieldNames);
 
         try {
             const result = await this.keepLast.add(
@@ -58,6 +59,8 @@ export class GanttModel extends Model {
                     { context }
                 )
             );
+
+            console.log("[GanttModel] searchRead result:", result);
 
             this.data.records = result.map((record) => ({
                 resId: record.id,
