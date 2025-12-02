@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<templates xml:space="preserve">
-    <t t-name="web_gantt_ce.GanttRenderer">
-        <div class="o_gantt_renderer h-100 overflow-auto">
-            <div t-ref="ganttContainer" class="o_gantt_container"/>
-        </div>
-    </t>
-</templates>

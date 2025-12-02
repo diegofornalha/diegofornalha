@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="web_gantt_ce.GanttController">
+        <Layout className="'o_gantt_view'" display="props.display">
+            <t t-set-slot="control-panel-additional-actions">
+                <select class="o_gantt_scale_selector form-select" t-on-change="onScaleChange">
+                    <t t-foreach="scales" t-as="scale" t-key="scale">
+                        <option t-att-value="scale" t-att-selected="scale === state.scale">
+                            <t t-esc="scale"/>
+                        </option>
+                    </t>
+                </select>
+            </t>
+            <t t-set-slot="layout-actions"/>
+            <div class="o_gantt_content h-100">
+                <GanttRenderer t-props="rendererProps"/>
+            </div>
+        </Layout>
+    </t>
+</templates>

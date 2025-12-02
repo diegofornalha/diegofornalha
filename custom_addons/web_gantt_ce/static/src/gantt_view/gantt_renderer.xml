@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="web_gantt_ce.GanttRenderer">
+        <div class="o_gantt_renderer">
+            <t t-if="hasData">
+                <div class="o_gantt_container" t-ref="gantt-container"/>
+            </t>
+            <t t-else="">
+                <div class="o_view_nocontent" role="alert">
+                    <div class="o_nocontent_help">
+                        <p class="o_view_nocontent_smiling_face">
+                            Nenhuma tarefa para exibir no Gantt
+                        </p>
+                        <p>
+                            Crie tarefas com datas de início e prazo para visualizá-las aqui.
+                        </p>
+                    </div>
+                </div>
+            </t>
+        </div>
+    </t>
+</templates>
