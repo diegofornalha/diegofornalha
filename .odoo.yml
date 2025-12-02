@@ -1,0 +1,9 @@
+# odoo project configuration
+version: 1
+name: teste_funcional
+base_dir: /Users/2a/Desktop/odoo19framework
+module: teste_funcional
+template: minimal
+venv: True
+odoo_branch: 19.0
+oca_web: True

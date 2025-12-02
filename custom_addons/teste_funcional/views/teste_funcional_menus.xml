@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <menuitem id="menu_teste_funcional_root" name="Teste Funcional" sequence="10"/>
+    <menuitem id="menu_teste_funcional_record" name="Teste Funcional" parent="menu_teste_funcional_root" action="action_teste_funcional_record" sequence="10"/>
+</odoo>

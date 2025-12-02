@@ -1,0 +1,86 @@
+.o_gantt_view {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+
+    .o_gantt_view_container {
+        flex: 1;
+        overflow: hidden;
+    }
+}
+
+.o_gantt_renderer {
+    min-height: 400px;
+    background: #fff;
+}
+
+.o_gantt_container {
+    min-height: 100%;
+    padding: 16px;
+}
+
+.o_gantt_empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px;
+}
+
+.o_gantt_error {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+}
+
+// Gantt library customizations
+.gantt-container {
+    background: #fff;
+    border-radius: 4px;
+}
+
+.gantt {
+    .bar {
+        transition: fill 0.2s ease;
+    }
+
+    .bar-wrapper:hover .bar {
+        fill: #7c3aed !important;
+    }
+
+    // Decoration classes
+    .gantt-danger .bar {
+        fill: #dc3545 !important;
+    }
+
+    .gantt-warning .bar {
+        fill: #ffc107 !important;
+    }
+
+    .gantt-success .bar {
+        fill: #28a745 !important;
+    }
+
+    .gantt-info .bar {
+        fill: #17a2b8 !important;
+    }
+}
+
+// Popup styling
+.gantt-popup {
+    min-width: 180px;
+
+    .gantt-popup-title {
+        color: #fff;
+        font-weight: 600;
+    }
+
+    .gantt-popup-subtitle {
+        color: #ccc;
+    }
+
+    .gantt-popup-progress {
+        color: #aaa;
+    }
+}

@@ -1,0 +1,1294 @@
+
+/* /web/static/src/views/graph/graph_arch_parser.js */
+odoo.define('@web/views/graph/graph_arch_parser',['@web/core/utils/strings','@web/core/utils/xml','@web/search/utils/misc'],function(require){'use strict';let __exports={};const{exprToBoolean}=require("@web/core/utils/strings");const{visitXML}=require("@web/core/utils/xml");const{GROUPABLE_TYPES}=require("@web/search/utils/misc");const MODES=["bar","line","pie"];const ORDERS=["ASC","DESC","asc","desc",null];const GraphArchParser=__exports.GraphArchParser=class GraphArchParser{parse(arch,fields={}){const archInfo={fields,fieldAttrs:{},groupBy:[],measures:[]};visitXML(arch,(node)=>{switch(node.tagName){case"graph":{if(node.hasAttribute("disable_linking")){archInfo.disableLinking=exprToBoolean(node.getAttribute("disable_linking"));}
+if(node.hasAttribute("stacked")){archInfo.stacked=exprToBoolean(node.getAttribute("stacked"));}
+if(node.hasAttribute("cumulated")){archInfo.cumulated=exprToBoolean(node.getAttribute("cumulated"));}
+if(node.hasAttribute("cumulated_start")){archInfo.cumulatedStart=exprToBoolean(node.getAttribute("cumulated_start"));}
+const mode=node.getAttribute("type");if(mode&&MODES.includes(mode)){archInfo.mode=mode;}
+const order=node.getAttribute("order");if(order&&ORDERS.includes(order)){archInfo.order=order.toUpperCase();}
+const title=node.getAttribute("string");if(title){archInfo.title=title;}
+break;}
+case"field":{const fieldName=node.getAttribute("name");if(fieldName==="id"){break;}
+const string=node.getAttribute("string");if(string){if(!archInfo.fieldAttrs[fieldName]){archInfo.fieldAttrs[fieldName]={};}
+archInfo.fieldAttrs[fieldName].string=string;}
+const widget=node.getAttribute("widget");if(widget){if(!archInfo.fieldAttrs[fieldName]){archInfo.fieldAttrs[fieldName]={};}
+archInfo.fieldAttrs[fieldName].widget=widget;}
+if(node.getAttribute("invisible")==="True"||node.getAttribute("invisible")==="1"){if(!archInfo.fieldAttrs[fieldName]){archInfo.fieldAttrs[fieldName]={};}
+archInfo.fieldAttrs[fieldName].isInvisible=true;break;}
+const isMeasure=node.getAttribute("type")==="measure";if(isMeasure){archInfo.measures.push(fieldName);archInfo.measure=fieldName;}else{const{type}=archInfo.fields[fieldName];if(GROUPABLE_TYPES.includes(type)){let groupBy=fieldName;const interval=node.getAttribute("interval");if(interval){groupBy+=`:${interval}`;}
+archInfo.groupBy.push(groupBy);}}
+break;}}});return archInfo;}}
+return __exports;});;
+
+/* /web/static/src/views/graph/graph_controller.js */
+odoo.define('@web/views/graph/graph_controller',['@web/search/layout','@web/model/model','@web/views/standard_view_props','@web/search/action_hook','@web/search/search_bar/search_bar','@web/search/search_bar/search_bar_toggler','@web/search/cog_menu/cog_menu','@web/views/widgets/widget','@web/views/action_helper','@odoo/owl'],function(require){'use strict';let __exports={};const{Layout}=require("@web/search/layout");const{useModelWithSampleData}=require("@web/model/model");const{standardViewProps}=require("@web/views/standard_view_props");const{useSetupAction}=require("@web/search/action_hook");const{SearchBar}=require("@web/search/search_bar/search_bar");const{useSearchBarToggler}=require("@web/search/search_bar/search_bar_toggler");const{CogMenu}=require("@web/search/cog_menu/cog_menu");const{Widget}=require("@web/views/widgets/widget");const{ActionHelper}=require("@web/views/action_helper");const{Component,useRef}=require("@odoo/owl");const GraphController=__exports.GraphController=class GraphController extends Component{static template="web.GraphView";static components={Layout,SearchBar,CogMenu,Widget,ActionHelper};static props={...standardViewProps,Model:Function,modelParams:Object,Renderer:Function,buttonTemplate:String,};setup(){this.model=useModelWithSampleData(this.props.Model,this.props.modelParams,this.modelOptions);useSetupAction({rootRef:useRef("root"),getLocalState:()=>({metaData:this.model.metaData}),getContext:()=>this.getContext(),});this.searchBarToggler=useSearchBarToggler();}
+get modelOptions(){return{lazy:!this.env.config.isReloadingController&&!this.env.inDialog&&!!this.props.display.controlPanel,};}
+getContext(){const{measure,groupBy,mode}=this.model.metaData;const context={graph_measure:measure,graph_mode:mode,graph_groupbys:groupBy.map((gb)=>gb.spec),};if(mode!=="pie"){context.graph_order=this.model.metaData.order;context.graph_stacked=this.model.metaData.stacked;if(mode==="line"){context.graph_cumulated=this.model.metaData.cumulated;}}
+return context;}}
+return __exports;});;
+
+/* /web/static/src/views/graph/graph_model.js */
+odoo.define('@web/views/graph/graph_model',['@web/core/domain','@web/core/l10n/translation','@web/core/user','@web/core/utils/arrays','@web/core/utils/concurrency','@web/model/model','@web/search/utils/dates','@web/search/utils/group_by','@web/search/utils/misc','@web/views/utils'],function(require){'use strict';let __exports={};const{Domain}=require("@web/core/domain");const{appTranslateFn}=require("@web/core/l10n/translation");const _t=(str,...args)=>appTranslateFn(str,"web",...args);const{user}=require("@web/core/user");const{sortBy}=require("@web/core/utils/arrays");const{KeepLast,Race}=require("@web/core/utils/concurrency");const{addPropertyFieldDefs,Model}=require("@web/model/model");const{rankInterval}=require("@web/search/utils/dates");const{getGroupBy}=require("@web/search/utils/group_by");const{GROUPABLE_TYPES}=require("@web/search/utils/misc");const{computeReportMeasures,processMeasure}=require("@web/views/utils");const SEP=__exports.SEP=" / ";const DATA_LIMIT=80;const SEQUENTIAL_TYPES=__exports.SEQUENTIAL_TYPES=["date","datetime"];const GraphModel=__exports.GraphModel=class GraphModel extends Model{setup(params){this.keepLast=new KeepLast();this.race=new Race();const _fetchDataPoints=this._fetchDataPoints.bind(this);this._fetchDataPoints=(...args)=>this.race.add(_fetchDataPoints(...args));this.initialGroupBy=null;this.metaData=params;this.data=null;this.searchParams=null;this.lineOverlayDataset=null;}
+async load(searchParams){this.searchParams=searchParams;if(!this.initialGroupBy){this.initialGroupBy=searchParams.context.graph_groupbys||this.metaData.groupBy;}
+const metaData=this._buildMetaData();await addPropertyFieldDefs(this.orm,metaData.resModel,searchParams.context,metaData.fields,metaData.groupBy.map((gb)=>gb.fieldName));await this._fetchDataPoints(metaData);}
+async forceLoadAll(){const metaData=this._buildMetaData();await this._fetchDataPoints(metaData,true);this.notify();}
+hasData(){return this.dataPoints?.length>0;}
+async updateMetaData(params){if("measure"in params){const metaData=this._buildMetaData(params);await this._fetchDataPoints(metaData);this.useSampleModel=false;}else{await this.race.getCurrentProm();this.metaData=Object.assign({},this.metaData,params);this._prepareData();}
+this.notify();}
+_buildMetaData(params){const{domain,context,groupBy}=this.searchParams;const metaData=Object.assign({},this.metaData,{context});metaData.domain=domain;metaData.measure=context.graph_measure||metaData.measure;metaData.mode=context.graph_mode||metaData.mode;metaData.groupBy=groupBy.length?groupBy:this.initialGroupBy;if(metaData.mode!=="pie"){metaData.order="graph_order"in context?context.graph_order:metaData.order;if("graph_stacked"in context){metaData.stacked=context.graph_stacked;}
+if(metaData.mode==="line"){metaData.cumulated="graph_cumulated"in context?context.graph_cumulated:metaData.cumulated;}}
+this._normalize(metaData);metaData.measures=computeReportMeasures(metaData.fields,metaData.fieldAttrs,[...(metaData.viewMeasures||[]),metaData.measure,]);return Object.assign(metaData,params);}
+async _fetchDataPoints(metaData,forceUseAllDataPoints=false){[this.dataPoints]=await this.keepLast.add(this._loadDataPoints(metaData));this.metaData=metaData;this._prepareData(forceUseAllDataPoints);}
+_getData(dataPoints,forceUseAllDataPoints){const{mode}=this.metaData;const dataPtMapping=new WeakMap();const datasetsTmp={};let exceeds=false;const labels=[];const labelMap={};for(const dataPt of dataPoints){const datasetLabel=this._getDatasetLabel(dataPt);if(!(datasetLabel in datasetsTmp)){if(!forceUseAllDataPoints&&Object.keys(datasetsTmp).length>=DATA_LIMIT){exceeds=true;continue;}
+datasetsTmp[datasetLabel]={label:datasetLabel};}
+dataPtMapping.set(dataPt,datasetsTmp[datasetLabel]);const x=dataPt.labels.slice(0,mode==="pie"?undefined:1);const trueLabel=x.length?x.join(SEP):_t("Total");const key=JSON.stringify(x);if(labelMap[key]===undefined){labelMap[key]=labels.length;const label=x.length?x.join(SEP):_t("Total");labels.push(label);}
+dataPt.labelIndex=labelMap[key];dataPt.trueLabel=trueLabel;}
+for(const dataPt of dataPoints){if(!dataPtMapping.has(dataPt)){continue;}
+const{domain,labelIndex,trueLabel,value,identifier,cumulatedStart,currencyId}=dataPt;const dataset=dataPtMapping.get(dataPt);if(!dataset.data){const dataLength=labels.length;Object.assign(dataset,{data:new Array(dataLength).fill(0),cumulatedStart,trueLabels:labels.slice(0,dataLength),domains:new Array(dataLength).fill([]),identifiers:new Set(),currencyIds:new Array(dataLength).fill(),});}
+dataset.data[labelIndex]=value;dataset.domains[labelIndex]=domain;dataset.trueLabels[labelIndex]=trueLabel;dataset.identifiers.add(identifier);dataset.currencyIds[labelIndex]=currencyId;}
+const datasets=Object.values(datasetsTmp);return{datasets,labels,exceeds};}
+_getLineOverlayDataset(){const{stacked}=this.metaData;const datasets=this.data.datasets;let lineOverlayDataset=null;if(stacked&&datasets.length>1){const label=_t("Sum");const data=[];const currencyIds=[];for(const dataset of datasets){for(let i=0;i<dataset.data.length;i++){data[i]=(data[i]||0)+dataset.data[i];currencyIds[i]=dataset.currencyIds[i]||currencyIds[i];}}
+lineOverlayDataset={label,data,currencyIds,trueLabels:datasets[0].trueLabels,};}
+return lineOverlayDataset;}
+_getDatasetLabel(dataPoint){const{measure,measures,mode}=this.metaData;const{labels}=dataPoint;if(mode==="pie"){return"";}
+return labels.slice(1).join(SEP)||measures[measure].string;}
+_getDefaultFilterLabel(gb){return this.metaData.fields[gb?.fieldName]?.falsy_value_label||_t("None");}
+_getProcessedDataPoints(){const{groupBy,mode,order}=this.metaData;let processedDataPoints=[];if(mode==="line"){processedDataPoints=this.dataPoints.filter((dataPoint)=>dataPoint.labels[0]!==this._getDefaultFilterLabel(groupBy[0]));}else if(mode==="pie"){processedDataPoints=this.dataPoints.filter((dataPoint)=>dataPoint.value>0&&dataPoint.count!==0);}else{processedDataPoints=this.dataPoints.filter((dataPoint)=>dataPoint.count!==0);}
+if(order!==null&&mode!=="pie"&&groupBy.length>0){const groupedDataPoints={};for(const dataPt of processedDataPoints){const key=dataPt.labels[0];if(!groupedDataPoints[key]){groupedDataPoints[key]=[];}
+groupedDataPoints[key].push(dataPt);}
+const groups=Object.values(groupedDataPoints);const groupTotal=(group)=>group.reduce((sum,dataPt)=>sum+dataPt.value,0);processedDataPoints=sortBy(groups,groupTotal,order.toLowerCase()).flat();}
+return processedDataPoints;}
+async _loadDataPoints(metaData){const{measure,domain,fields,groupBy,resModel,cumulatedStart}=metaData;const fieldName=groupBy[0]?.fieldName;const sequentialField=cumulatedStart&&SEQUENTIAL_TYPES.includes(fields[fieldName]?.type)?fieldName:null;const sequentialSpec=sequentialField&&groupBy[0].spec;const measures=["__count"];let fieldAggregate="__count",monetaryAggregates;if(measure!=="__count"){let{aggregator,currency_field,name,type}=fields[measure];if(type==="many2one"){aggregator="count_distinct";}
+if(aggregator===undefined){throw new Error(`No aggregate function has been provided for the measure '${measure}'`);}
+if(type==="monetary"&&currency_field){monetaryAggregates=[`${currency_field}:array_agg_distinct`,`${name}:sum_currency`,];measures.push(...monetaryAggregates);}
+fieldAggregate=`${measure}:${aggregator}`;measures.push(fieldAggregate);}
+const numbering={};const groups=await this.orm.formattedReadGroup(resModel,domain,groupBy.map((gb)=>gb.spec),measures,{context:{fill_temporal:true,...this.searchParams.context},});let startGroups=false;if(cumulatedStart&&sequentialField&&groups.length&&domain.some((leaf)=>leaf.length===3&&leaf[0]==sequentialField)){const firstDate=groups[0][sequentialSpec][0];const newDomain=Domain.combine([new Domain([[sequentialField,"<",firstDate]]),Domain.removeDomainLeaves(domain,[sequentialField]),],"AND").toList();startGroups=await this.orm.formattedReadGroup(resModel,newDomain,groupBy.filter((gb)=>gb.fieldName!=sequentialField).map((gb)=>gb.spec),measures,{context:{...this.searchParams.context},});}
+const dataPoints=[];const cumulatedStartValue={};if(startGroups){for(const group of startGroups){const rawValues=[];for(const gb of groupBy.filter((gb)=>gb.fieldName!=sequentialField)){rawValues.push({[gb.spec]:group[gb.spec]});}
+cumulatedStartValue[JSON.stringify(rawValues)]=group[measures.slice(-1)];}}
+const graphCurrencies=new Set();const defaultCurrency=user.activeCompany.currency_id;for(const group of groups){const{__domain,__count}=group;const labels=[];const rawValues=[];for(const gb of groupBy){let label;const val=group[gb.spec];rawValues.push({[gb.spec]:val});const fieldName=gb.fieldName;const{type}=fields[fieldName];if(type==="boolean"){label=`${val}`;}else if(type==="integer"){label=val===false?"0":`${val}`;}else if(val===false){label=this._getDefaultFilterLabel(gb);}else if(["many2many","many2one"].includes(type)){const[id,name]=val;const key=JSON.stringify([fieldName,name]);if(!numbering[key]){numbering[key]={};}
+const numbers=numbering[key];if(!numbers[id]){numbers[id]=Object.keys(numbers).length+1;}
+const num=numbers[id];label=num===1?name:`${name} (${num})`;}else if(type==="selection"){const selected=fields[fieldName].selection.find((s)=>s[0]===val);label=selected[1];}else if(["date","datetime"].includes(type)){label=val[1];}else{label=val;}
+labels.push(label);}
+const value=group[fieldAggregate];if(!Number.isInteger(value)){metaData.allIntegers=false;}
+const groupId=JSON.stringify(rawValues.slice(1));const dataPoint={count:__count,domain:__domain,value,labels,identifier:JSON.stringify(rawValues),cumulatedStart:cumulatedStartValue[groupId]||0,};if(monetaryAggregates){const currencies=group[monetaryAggregates[0]];dataPoint.currencyId=currencies[0];dataPoint.convertedValue=group[monetaryAggregates[1]];if(currencies.length>1){dataPoint.currencyId=defaultCurrency;dataPoint.value=dataPoint.convertedValue;}
+graphCurrencies.add(dataPoint.currencyId);}
+dataPoints.push(dataPoint);}
+for(const dataPoint of dataPoints){if(graphCurrencies.size>1){dataPoint.currencyId=defaultCurrency;dataPoint.value=dataPoint.convertedValue;}
+delete dataPoint.convertedValue;}
+return[dataPoints,graphCurrencies];}
+_normalize(metaData){const{fields}=metaData;const groupBy=[];for(const gb of metaData.groupBy){let ngb=gb;if(typeof gb==="string"){ngb=getGroupBy(gb,fields);}
+groupBy.push(ngb);}
+const processedGroupBy=[];for(const gb of groupBy){const{fieldName,interval}=gb;if(!fieldName.includes(".")){const{groupable,type}=fields[fieldName];if(!groupable||["id","__count"].includes(fieldName)||!GROUPABLE_TYPES.includes(type)){continue;}}
+const index=processedGroupBy.findIndex((gb)=>gb.fieldName===fieldName);if(index===-1){processedGroupBy.push(gb);}else if(interval){const registeredInterval=processedGroupBy[index].interval;if(rankInterval(registeredInterval)<rankInterval(interval)){processedGroupBy.splice(index,1,gb);}}}
+metaData.groupBy=processedGroupBy;metaData.measure=processMeasure(metaData.measure);}
+_prepareData(forceUseAllDataPoints=false){const processedDataPoints=this._getProcessedDataPoints();this.data=this._getData(processedDataPoints,forceUseAllDataPoints);this.lineOverlayDataset=null;if(this.metaData.mode==="bar"){this.lineOverlayDataset=this._getLineOverlayDataset();}}}
+return __exports;});;
+
+/* /web/static/src/views/graph/graph_renderer.js */
+odoo.define('@web/views/graph/graph_renderer',['@web/core/l10n/translation','@web/core/colors/colors','@web/core/registry','@web/views/fields/formatters','@web/views/graph/graph_model','@web/core/utils/arrays','@web/core/assets','@web/core/utils/render','@web/core/utils/hooks','@odoo/owl','@web/core/dropdown/dropdown','@web/core/dropdown/dropdown_item','@web/core/browser/cookie','@web/core/utils/html','@web/views/view_components/report_view_measures','@web/views/widgets/widget'],function(require){'use strict';let __exports={};const{appTranslateFn}=require("@web/core/l10n/translation");const _t=(str,...args)=>appTranslateFn(str,"web",...args);const{getBorderWhite,DEFAULT_BG,getColor,getCustomColor,lightenColor,darkenColor,}=require("@web/core/colors/colors");const{registry}=require("@web/core/registry");const{formatFloat,formatMonetary}=require("@web/views/fields/formatters");const{SEP}=require("@web/views/graph/graph_model");const{sortBy}=require("@web/core/utils/arrays");const{loadBundle}=require("@web/core/assets");const{renderToMarkup}=require("@web/core/utils/render");const{useService}=require("@web/core/utils/hooks");const{Component,onWillUnmount,useEffect,useRef,onWillStart,markup}=require("@odoo/owl");const{Dropdown}=require("@web/core/dropdown/dropdown");const{DropdownItem}=require("@web/core/dropdown/dropdown_item");const{cookie}=require("@web/core/browser/cookie");const{createElementWithContent}=require("@web/core/utils/html");const{ReportViewMeasures}=require("@web/views/view_components/report_view_measures");const{Widget}=require("@web/views/widgets/widget");const NO_DATA=_t("No data");const formatters=registry.category("formatters");const colorScheme=cookie.get("color_scheme");const GRAPH_LEGEND_COLOR=getCustomColor(colorScheme,"#111827","#ffffff");const GRAPH_GRID_COLOR=getCustomColor(colorScheme,"rgba(0,0,0,.1)","rgba(255,255,255,.15");const GRAPH_LABEL_COLOR=getCustomColor(colorScheme,"#111827","#E4E4E4");const NO_DATA_COLOR=getCustomColor(colorScheme,DEFAULT_BG,"#3C3E4B");const gridOnTop={id:"gridOnTop",afterDraw:(chart)=>{const elements=chart.getDatasetMeta(0).data||[];const ctx=chart.ctx;const chartArea=chart.chartArea;const yAxis=chart.scales.y;const xAxis=chart.scales.x;ctx.lineWidth=1;ctx.strokeStyle=GRAPH_GRID_COLOR;yAxis.ticks.forEach((value,index)=>{const y=yAxis.getPixelForTick(index);ctx.beginPath();ctx.moveTo(chartArea.left,y);ctx.lineTo(chartArea.right,y);ctx.moveTo(chartArea.left-8,y);ctx.lineTo(chartArea.left,y);ctx.setLineDash([]);ctx.stroke();});xAxis.ticks.forEach((value,tickIndex)=>{const x=xAxis.getPixelForTick(tickIndex);ctx.beginPath();ctx.moveTo(x,chartArea.bottom);ctx.lineTo(x,chartArea.bottom+8);ctx.stroke();});elements.forEach((point,eltIndex)=>{xAxis.ticks.forEach((value,tickIndex)=>{if(point.active&&eltIndex===tickIndex){const x=xAxis.getPixelForTick(tickIndex);ctx.beginPath();ctx.moveTo(x,chartArea.top);ctx.lineTo(x,chartArea.bottom);ctx.strokeStyle=GRAPH_GRID_COLOR;ctx.stroke();}});});},};function getMaxWidth(chartArea){const{left,right}=chartArea;return Math.floor((right-left)/1.618)+"px";}
+function shortenLabel(label){const groups=label.toString().split(SEP);let shortLabel=groups.slice(0,3).join(SEP);if(shortLabel.length>30){shortLabel=`${shortLabel.slice(0, 30)}...`;}else if(groups.length>3){shortLabel=`${shortLabel}${SEP}...`;}
+return shortLabel;}
+const GraphRenderer=__exports.GraphRenderer=class GraphRenderer extends Component{static template="web.GraphRenderer";static components={Dropdown,DropdownItem,ReportViewMeasures,Widget};static props=["class?","model","buttonTemplate"];setup(){this.model=this.props.model;this.rootRef=useRef("root");this.canvasRef=useRef("canvas");this.containerRef=useRef("container");this.actionService=useService("action");this.chart=null;this.tooltip=null;this.legendTooltip=null;onWillStart(async()=>{await loadBundle("web.chartjs_lib");});useEffect(()=>this.renderChart());onWillUnmount(this.onWillUnmount);}
+onWillUnmount(){if(this.chart){this.chart.destroy();}}
+adjustTooltipHeight(tooltip,maxTooltipHeight){const sizeOneLine=tooltip.querySelector("tbody tr").clientHeight;const tbodySize=tooltip.querySelector("tbody").clientHeight;const toKeep=Math.max(0,Math.floor((maxTooltipHeight-(tooltip.clientHeight-tbodySize))/sizeOneLine)-1);const lines=tooltip.querySelectorAll("tbody tr");const toRemove=lines.length-toKeep;if(toRemove>0){for(let index=toKeep;index<lines.length;++index){lines[index].remove();}
+const tr=document.createElement("tr");const td=document.createElement("td");tr.classList.add("o_show_more","text-center","fw-bold");td.setAttribute("colspan","2");td.innerText=_t("...");tr.appendChild(td);tooltip.querySelector("tbody").appendChild(tr);}}
+customTooltip(data,metaData,context){const tooltipModel=context.tooltip;const{measure,measures,disableLinking,mode}=metaData;this.containerRef.el.style.cursor="";this.removeTooltips();if(tooltipModel.opacity===0||tooltipModel.dataPoints.length===0){return;}
+if(!disableLinking&&mode!=="line"){this.containerRef.el.style.cursor="pointer";}
+const chartAreaTop=this.chart.chartArea.top;const viewContentTop=this.containerRef.el.getBoundingClientRect().top;const content=renderToMarkup("web.GraphRenderer.CustomTooltip",{maxWidth:getMaxWidth(this.chart.chartArea),measure:measures[measure].string,mode:this.model.metaData.mode,tooltipItems:this.getTooltipItems(data,metaData,tooltipModel),});const template=createElementWithContent("template",content);const tooltip=template.content.firstChild;this.containerRef.el.prepend(tooltip);let top;const tooltipHeight=tooltip.clientHeight;const minTopAllowed=Math.floor(chartAreaTop);const maxTopAllowed=Math.floor(window.innerHeight-(viewContentTop+tooltipHeight))-2;const y=Math.floor(tooltipModel.y);if(minTopAllowed<=maxTopAllowed){if(y<=maxTopAllowed){if(y>=minTopAllowed){top=y;}else{top=minTopAllowed;}}else{top=maxTopAllowed;}}else{top=minTopAllowed;const maxTooltipHeight=window.innerHeight-(viewContentTop+chartAreaTop)-2;this.adjustTooltipHeight(tooltip,maxTooltipHeight);}
+this.fixTooltipLeftPosition(tooltip,tooltipModel.x);tooltip.style.top=Math.floor(top)+"px";this.tooltip=tooltip;}
+fixTooltipLeftPosition(tooltip,x){let left;const tooltipWidth=tooltip.clientWidth;const minLeftAllowed=Math.floor(this.chart.chartArea.left+2);const maxLeftAllowed=Math.floor(this.chart.chartArea.right-tooltipWidth-2);x=Math.floor(x);if(x<minLeftAllowed){left=minLeftAllowed;}else if(x>maxLeftAllowed){left=maxLeftAllowed;}else{left=x;}
+tooltip.style.left=`${left}px`;}
+formatValue(value,allIntegers=true,formatType=""){const largeNumber=Math.abs(value)>=1000;if(formatType){return formatters.get(formatType)(value);}
+if(allIntegers&&!largeNumber){return String(value);}
+if(largeNumber){return formatFloat(value,{humanReadable:true,decimals:2,minDigits:1});}
+return formatFloat(value);}
+getBarChartData(){const{stacked}=this.model.metaData;const{data,lineOverlayDataset}=this.model;for(let index=0;index<data.datasets.length;++index){const dataset=data.datasets[index];const itemColor=getColor(index,colorScheme,data.datasets.length);if(stacked){dataset.stack="";}
+dataset.backgroundColor=itemColor;dataset.borderRadius=4;}
+if(lineOverlayDataset){Object.assign(lineOverlayDataset,{type:"line",order:-1,tension:0,fill:false,pointHitRadius:20,pointRadius:5,pointHoverRadius:10,backgroundColor:getCustomColor(colorScheme,"#343a40","#e9ecef"),borderColor:getCustomColor(colorScheme,"rgba(0,0,0,.3)","rgba(255,255,255,.5)"),borderWidth:2,lineWidth:3,});return{...data,datasets:[...data.datasets,lineOverlayDataset],};}
+return data;}
+getChartConfig(){const{mode}=this.model.metaData;let data;switch(mode){case"bar":data=this.getBarChartData();break;case"line":data=this.getLineChartData();break;case"pie":data=this.getPieChartData();}
+const options=this.prepareOptions();const config={data,options,type:mode};if(mode==="line"){config.plugins=[gridOnTop];}
+return config;}
+getAnimationOptions(){let delayed;const{mode}=this.model.metaData;const labelsCount=this.model.data.labels.length;const gap=350;const animationOptions={};if(mode==="pie"){animationOptions.offset={duration:200};}else{animationOptions.duration=600;animationOptions.onComplete=()=>{delayed=true;};animationOptions.delay=(context)=>{let delay=0;if((mode==="bar"||mode==="line")&&!delayed){delay=context.dataIndex*(gap/labelsCount);}
+return delay;};}
+return animationOptions;}
+getElementOptions(){const{mode,stacked}=this.model.metaData;const elementOptions={};if(mode==="bar"){elementOptions.bar={borderWidth:1};}else if(mode==="line"){elementOptions.line={fill:stacked,tension:0};}
+return elementOptions;}
+getLegendOptions(){const{mode}=this.model.metaData;const legendOptions={onHover:this.onLegendHover.bind(this),onLeave:this.onLegendLeave.bind(this),};if(mode==="line"){legendOptions.onClick=this.onLegendClick.bind(this);}
+if(mode==="pie"){legendOptions.labels={generateLabels:(chart)=>chart.data.labels.map((label,index)=>{const hidden=!chart.getDataVisibility(index);const fullText=label;const text=shortenLabel(fullText);const fillStyle=label===NO_DATA?NO_DATA_COLOR:getColor(index,colorScheme,chart.data.labels.length);return{text,fullText,fillStyle,hidden,index,fontColor:GRAPH_LEGEND_COLOR,lineWidth:0,};}),};}else{legendOptions.position="top";legendOptions.align="end";const referenceColor=mode==="bar"?"backgroundColor":"borderColor";legendOptions.labels={generateLabels:(chart)=>{const{data}=chart;const labels=data.datasets.map((dataset,index)=>({text:shortenLabel(dataset.label),fullText:dataset.label,fillStyle:dataset[referenceColor],hidden:!chart.isDatasetVisible(index),lineCap:dataset.borderCapStyle,lineDash:dataset.borderDash,lineDashOffset:dataset.borderDashOffset,lineJoin:dataset.borderJoinStyle,lineWidth:dataset.borderWidth,strokeStyle:dataset[referenceColor],pointStyle:dataset.pointStyle,datasetIndex:index,fontColor:GRAPH_LEGEND_COLOR,}));return labels;},};}
+return legendOptions;}
+getLineChartData(){const{cumulated}=this.model.metaData;const data=this.model.data;for(let index=0;index<data.datasets.length;++index){const dataset=data.datasets[index];const itemColor=getColor(index,colorScheme,data.datasets.length);dataset.backgroundColor=getCustomColor(colorScheme,lightenColor(itemColor,0.5),darkenColor(itemColor,0.5));dataset.cubicInterpolationMode="monotone";dataset.borderColor=itemColor;dataset.borderWidth=2;dataset.hoverBackgroundColor=dataset.borderColor;dataset.pointRadius=3;dataset.pointHoverRadius=6;if(cumulated){let accumulator=dataset.cumulatedStart;dataset.data=dataset.data.map((value)=>{accumulator+=value;return accumulator;});}
+if(data.labels.length===1){dataset.data.unshift(undefined);dataset.trueLabels.unshift(undefined);dataset.domains.unshift(undefined);}
+dataset.pointBackgroundColor=dataset.borderColor;}
+data.labels=data.labels.length>1?data.labels:["",...data.labels,""];return data;}
+getPieChartData(){const data=this.model.data;const colors=data.labels.map((_,index)=>getColor(index,colorScheme,data.labels.length));const borderColor=getBorderWhite(colorScheme);for(const dataset of data.datasets){dataset.backgroundColor=colors;dataset.hoverBackgroundColor=colors;dataset.borderColor=borderColor;dataset.hoverOffset=60;}
+let addNoDataToLegend=false;if(data.datasets.length===0){const fakeData=new Array(data.labels.length+1);fakeData[data.labels.length]=1;const fakeTrueLabels=new Array(data.labels.length+1);fakeTrueLabels[data.labels.length]=NO_DATA;data.datasets.push({label:"",data:fakeData,trueLabels:fakeTrueLabels,backgroundColor:[...colors,NO_DATA_COLOR],borderColor,});addNoDataToLegend=true;}
+if(addNoDataToLegend){data.labels.push(NO_DATA);}
+return data;}
+getScaleOptions(){const{labels}=this.model.data;const{fieldAttrs,measure,measures,mode,stacked}=this.model.metaData;if(mode==="pie"){return{};}
+const xAxe={type:"category",ticks:{callback:(val,index)=>{const value=labels[index];return shortenLabel(value);},color:GRAPH_LABEL_COLOR,},grid:{color:"transparent",},border:{display:false,},};const yAxe={beginAtZero:true,type:"linear",title:{text:measures[measure].string,color:cookie.get("color_scheme")==="dark"?getColor(15,cookie.get("color_scheme")):null,},ticks:{callback:(value)=>this.formatValue(value,false,fieldAttrs[measure]?.widget),color:GRAPH_LABEL_COLOR,},stacked:mode==="line"&&stacked?stacked:undefined,grid:{display:mode==="line"?false:true,color:GRAPH_GRID_COLOR,},border:{display:false,},suggestedMax:0,suggestedMin:0,};return{x:xAxe,y:yAxe};}
+loadAll(){return this.model.forceLoadAll();}
+getTooltipItems(data,metaData,tooltipModel){const{allIntegers,mode,groupBy,measure}=metaData;const sortedDataPoints=sortBy(tooltipModel.dataPoints,"raw","desc");const items=[];for(const item of sortedDataPoints){const index=item.dataIndex;const dataset=data.datasets[item.datasetIndex]||this.model.lineOverlayDataset;let label=dataset.trueLabels[index];let value=dataset.data[index];const measureWidget=metaData.fieldAttrs[measure]?.widget;if(dataset.currencyIds?.[index]){value=formatMonetary(value,{currencyId:dataset.currencyIds[index]});}else if(dataset.currencyIds?.[index]===false){value=markup`${formatMonetary(value)}<sup class="ms-1 fw-bolder">?</sup>`;}else{value=this.formatValue(value,allIntegers,measureWidget);}
+let boxColor;let percentage;if(mode==="pie"){if(label===NO_DATA){value=this.formatValue(0,allIntegers,measureWidget);}
+boxColor=dataset.backgroundColor[index];const totalData=dataset.data.reduce((a,b)=>a+b,0);percentage=totalData&&((dataset.data[index]*100)/totalData).toFixed(2);}else{if(groupBy.length>1){label=`${label} / ${dataset.label}`;}
+boxColor=mode==="bar"?dataset.backgroundColor:dataset.borderColor;}
+items.push({label,value,boxColor,percentage});}
+return items;}
+getTooltipOptions(){const{data,metaData}=this.model;const{mode}=metaData;const tooltipOptions={enabled:false,external:this.customTooltip.bind(this,data,metaData),};if(mode==="line"){tooltipOptions.mode="index";tooltipOptions.intersect=false;tooltipOptions.position="average";}
+if(mode==="bar"){tooltipOptions.xAlign="center";tooltipOptions.yAlign="bottom";}
+if(mode==="pie"){tooltipOptions.xAlign="center";tooltipOptions.yAlign="center";}
+return tooltipOptions;}
+onGraphClicked(ev,isMiddleClick){const{disableLinking,mode}=this.model.metaData;if(disableLinking||mode==="line"){return;}
+const[activeElement]=this.chart.getElementsAtEventForMode(ev,"nearest",{intersect:true},false);if(!activeElement){return;}
+const{datasetIndex,index}=activeElement;const{domains}=this.chart.data.datasets[datasetIndex];if(domains){this.onGraphClickedFinal(domains[index],isMiddleClick);}}
+onLegendClick(ev,legendItem){this.removeTooltips();const index=legendItem.datasetIndex;const meta=this.chart.getDatasetMeta(index);meta.hidden=meta.hidden===null?!this.chart.data.datasets[index].hidden:null;this.chart.update();}
+onLegendHover(ev,legendItem){ev=ev.native;this.canvasRef.el.style.cursor="pointer";const{fullText,text}=legendItem;if(this.legendTooltip||text===fullText){return;}
+const viewContentTop=this.canvasRef.el.getBoundingClientRect().top;const legendTooltip=Object.assign(document.createElement("div"),{className:"o_tooltip_legend popover p-3 pe-none position-absolute",innerText:fullText,});legendTooltip.style.top=`${ev.clientY - viewContentTop}px`;legendTooltip.style.maxWidth=getMaxWidth(this.chart.chartArea);this.containerRef.el.appendChild(legendTooltip);this.fixTooltipLeftPosition(legendTooltip,ev.clientX);this.legendTooltip=legendTooltip;}
+onLegendLeave(){this.canvasRef.el.style.cursor="";this.removeLegendTooltip();}
+prepareOptions(){const{mode}=this.model.metaData;const options={maintainAspectRatio:false,scales:this.getScaleOptions(),plugins:{legend:this.getLegendOptions(),tooltip:this.getTooltipOptions(),},elements:this.getElementOptions(),onResize:()=>{this.resizeChart(options);},animation:this.getAnimationOptions(),};if(mode==="line"){options.interaction={mode:"index",intersect:false,};}
+if(mode==="pie"){options.radius="90%";}
+return options;}
+resizeChart(context){const{mode}=this.model.metaData;if(mode==="pie"){if(this.env.isSmall){context.plugins.legend.position="bottom";context.plugins.legend.align="center";}else{context.plugins.legend.position="right";context.plugins.legend.align="start";}}}
+removeLegendTooltip(){if(this.legendTooltip){this.legendTooltip.remove();this.legendTooltip=null;}}
+removeTooltips(){if(this.tooltip){this.tooltip.remove();this.tooltip=null;}
+this.removeLegendTooltip();}
+renderChart(){if(this.chart){this.chart.destroy();}
+if(this.canvasRef.el){const config=this.getChartConfig();this.chart=new Chart(this.canvasRef.el,config);}}
+openView(domain,views,context,newWindow){this.actionService.doAction({context,domain,name:this.model.metaData.title,res_model:this.model.metaData.resModel,target:"current",type:"ir.actions.act_window",views,},{newWindow,viewType:"list",});}
+onGraphClickedFinal(domain,isMiddleClick=false){const{context}=this.model.metaData;Object.keys(context).forEach((x)=>{if(x==="group_by"||x.startsWith("search_default_")){delete context[x];}});const views={};for(const[viewId,viewType]of this.env.config.views||[]){views[viewType]=viewId;}
+function getView(viewType){return[views[viewType]||false,viewType];}
+const actionViews=[getView("list"),getView("form")];this.openView(domain,actionViews,context,isMiddleClick);}
+onMeasureSelected({measure}){this.model.updateMetaData({measure});}
+onModeSelected(mode){if(this.model.metaData.mode!=mode){this.model.updateMetaData({mode});}}
+toggleOrder(order){const{order:currentOrder}=this.model.metaData;const nextOrder=currentOrder===order?null:order;this.model.updateMetaData({order:nextOrder});}
+toggleStacked(){const{stacked}=this.model.metaData;this.model.updateMetaData({stacked:!stacked});}
+toggleCumulated(){const{cumulated}=this.model.metaData;this.model.updateMetaData({cumulated:!cumulated});}}
+return __exports;});;
+
+/* /web/static/src/views/graph/graph_search_model.js */
+odoo.define('@web/views/graph/graph_search_model',['@web/search/search_model'],function(require){'use strict';let __exports={};const{SearchModel}=require("@web/search/search_model");const GraphSearchModel=__exports.GraphSearchModel=class GraphSearchModel extends SearchModel{_getIrFilterDescription(){this.preparingIrFilterDescription=true;const result=super._getIrFilterDescription(...arguments);this.preparingIrFilterDescription=false;return result;}
+_getSearchItemGroupBys(activeItem){const{searchItemId}=activeItem;const{context,type}=this.searchItems[searchItemId];if(!this.preparingIrFilterDescription&&type==="favorite"&&context.graph_groupbys){return context.graph_groupbys;}
+return super._getSearchItemGroupBys(...arguments);}}
+return __exports;});;
+
+/* /web/static/src/views/graph/graph_view.js */
+odoo.define('@web/views/graph/graph_view',['@web/core/l10n/translation','@web/core/registry','@web/views/graph/graph_arch_parser','@web/views/graph/graph_model','@web/views/graph/graph_controller','@web/views/graph/graph_renderer','@web/views/graph/graph_search_model'],function(require){'use strict';let __exports={};const{appTranslateFn}=require("@web/core/l10n/translation");const _t=(str,...args)=>appTranslateFn(str,"web",...args);const{registry}=require("@web/core/registry");const{GraphArchParser}=require("@web/views/graph/graph_arch_parser");const{GraphModel}=require("@web/views/graph/graph_model");const{GraphController}=require("@web/views/graph/graph_controller");const{GraphRenderer}=require("@web/views/graph/graph_renderer");const{GraphSearchModel}=require("@web/views/graph/graph_search_model");const viewRegistry=registry.category("views");const graphView=__exports.graphView={type:"graph",Controller:GraphController,Renderer:GraphRenderer,Model:GraphModel,ArchParser:GraphArchParser,SearchModel:GraphSearchModel,searchMenuTypes:["filter","groupBy","favorite"],buttonTemplate:"web.GraphView.Buttons",props:(genericProps,view)=>{let modelParams;if(genericProps.state){modelParams=genericProps.state.metaData;}else{const{arch,fields,resModel}=genericProps;const parser=new view.ArchParser();const archInfo=parser.parse(arch,fields);modelParams={disableLinking:Boolean(archInfo.disableLinking),fieldAttrs:archInfo.fieldAttrs,fields:fields,groupBy:archInfo.groupBy,measure:archInfo.measure||"__count",viewMeasures:archInfo.measures,mode:archInfo.mode||"bar",order:archInfo.order||null,resModel:resModel,stacked:"stacked"in archInfo?archInfo.stacked:true,cumulated:archInfo.cumulated||false,cumulatedStart:archInfo.cumulatedStart||false,title:archInfo.title||_t("Untitled"),};}
+return{...genericProps,modelParams,Model:view.Model,Renderer:view.Renderer,buttonTemplate:view.buttonTemplate,};},};viewRegistry.add("graph",graphView);return __exports;});;
+
+/* /web/static/src/views/pivot/pivot_arch_parser.js */
+odoo.define('@web/views/pivot/pivot_arch_parser',['@web/core/utils/strings','@web/core/utils/xml','@web/core/py_js/py'],function(require){'use strict';let __exports={};const{exprToBoolean}=require("@web/core/utils/strings");const{visitXML}=require("@web/core/utils/xml");const{evaluateExpr}=require("@web/core/py_js/py");const PivotArchParser=__exports.PivotArchParser=class PivotArchParser{parse(arch){const archInfo={activeMeasures:[],colGroupBys:[],defaultOrder:null,fieldAttrs:{},rowGroupBys:[],widgets:{},};visitXML(arch,(node)=>{switch(node.tagName){case"pivot":{if(node.hasAttribute("disable_linking")){archInfo.disableLinking=exprToBoolean(node.getAttribute("disable_linking"));}
+if(node.hasAttribute("default_order")){archInfo.defaultOrder=node.getAttribute("default_order");}
+if(node.hasAttribute("string")){archInfo.title=node.getAttribute("string");}
+if(node.hasAttribute("display_quantity")){archInfo.displayQuantity=exprToBoolean(node.getAttribute("display_quantity"));}
+break;}
+case"field":{let fieldName=node.getAttribute("name");archInfo.fieldAttrs[fieldName]={};if(node.hasAttribute("string")){archInfo.fieldAttrs[fieldName].string=node.getAttribute("string");}
+if(node.getAttribute("invisible")==="True"||node.getAttribute("invisible")==="1"){archInfo.fieldAttrs[fieldName].isInvisible=true;break;}
+for(const{name,value}of node.attributes){if(["name","type","operator","interval","string","widget"].includes(name)){continue;}
+if(name==="options"){archInfo.fieldAttrs[fieldName].options=evaluateExpr(value);}else{archInfo.fieldAttrs[fieldName][name]=value;}}
+if(node.hasAttribute("interval")){fieldName+=":"+node.getAttribute("interval");}
+if(node.hasAttribute("widget")){archInfo.widgets[fieldName]=node.getAttribute("widget");}
+if(node.getAttribute("type")==="measure"||node.hasAttribute("operator")){archInfo.activeMeasures.push(fieldName);}
+if(node.getAttribute("type")==="col"){archInfo.colGroupBys.push(fieldName);}
+if(node.getAttribute("type")==="row"){archInfo.rowGroupBys.push(fieldName);}
+break;}}});return archInfo;}}
+return __exports;});;
+
+/* /web/static/src/views/pivot/pivot_controller.js */
+odoo.define('@web/views/pivot/pivot_controller',['@web/search/layout','@web/model/model','@web/views/standard_view_props','@web/search/action_hook','@web/search/search_bar/search_bar','@web/search/search_bar/search_bar_toggler','@web/search/cog_menu/cog_menu','@web/views/widgets/widget','@web/views/action_helper','@odoo/owl'],function(require){'use strict';let __exports={};const{Layout}=require("@web/search/layout");const{useModelWithSampleData}=require("@web/model/model");const{standardViewProps}=require("@web/views/standard_view_props");const{useSetupAction}=require("@web/search/action_hook");const{SearchBar}=require("@web/search/search_bar/search_bar");const{useSearchBarToggler}=require("@web/search/search_bar/search_bar_toggler");const{CogMenu}=require("@web/search/cog_menu/cog_menu");const{Widget}=require("@web/views/widgets/widget");const{ActionHelper}=require("@web/views/action_helper");const{Component,useEffect,useRef}=require("@odoo/owl");const PivotController=__exports.PivotController=class PivotController extends Component{static template="web.PivotView";static components={Layout,SearchBar,CogMenu,Widget,ActionHelper};static props={...standardViewProps,Model:Function,modelParams:Object,Renderer:Function,buttonTemplate:String,};setup(){this.model=useModelWithSampleData(this.props.Model,this.props.modelParams,this.modelOptions);const{setScrollFromState}=useSetupAction({rootRef:useRef("root"),getLocalState:()=>{const{data,metaData}=this.model;return{data,metaData};},getContext:()=>this.getContext(),});useEffect((isReady)=>{if(isReady){setScrollFromState();}},()=>[this.model.isReady]);this.searchBarToggler=useSearchBarToggler();}
+get displayNoContent(){if(this.props.info.noContentHelp===false){return false;}
+const{metaData,useSampleModel}=this.model;return useSampleModel||!this.model.hasData()||!metaData.activeMeasures.length;}
+get modelOptions(){return{lazy:!this.env.config.isReloadingController&&!this.env.inDialog&&!!this.props.display.controlPanel,};}
+getContext(){return{pivot_measures:this.model.metaData.activeMeasures,pivot_column_groupby:this.model.metaData.fullColGroupBys,pivot_row_groupby:this.model.metaData.fullRowGroupBys,};}}
+return __exports;});;
+
+/* /web/static/src/views/pivot/pivot_model.js */
+odoo.define('@web/views/pivot/pivot_model',['@web/core/l10n/translation','@web/core/domain','@web/core/utils/arrays','@web/core/utils/concurrency','@web/search/utils/dates','@web/model/model','@web/views/utils'],function(require){'use strict';let __exports={};const{appTranslateFn}=require("@web/core/l10n/translation");const _t=(str,...args)=>appTranslateFn(str,"web",...args);const{Domain}=require("@web/core/domain");const{cartesian,sections,sortBy,symmetricalDifference}=require("@web/core/utils/arrays");const{KeepLast,Race}=require("@web/core/utils/concurrency");const{DEFAULT_INTERVAL}=require("@web/search/utils/dates");const{addPropertyFieldDefs,Model}=require("@web/model/model");const{computeReportMeasures,processMeasure}=require("@web/views/utils");const PivotModel=__exports.PivotModel=class PivotModel extends Model{setup(params){this.keepLast=new KeepLast();this.race=new Race();const _loadData=this._loadData.bind(this);this._loadData=(...args)=>this.race.add(_loadData(...args));let sortedColumn=params.metaData.sortedColumn||null;if(!sortedColumn&&params.metaData.defaultOrder){const defaultOrder=params.metaData.defaultOrder.split(" ");sortedColumn={groupId:[[],[]],measure:defaultOrder[0],order:defaultOrder[1]?defaultOrder[1]:"asc",};}
+this.searchParams={context:{},domain:[],groupBy:[],};this.data=params.data||{colGroupTree:null,rowGroupTree:null,groupDomains:{},measurements:{},currencyIds:{},counts:{},numbering:{},};const metaData=Object.assign({},params.metaData,{customGroupBys:params.metaData.customGroupBys||new Map(),expandedRowGroupBys:params.metaData.expandedRowGroupBys||[],expandedColGroupBys:params.metaData.expandedColGroupBys||[],sortedColumn,});this.metaData=this._buildMetaData(metaData);this.reload=false;this.nextActiveMeasures=null;}
+async addGroupBy(params){if(this.race.getCurrentProm()){return;}
+const{groupId,fieldName,type,custom}=params;let{interval}=params;const metaData=this._buildMetaData();if(custom&&!metaData.customGroupBys.has(fieldName)){const field=metaData.fields[fieldName];if(!interval&&["date","datetime"].includes(field.type)){interval=DEFAULT_INTERVAL;}
+metaData.customGroupBys.set(fieldName,{...field,id:fieldName,});}
+let groupBy=fieldName;if(interval){groupBy=`${groupBy}:${interval}`;}
+if(type==="row"){metaData.expandedRowGroupBys.push(groupBy);}else{metaData.expandedColGroupBys.push(groupBy);}
+const config={metaData,data:this.data};await this._expandGroup(groupId,type,config);this.metaData=metaData;this.notify();}
+closeGroup(groupId,type){if(this.race.getCurrentProm()){return;}
+let groupBys;let expandedGroupBys;let keyPart;let group;let tree;if(type==="row"){groupBys=this.metaData.rowGroupBys;expandedGroupBys=this.metaData.expandedRowGroupBys;tree=this.data.rowGroupTree;group=this._findGroup(this.data.rowGroupTree,groupId[0]);keyPart=0;}else{groupBys=this.metaData.colGroupBys;expandedGroupBys=this.metaData.expandedColGroupBys;tree=this.data.colGroupTree;group=this._findGroup(this.data.colGroupTree,groupId[1]);keyPart=1;}
+const groupIdPart=groupId[keyPart];const range=groupIdPart.map((_,index)=>index);function keep(key){const idPart=JSON.parse(key)[keyPart];return(range.some((index)=>groupIdPart[index]!==idPart[index])||idPart.length===groupIdPart.length);}
+function omitKeys(object){const newObject={};for(const key in object){if(keep(key)){newObject[key]=object[key];}}
+return newObject;}
+this.data.measurements=omitKeys(this.data.measurements);this.data.currencyIds=omitKeys(this.data.currencyIds);this.data.counts=omitKeys(this.data.counts);this.data.groupDomains=omitKeys(this.data.groupDomains);group.directSubTrees.clear();delete group.sortedKeys;var newGroupBysLength=this._getTreeHeight(tree)-1;if(newGroupBysLength<=groupBys.length){expandedGroupBys.splice(0);groupBys.splice(newGroupBysLength);}else{expandedGroupBys.splice(newGroupBysLength-groupBys.length);}
+this.notify();}
+async expandAll(){const config={metaData:this.metaData,data:this.data};await this._loadData(config,false);this.notify();}
+async expandGroup(groupId,type){if(this.race.getCurrentProm()){return;}
+const config={metaData:this.metaData,data:this.data};await this._expandGroup(groupId,type,config);this.notify();}
+exportData(){const measureCount=this.metaData.activeMeasures.length;const table=this.getTable();const headers=table.headers;let colGroupHeaderRows;let measureRow=[];function processHeader(header){const inTotalColumn=header.groupId[1].length===0;return{title:header.title,width:header.width,height:header.height,is_bold:!!header.measure&&inTotalColumn,};}
+colGroupHeaderRows=headers.slice(0,headers.length-1);measureRow=headers[headers.length-1].map(processHeader);colGroupHeaderRows[0].splice(0,1);colGroupHeaderRows=colGroupHeaderRows.map((headerRow)=>headerRow.map(processHeader));const tableRows=table.rows.map((row)=>({title:row.title,indent:row.indent,values:row.subGroupMeasurements.map((measurement)=>{let value=measurement.value;if(value===undefined){value="";}
+return{is_bold:measurement.isBold,value:value,};}),}));return{model:this.metaData.resModel,title:this.metaData.title,col_group_headers:colGroupHeaderRows,measure_headers:measureRow,rows:tableRows,measure_count:measureCount,};}
+async flip(){await this.race.getCurrentProm();let temp=this.data.rowGroupTree;this.data.rowGroupTree=this.data.colGroupTree;this.data.colGroupTree=temp;temp=this.metaData.rowGroupBys;this.metaData.rowGroupBys=this.metaData.colGroupBys;this.metaData.colGroupBys=temp;temp=this.metaData.expandedColGroupBys;this.metaData.expandedColGroupBys=this.metaData.expandedRowGroupBys;this.metaData.expandedRowGroupBys=temp;function twistKey(key){return JSON.stringify(JSON.parse(key).reverse());}
+function twist(object){const newObject={};Object.keys(object).forEach((key)=>{const value=object[key];newObject[twistKey(key)]=value;});return newObject;}
+this.data.measurements=twist(this.data.measurements);this.data.currencyIds=twist(this.data.currencyIds);this.data.counts=twist(this.data.counts);this.data.groupDomains=twist(this.data.groupDomains);this.notify();}
+getGroupDomain(group){const config={metaData:this.metaData,data:this.data};return this._getGroupDomain(group,config);}
+getTable(){const headers=this._getTableHeaders();return{headers:headers,rows:this._getTableRows(this.data.rowGroupTree,headers[headers.length-1]),};}
+getTableWidth(){var leafCounts=this._getLeafCounts(this.data.colGroupTree);return leafCounts[JSON.stringify(this.data.colGroupTree.root.values)]+2;}
+hasData(){return this._hasData(this.data);}
+async load(searchParams){this.searchParams=searchParams;const processedMeasures=processMeasure(searchParams.context.pivot_measures);const activeMeasures=processedMeasures||this.metaData.activeMeasures;const metaData=this._buildMetaData({activeMeasures});if(!this.reload){metaData.rowGroupBys=searchParams.context.pivot_row_groupby||(searchParams.groupBy.length?searchParams.groupBy:metaData.rowGroupBys);this.reload=true;}else{metaData.rowGroupBys=searchParams.groupBy.length?searchParams.groupBy:searchParams.context.pivot_row_groupby||metaData.rowGroupBys;}
+metaData.colGroupBys=searchParams.context.pivot_column_groupby||this.metaData.colGroupBys;if(JSON.stringify(metaData.rowGroupBys)!==JSON.stringify(this.metaData.rowGroupBys)){metaData.expandedRowGroupBys=[];}
+if(JSON.stringify(metaData.colGroupBys)!==JSON.stringify(this.metaData.colGroupBys)){metaData.expandedColGroupBys=[];}
+const allActivesMeasures=new Set(this.metaData.activeMeasures);if(processedMeasures){processedMeasures.forEach((e)=>allActivesMeasures.add(e));}
+metaData.measures=computeReportMeasures(metaData.fields,metaData.fieldAttrs,[...allActivesMeasures,]);const config={metaData,data:this.data};await addPropertyFieldDefs(this.orm,metaData.resModel,searchParams.context,metaData.fields,new Set([...metaData.rowGroupBys,...metaData.colGroupBys]));return this._loadData(config);}
+sortRows(sortedColumn){if(this.race.getCurrentProm()){return;}
+const config={metaData:this.metaData,data:this.data};this._sortRows(sortedColumn,config);this.notify();}
+async toggleMeasure(fieldName){const metaData=this._buildMetaData();this.nextActiveMeasures=this.nextActiveMeasures||metaData.activeMeasures;metaData.activeMeasures=this.nextActiveMeasures;const index=metaData.activeMeasures.indexOf(fieldName);if(index!==-1){metaData.activeMeasures.splice(index,1);await Promise.resolve(this.race.getCurrentProm());this.metaData=metaData;}else{metaData.activeMeasures.push(fieldName);const config={metaData,data:this.data};await this._loadData(config);this.useSampleModel=false;}
+this.nextActiveMeasures=null;this.notify();}
+_addGroup(groupTree,labels,values){let tree=groupTree;values.slice(0,values.length-1).forEach(function(value){tree=tree.directSubTrees.get(value);});const value=values[values.length-1];if(tree.directSubTrees.has(value)){return;}
+tree.directSubTrees.set(value,{root:{labels:labels,values:values,},directSubTrees:new Map(),});}
+_buildMetaData(params){const metaData=Object.assign({},this.metaData,params);metaData.activeMeasures=[...metaData.activeMeasures];metaData.colGroupBys=[...metaData.colGroupBys];metaData.rowGroupBys=[...metaData.rowGroupBys];metaData.expandedColGroupBys=[...metaData.expandedColGroupBys];metaData.expandedRowGroupBys=[...metaData.expandedRowGroupBys];metaData.customGroupBys=new Map([...metaData.customGroupBys]);metaData.sortedColumn=metaData.sortedColumn?{...metaData.sortedColumn}:null;metaData.domain=this.searchParams.domain;Object.defineProperty(metaData,"fullColGroupBys",{get(){return metaData.colGroupBys.concat(metaData.expandedColGroupBys);},});Object.defineProperty(metaData,"fullRowGroupBys",{get(){return metaData.rowGroupBys.concat(metaData.expandedRowGroupBys);},});return metaData;}
+async _expandGroup(groupId,type,config){const{metaData}=config;const group={rowValues:groupId[0],colValues:groupId[1],type:type,};const groupValues=type==="row"?groupId[0]:groupId[1];const groupBys=type==="row"?metaData.fullRowGroupBys:metaData.fullColGroupBys;if(groupValues.length>=groupBys.length){throw new Error("Cannot expand group");}
+const groupBy=groupBys[groupValues.length];let leftDivisors;let rightDivisors;if(group.type==="row"){leftDivisors=[[groupBy]];rightDivisors=sections(metaData.fullColGroupBys);}else{leftDivisors=sections(metaData.fullRowGroupBys);rightDivisors=[[groupBy]];}
+const divisors=cartesian(leftDivisors,rightDivisors);delete group.type;await this._subdivideGroup(group,divisors,config);}
+_findGroup(groupTree,values){let tree=groupTree;values.slice(0,values.length).forEach((value)=>{tree=tree.directSubTrees.get(value);});return tree;}
+_getCellValue(groupId,measure,config){var key=JSON.stringify(groupId);if(!config.data.measurements[key]){return;}
+return config.data.measurements[key][measure];}
+_getCellCurrency(groupId,measure,config){var key=JSON.stringify(groupId);if(!config.data.currencyIds[key]){return;}
+return config.data.currencyIds[key][measure];}
+_getGroupBySpecs(rowGroupBy,colGroupBy){const set=rowGroupBy.concat(colGroupBy).reduce((acc,gb)=>{acc.add(this._normalize(gb));return acc;},new Set());return[...set];}
+_getGroupDomain(group,config){const{data}=config;var key=JSON.stringify([group.rowValues,group.colValues]);return data.groupDomains[key];}
+_getGroupLabels(group,groupBys,config){return groupBys.map((gb)=>{const groupBy=this._normalize(gb);return this._sanitizeLabel(group[groupBy],groupBy,config);});}
+async _getGroupsSubdivision(params,groupInfo){const{resModel,groupDomain,groupingSets,measureSpecs,kwargs}=params;const result=await this.orm.formattedReadGroupingSets(resModel,groupDomain,groupingSets,measureSpecs,kwargs);return groupInfo.map((info)=>({...info,subGroups:result[info.subGroupIndex]}));}
+_getGroupValues(group,groupBys){return groupBys.map((gb)=>{const groupBy=this._normalize(gb);return this._sanitizeValue(group[groupBy]);});}
+_getLeafCounts(tree){const leafCounts={};let leafCount;if(!tree.directSubTrees.size){leafCount=1;}else{leafCount=[...tree.directSubTrees.values()].reduce((acc,subTree)=>{const subLeafCounts=this._getLeafCounts(subTree);Object.assign(leafCounts,subLeafCounts);return acc+leafCounts[JSON.stringify(subTree.root.values)];},0);}
+leafCounts[JSON.stringify(tree.root.values)]=leafCount;return leafCounts;}
+_getMeasurements(group,config){const{metaData}=config;return this._getMeasureSpecs(config).reduce((measurements,measureName)=>{var measurement=group[measureName];const[fieldName,aggregator]=measureName.split(":");if(aggregator==="array_agg_distinct"){return measurements;}
+if(aggregator==="sum_currency"){const currencies=group[metaData.fields[fieldName].currency_field+":array_agg_distinct"];if(currencies.length===1){return measurements;}}
+if(metaData.measures[fieldName].type==="boolean"&&measurement instanceof Boolean){measurement=measurement?1:0;}
+measurements[fieldName]=measurement;return measurements;},{});}
+_getCurrencyIds(group,config){const{metaData}=config;return this._getMeasureSpecs(config).reduce((currencyIds,measureName)=>{const[fieldName,aggregator]=measureName.split(":");if(aggregator==="array_agg_distinct"){return currencyIds;}
+const measureField=metaData.measures[fieldName];if(measureField.type==="monetary"&&measureField.currency_field){currencyIds[fieldName]=group[measureField.currency_field+":array_agg_distinct"];}
+return currencyIds;},{});}
+_getMeasuresRow(columns){const sortedColumn=this.metaData.sortedColumn||{};const measureRow=[];columns.forEach((column)=>{this.metaData.activeMeasures.forEach((measureName)=>{const measureCell={groupId:column.groupId,height:1,measure:measureName,title:this.metaData.measures[measureName].string,width:1,};if(sortedColumn.measure===measureName&&JSON.stringify(sortedColumn.groupId)===JSON.stringify(column.groupId)){measureCell.order=sortedColumn.order;}
+measureRow.push(measureCell);});});return measureRow;}
+_getMeasureSpecs(config){const{metaData}=config;return metaData.activeMeasures.reduce((acc,measure)=>{if(measure==="__count"){acc.push(measure);return acc;}
+const field=this.metaData.fields[measure];if(field.type==="many2one"){field.aggregator="count_distinct";}
+if(field.aggregator===undefined){throw new Error("No aggregate function has been provided for the measure '"+measure+"'");}
+acc.push(measure+":"+field.aggregator);if(field.currency_field){acc.push(field.currency_field+":array_agg_distinct");acc.push(field.name+":sum_currency");}
+return acc;},[]);}
+_getNumberedLabel(label,fieldName,config){const{data}=config;const id=label[0];const name=label[1];data.numbering[fieldName]=data.numbering[fieldName]||{};data.numbering[fieldName][name]=data.numbering[fieldName][name]||{};const numbers=data.numbering[fieldName][name];numbers[id]=numbers[id]||Object.keys(numbers).length+1;return name+(numbers[id]>1?"  ("+numbers[id]+")":"");}
+_getTableHeaders(){const colGroupBys=this.metaData.fullColGroupBys;const height=colGroupBys.length+1;const measureCount=this.metaData.activeMeasures.length;const leafCounts=this._getLeafCounts(this.data.colGroupTree);let headers=[];const measureColumns=[];const colGroupRows=new Array(height).fill(0).map(()=>[]);colGroupRows[0].push({height:height+1,title:"",width:1,});function generateTreeHeaders(tree,fields){const group=tree.root;const rowIndex=group.values.length;const row=colGroupRows[rowIndex];const groupId=[[],group.values];const isLeaf=!tree.directSubTrees.size;const leafCount=leafCounts[JSON.stringify(tree.root.values)];const cell={groupId:groupId,height:isLeaf?colGroupBys.length+1-rowIndex:1,isLeaf:isLeaf,isFolded:isLeaf&&colGroupBys.length>group.values.length,label:rowIndex===0?undefined:fields[colGroupBys[rowIndex-1].split(":")[0]].string,title:group.labels.length?group.labels[group.labels.length-1]:_t("Total"),width:leafCount*measureCount,};row.push(cell);if(isLeaf){measureColumns.push(cell);}
+[...tree.directSubTrees.values()].forEach((subTree)=>{generateTreeHeaders(subTree,fields);});}
+generateTreeHeaders(this.data.colGroupTree,this.metaData.fields);if(leafCounts[JSON.stringify(this.data.colGroupTree.root.values)]>1){var groupId=[[],[]];var totalTopRightCell={groupId:groupId,height:height,title:"",width:measureCount,};colGroupRows[0].push(totalTopRightCell);measureColumns.push(totalTopRightCell);}
+headers=headers.concat(colGroupRows);var measuresRow=this._getMeasuresRow(measureColumns);headers.push(measuresRow);return headers;}
+_getTableRows(tree,columns){let rows=[];const group=tree.root;const rowGroupId=[group.values,[]];const title=group.labels.length?group.labels[group.labels.length-1]:_t("Total");const indent=group.labels.length;const isLeaf=!tree.directSubTrees.size;const rowGroupBys=this.metaData.fullRowGroupBys;const subGroupMeasurements=columns.map((column)=>{const colGroupId=column.groupId;const groupIntersectionId=[rowGroupId[0],colGroupId[1]];const measure=column.measure;const value=this._getCellValue(groupIntersectionId,measure,{data:this.data,});const currencyIds=this._getCellCurrency(groupIntersectionId,measure,{data:this.data,});const measurement={groupId:groupIntersectionId,measure:measure,value:value,currencyIds,isBold:!groupIntersectionId[0].length||!groupIntersectionId[1].length,};return measurement;});rows.push({title:title,label:indent===0?undefined:this.metaData.fields[rowGroupBys[indent-1].split(":")[0]].string,groupId:rowGroupId,indent:indent,isLeaf:isLeaf,isFolded:isLeaf&&rowGroupBys.length>group.values.length,subGroupMeasurements:subGroupMeasurements,});const subTreeKeys=tree.sortedKeys||[...tree.directSubTrees.keys()];subTreeKeys.forEach((subTreeKey)=>{const subTree=tree.directSubTrees.get(subTreeKey);rows=rows.concat(this._getTableRows(subTree,columns));});return rows;}
+_getTreeHeight(tree){const subTreeHeights=[...tree.directSubTrees.values()].map(this._getTreeHeight.bind(this));return Math.max(0,Math.max.apply(null,subTreeHeights))+1;}
+_hasData(data){const key=JSON.stringify([[],[]]);return data.counts[key]>0;}
+async _loadData(config,prune=true){config.data={};const{data,metaData}=config;data.rowGroupTree={root:{labels:[],values:[]},directSubTrees:new Map()};data.colGroupTree={root:{labels:[],values:[]},directSubTrees:new Map()};data.measurements={};data.currencyIds={};data.counts={};data.groupDomains={};data.numbering={};const key=JSON.stringify([[],[]]);data.groupDomains[key]=metaData.domain;const group={rowValues:[],colValues:[]};const leftDivisors=sections(metaData.fullRowGroupBys);const rightDivisors=sections(metaData.fullColGroupBys);const divisors=cartesian(leftDivisors,rightDivisors);await this._subdivideGroup(group,divisors,config);if(prune&&this._hasData(data)&&this._hasData(this.data)){if(symmetricalDifference(metaData.rowGroupBys,this.metaData.rowGroupBys).length===0){this._pruneTree(data.rowGroupTree,this.data.rowGroupTree);}
+if(symmetricalDifference(metaData.colGroupBys,this.metaData.colGroupBys).length===0){this._pruneTree(data.colGroupTree,this.data.colGroupTree);}}
+this.data=config.data;this.metaData=config.metaData;}
+_normalize(gb){const[fieldName,interval]=gb.split(":");const field=this.metaData.fields[fieldName];if(["date","datetime"].includes(field.type)){return`${fieldName}:${interval || "month"}`;}else{return fieldName;}}
+_prepareData(group,groupSubdivisions,config){const{data,metaData}=config;const groupRowValues=group.rowValues;let groupRowLabels=[];let rowSubTree=data.rowGroupTree;let root;if(groupRowValues.length){rowSubTree=this._findGroup(data.rowGroupTree,groupRowValues);root=rowSubTree.root;groupRowLabels=root.labels;}
+const groupColValues=group.colValues;let groupColLabels=[];if(groupColValues.length){root=this._findGroup(data.colGroupTree,groupColValues).root;groupColLabels=root.labels;}
+groupSubdivisions.forEach((groupSubdivision)=>{groupSubdivision.subGroups.forEach((subGroup)=>{const rowValues=groupRowValues.concat(this._getGroupValues(subGroup,groupSubdivision.rowGroupBy));const rowLabels=groupRowLabels.concat(this._getGroupLabels(subGroup,groupSubdivision.rowGroupBy,config));const colValues=groupColValues.concat(this._getGroupValues(subGroup,groupSubdivision.colGroupBy));const colLabels=groupColLabels.concat(this._getGroupLabels(subGroup,groupSubdivision.colGroupBy,config));if(!colValues.length&&rowValues.length){this._addGroup(data.rowGroupTree,rowLabels,rowValues);}
+if(colValues.length&&!rowValues.length){this._addGroup(data.colGroupTree,colLabels,colValues);}
+const key=JSON.stringify([rowValues,colValues]);data.measurements[key]=this._getMeasurements(subGroup,config);data.currencyIds[key]=this._getCurrencyIds(subGroup,config);data.counts[key]=subGroup.__count;if(subGroup.__domain){data.groupDomains[key]=subGroup.__domain;}else{data.groupDomains[key]=Domain.FALSE.toList();}});});if(metaData.sortedColumn){this._sortRows(metaData.sortedColumn,config);}}
+_pruneTree(tree,oldTree){if(!oldTree.directSubTrees.size){tree.directSubTrees.clear();delete tree.sortedKeys;return;}
+[...tree.directSubTrees.keys()].forEach((subTreeKey)=>{const subTree=tree.directSubTrees.get(subTreeKey);if(!oldTree.directSubTrees.has(subTreeKey)){subTree.directSubTrees.clear();delete subTree.sortedKeys;}else{const oldSubTree=oldTree.directSubTrees.get(subTreeKey);this._pruneTree(subTree,oldSubTree);}});}
+_sanitizeLabel(value,groupBy,config){const{metaData}=config;const fieldName=groupBy.split(":")[0];if(fieldName&&metaData.fields[fieldName]){const field=metaData.fields[fieldName];if(field.type==="boolean"){return value===undefined?_t("None"):value?_t("Yes"):_t("No");}else if(field.type==="integer"){if(fieldName==="id"&&Array.isArray(value)){return value[1];}
+return value||"0";}}
+if(value===false){return metaData.fields[fieldName].falsy_value_label||_t("None");}
+if(value instanceof Array){return this._getNumberedLabel(value,fieldName,config);}
+if(fieldName&&metaData.fields[fieldName]&&metaData.fields[fieldName].type==="selection"){const selected=metaData.fields[fieldName].selection.find((o)=>o[0]===value);return selected?selected[1]:value;}
+return value;}
+_sanitizeValue(value){if(value instanceof Array){return value[0];}
+return value;}
+async _subdivideGroup(group,divisors,config){const{data}=config;const key=JSON.stringify([group.rowValues,group.colValues]);if(!data.counts[key]||data.counts[key]>0){const subGroup={rowValues:group.rowValues,colValues:group.colValues,};const groupDomain=this._getGroupDomain(subGroup,config);const measureSpecs=this._getMeasureSpecs(config);if(!measureSpecs.includes("__count")){measureSpecs.push("__count");}
+const resModel=config.metaData.resModel;const kwargs={context:this.searchParams.context};const groupingSets=[];const groupInfo=[];divisors.forEach((divisor)=>{const groupBy=this._getGroupBySpecs(divisor[0],divisor[1]);const key=JSON.stringify(groupBy.toSorted());let index=groupingSets.findIndex((value)=>JSON.stringify(value.toSorted())===key);if(index===-1){index=groupingSets.length;groupingSets.push(groupBy);}
+groupInfo.push({group:subGroup,rowGroupBy:divisor[0],colGroupBy:divisor[1],subGroupIndex:index,});});const params={resModel,groupDomain,measureSpecs,kwargs,groupingSets,};const groupSubdivisions=await this.keepLast.add(this._getGroupsSubdivision(params,groupInfo));if(groupSubdivisions.length){this._prepareData(group,groupSubdivisions,config);}}}
+_sortRows(sortedColumn,config){const metaData=config.metaData||this.metaData;const data=config.data||this.data;const colGroupValues=sortedColumn.groupId[1];metaData.sortedColumn=sortedColumn;const sortFunction=(tree)=>(subTreeKey)=>{const subTree=tree.directSubTrees.get(subTreeKey);const groupIntersectionId=[subTree.root.values,colGroupValues];const value=this._getCellValue(groupIntersectionId,sortedColumn.measure,{data})||0;return sortedColumn.order==="asc"?value:-value;};this._sortTree(sortFunction,data.rowGroupTree);}
+_sortTree(sortFunction,tree){tree.sortedKeys=sortBy([...tree.directSubTrees.keys()],sortFunction(tree));[...tree.directSubTrees.values()].forEach((subTree)=>{this._sortTree(sortFunction,subTree);});}}
+return __exports;});;
+
+/* /web/static/src/views/pivot/pivot_renderer.js */
+odoo.define('@web/views/pivot/pivot_renderer',['@odoo/owl','@web/core/checkbox/checkbox','@web/core/dropdown/dropdown','@web/core/dropdown/dropdown_hooks','@web/core/dropdown/dropdown_item','@web/core/l10n/localization','@web/core/l10n/translation','@web/core/network/download','@web/core/popover/popover_hook','@web/core/registry','@web/core/user','@web/core/utils/arrays','@web/core/utils/hooks','@web/search/custom_group_by_item/custom_group_by_item','@web/search/properties_group_by_item/properties_group_by_item','@web/search/utils/dates','@web/search/utils/misc','@web/views/view_components/multi_currency_popover','@web/views/view_components/report_view_measures'],function(require){'use strict';let __exports={};const{Component,onWillUpdateProps,useRef}=require("@odoo/owl");const{CheckBox}=require("@web/core/checkbox/checkbox");const{Dropdown}=require("@web/core/dropdown/dropdown");const{DropdownState}=require("@web/core/dropdown/dropdown_hooks");const{DropdownItem}=require("@web/core/dropdown/dropdown_item");const{localization}=require("@web/core/l10n/localization");const{appTranslateFn}=require("@web/core/l10n/translation");const _t=(str,...args)=>appTranslateFn(str,"web",...args);const{download}=require("@web/core/network/download");const{usePopover}=require("@web/core/popover/popover_hook");const{registry}=require("@web/core/registry");const{user}=require("@web/core/user");const{sortBy}=require("@web/core/utils/arrays");const{useService}=require("@web/core/utils/hooks");const{CustomGroupByItem}=require("@web/search/custom_group_by_item/custom_group_by_item");const{PropertiesGroupByItem}=require("@web/search/properties_group_by_item/properties_group_by_item");const{getIntervalOptions}=require("@web/search/utils/dates");const{GROUPABLE_TYPES}=require("@web/search/utils/misc");const{MultiCurrencyPopover}=require("@web/views/view_components/multi_currency_popover");const{ReportViewMeasures}=require("@web/views/view_components/report_view_measures");const formatters=registry.category("formatters");class PivotDropdown extends Dropdown{get position(){return this.props.state.position||"bottom-start";}
+get target(){return this.props.state.target;}}
+const PivotRenderer=__exports.PivotRenderer=class PivotRenderer extends Component{static template="web.PivotRenderer";static components={CheckBox,CustomGroupByItem,Dropdown,DropdownItem,PivotDropdown,PropertiesGroupByItem,ReportViewMeasures,};static props=["model","buttonTemplate"];setup(){this.actionService=useService("action");this.model=this.props.model;this.table=this.model.getTable();this.l10n=localization;this.tableRef=useRef("table");this.dropdown={state:new DropdownState({onClose:()=>{delete this.dropdown.cellInfo;delete this.dropdown.state.target;delete this.dropdown.state.position;},}),};this.multiCurrencyPopover=usePopover(MultiCurrencyPopover,{position:"right",});const fields=[];for(const[fieldName,field]of Object.entries(this.env.searchModel.searchViewFields)){if(this.validateField(fieldName,field)){fields.push(Object.assign({name:fieldName},field));}}
+this.fields=sortBy(fields,"string");onWillUpdateProps(this.onWillUpdateProps);}
+onWillUpdateProps(){this.table=this.model.getTable();}
+getFormattedValue(cell){const field=this.model.metaData.measures[cell.measure];const fieldAttrs=this.model.metaData.fieldAttrs[cell.measure]??{};const fieldInfo={options:fieldAttrs.options??{},attrs:fieldAttrs,};let formatType=this.model.metaData.widgets[cell.measure];if(!formatType){const fieldType=field.type;formatType=["many2one","reference"].includes(fieldType)?"integer":fieldType;}
+const formatter=formatters.get(formatType);const formatOptions={field};if(formatter.extractOptions){Object.assign(formatOptions,formatter.extractOptions(fieldInfo));}
+if(formatType==="monetary"){if(cell.currencyIds.length>1){formatOptions.currencyId=user.activeCompany.currency_id;return{rawValue:cell.value,value:formatter(cell.value,formatOptions),currencies:cell.currencyIds,};}
+formatOptions.currencyId=cell.currencyIds[0];}
+return{value:formatter(cell.value,formatOptions)};}
+get groupByItems(){let items=this.env.searchModel.getSearchItems((searchItem)=>["groupBy","dateGroupBy"].includes(searchItem.type)&&!searchItem.custom);if(items.length===0){items=this.fields;}
+let groupNumber=1+Math.max(0,...items.map(({groupNumber:n})=>n||0));for(const[fieldName,customGroupBy]of this.model.metaData.customGroupBys.entries()){items.push({...customGroupBy,name:fieldName,groupNumber:groupNumber++});}
+return items.map((item)=>({...item,id:item.id||item.name,fieldName:item.fieldName||item.name,description:item.description||item.string,options:item.options||(["date","datetime"].includes(item.type)?getIntervalOptions():undefined),}));}
+get hideCustomGroupBy(){return this.env.searchModel.hideCustomGroupBy||false;}
+validateField(fieldName,field){const{groupable,type}=field;return groupable&&fieldName!=="id"&&GROUPABLE_TYPES.includes(type);}
+onAddCustomGroupBy(fieldName){this.model.addGroupBy({...this.dropdown.cellInfo,fieldName,custom:true});this.dropdown.state.close();}
+onGroupBySelected({itemId,optionId}){const{fieldName}=this.groupByItems.find(({id})=>id===itemId);this.model.addGroupBy({...this.dropdown.cellInfo,fieldName,interval:optionId});}
+onHeaderClick(ev,cell,isXAxis){const type=isXAxis?"col":"row";if(cell.isLeaf&&!cell.isFolded){if(this.dropdown.state.isOpen){this.dropdown.state.close();}else{this.dropdown.cellInfo={type,groupId:cell.groupId};Object.assign(this.dropdown.state,{target:ev.target.closest(".o_pivot_header_cell_closed"),position:isXAxis?"bottom-start":"bottom-end",isOpen:true,});}}else if(cell.isLeaf&&cell.isFolded){this.model.expandGroup(cell.groupId,type);}else if(!cell.isLeaf){this.model.closeGroup(cell.groupId,type);}}
+onMeasureClick(cell){this.model.sortRows({groupId:cell.groupId,measure:cell.measure,order:(cell.order||"desc")==="asc"?"desc":"asc",});}
+onMouseEnter(ev){var index=[...ev.currentTarget.parentNode.children].indexOf(ev.currentTarget);if(ev.currentTarget.tagName==="TH"){index+=1;}
+this.tableRef.el.querySelectorAll("td:nth-child("+(index+1)+")").forEach((elt)=>elt.classList.add("o_cell_hover"));}
+onMouseLeave(){this.tableRef.el.querySelectorAll(".o_cell_hover").forEach((elt)=>elt.classList.remove("o_cell_hover"));}
+onDownloadButtonClicked(){if(this.model.getTableWidth()>16384){throw new Error(_t("For Excel compatibility, data cannot be exported if there are more than 16384 columns.\n\nTip: try to flip axis, filter further or reduce the number of measures."));}
+const table=this.model.exportData();download({url:"/web/pivot/export_xlsx",data:{data:new Blob([JSON.stringify(table)],{type:"application/json"})},});}
+onExpandButtonClicked(){this.model.expandAll();}
+onFlipButtonClicked(){this.model.flip();}
+onMeasureSelected({measure}){this.model.toggleMeasure(measure);}
+openMultiCurrencyPopover(ev,value,currencyIds){if(!this.multiCurrencyPopover.isOpen){this.multiCurrencyPopover.open(ev.target,{currencyIds,target:ev.target,value,});}}
+openView(domain,views,context,newWindow){this.actionService.doAction({type:"ir.actions.act_window",name:this.model.metaData.title,res_model:this.model.metaData.resModel,views:views,view_mode:"list",target:"current",context,domain,},{newWindow,});}
+onOpenView(cell,newWindow){if(cell.value===undefined||this.model.metaData.disableLinking){return;}
+const context=Object.assign({},this.model.searchParams.context);Object.keys(context).forEach((x)=>{if(x==="group_by"||x.startsWith("search_default_")){delete context[x];}});const{views=[]}=this.env.config;this.views=["list","form"].map((viewType)=>{const view=views.find((view)=>view[1]===viewType);return[view?view[0]:false,viewType];});const group={rowValues:cell.groupId[0],colValues:cell.groupId[1]};this.openView(this.model.getGroupDomain(group),this.views,context,newWindow);}}
+return __exports;});;
+
+/* /web/static/src/views/pivot/pivot_search_model.js */
+odoo.define('@web/views/pivot/pivot_search_model',['@web/search/search_model'],function(require){'use strict';let __exports={};const{SearchModel}=require("@web/search/search_model");const PivotSearchModel=__exports.PivotSearchModel=class PivotSearchModel extends SearchModel{_getIrFilterDescription(){this.preparingIrFilterDescription=true;const result=super._getIrFilterDescription(...arguments);this.preparingIrFilterDescription=false;return result;}
+_getSearchItemGroupBys(activeItem){const{searchItemId}=activeItem;const{context,type}=this.searchItems[searchItemId];if(!this.preparingIrFilterDescription&&type==="favorite"&&context.pivot_row_groupby){return context.pivot_row_groupby;}
+return super._getSearchItemGroupBys(...arguments);}}
+return __exports;});;
+
+/* /web/static/src/views/pivot/pivot_view.js */
+odoo.define('@web/views/pivot/pivot_view',['@web/core/l10n/translation','@web/core/registry','@web/views/pivot/pivot_arch_parser','@web/views/pivot/pivot_controller','@web/views/pivot/pivot_model','@web/views/pivot/pivot_renderer','@web/views/pivot/pivot_search_model'],function(require){'use strict';let __exports={};const{appTranslateFn}=require("@web/core/l10n/translation");const _t=(str,...args)=>appTranslateFn(str,"web",...args);const{registry}=require("@web/core/registry");const{PivotArchParser}=require("@web/views/pivot/pivot_arch_parser");const{PivotController}=require("@web/views/pivot/pivot_controller");const{PivotModel}=require("@web/views/pivot/pivot_model");const{PivotRenderer}=require("@web/views/pivot/pivot_renderer");const{PivotSearchModel}=require("@web/views/pivot/pivot_search_model");const viewRegistry=registry.category("views");const pivotView=__exports.pivotView={type:"pivot",Controller:PivotController,Renderer:PivotRenderer,Model:PivotModel,ArchParser:PivotArchParser,SearchModel:PivotSearchModel,searchMenuTypes:["filter","groupBy","favorite"],buttonTemplate:"web.PivotView.Buttons",props:(genericProps,view)=>{const modelParams={};if(genericProps.state){modelParams.data=genericProps.state.data;modelParams.metaData=genericProps.state.metaData;}else{const{arch,fields,resModel}=genericProps;const archInfo=new view.ArchParser().parse(arch);if(!archInfo.activeMeasures.length||archInfo.displayQuantity){archInfo.activeMeasures.unshift("__count");}
+modelParams.metaData={activeMeasures:archInfo.activeMeasures,colGroupBys:archInfo.colGroupBys,defaultOrder:archInfo.defaultOrder,disableLinking:Boolean(archInfo.disableLinking),fields:fields,fieldAttrs:archInfo.fieldAttrs,resModel:resModel,rowGroupBys:archInfo.rowGroupBys,title:archInfo.title||_t("Untitled"),widgets:archInfo.widgets,};}
+return{...genericProps,Model:view.Model,modelParams,Renderer:view.Renderer,buttonTemplate:view.buttonTemplate,};},};viewRegistry.add("pivot",pivotView);return __exports;});;
+
+/* /mail/static/src/views/web/activity/activity_arch_parser.js */
+odoo.define('@mail/views/web/activity/activity_arch_parser',['@web/core/utils/xml','@web/views/fields/field'],function(require){'use strict';let __exports={};const{visitXML}=require("@web/core/utils/xml");const{Field}=require("@web/views/fields/field");const ActivityArchParser=__exports.ActivityArchParser=class ActivityArchParser{parse(xmlDoc,models,modelName){const jsClass=xmlDoc.getAttribute("js_class");const title=xmlDoc.getAttribute("string");const fieldNodes={};const templateDocs={};const fieldNextIds={};visitXML(xmlDoc,(node)=>{if(node.hasAttribute("t-name")){templateDocs[node.getAttribute("t-name")]=node;return;}
+if(node.tagName==="field"){const fieldInfo=Field.parseFieldNode(node,models,modelName,"activity",jsClass);if(!(fieldInfo.name in fieldNextIds)){fieldNextIds[fieldInfo.name]=0;}
+const fieldId=`${fieldInfo.name}_${fieldNextIds[fieldInfo.name]++}`;fieldNodes[fieldId]=fieldInfo;node.setAttribute("field_id",fieldId);}
+if(node.tagName==="img"){const attSrc=node.getAttribute("t-att-src");if(attSrc&&/\bactivity_image\b/.test(attSrc)&&!Object.values(fieldNodes).some((f)=>f.name==="write_date")){fieldNodes.write_date_0={name:"write_date",type:"datetime"};}}});return{fieldNodes,templateDocs,title,};}}
+return __exports;});;
+
+/* /mail/static/src/views/web/activity/activity_cell.js */
+odoo.define('@mail/views/web/activity/activity_cell',['@mail/core/web/activity_list_popover','@mail/views/web/fields/avatar/avatar','@odoo/owl','@web/core/popover/popover_hook','@web/core/l10n/dates','@web/core/l10n/translation','@web/core/l10n/utils'],function(require){'use strict';let __exports={};const{ActivityListPopover}=require("@mail/core/web/activity_list_popover");const{Avatar}=require("@mail/views/web/fields/avatar/avatar");const{Component,useRef}=require("@odoo/owl");const{usePopover}=require("@web/core/popover/popover_hook");const{formatDate}=require("@web/core/l10n/dates");const{appTranslateFn}=require("@web/core/l10n/translation");const _t=(str,...args)=>appTranslateFn(str,"mail",...args);const{formatList}=require("@web/core/l10n/utils");const ActivityCell=__exports.ActivityCell=class ActivityCell extends Component{static components={Avatar,};static props={activityIds:{type:Array,elements:Number,},attachmentsInfo:{optional:true,type:Object,},activityTypeId:Number,reportingDate:String,countByState:Object,reloadFunc:Function,resId:Number,resModel:String,summaries:Array,userAssignedIds:Array,};static template="mail.ActivityCell";setup(){this.popover=usePopover(ActivityListPopover,{position:"bottom-start"});this.contentRef=useRef("content");}
+get reportingDateFormatted(){return formatDate(luxon.DateTime.fromISO(this.props.reportingDate));}
+get displayedSummaries(){const summariesWithContent=this.props.summaries.filter((textContent)=>!!textContent);const extras=this.props.summaries.length-summariesWithContent.length
+if(summariesWithContent.length>0&&extras>0){summariesWithContent.push(_t("%(extraCount)s more",{extraCount:extras}));}
+return formatList(summariesWithContent);}
+get ongoingActivityCount(){return((this.props.countByState?.planned??0)+
+(this.props.countByState?.today??0)+
+(this.props.countByState?.overdue??0));}
+get totalActivityCount(){return this.ongoingActivityCount+(this.props.countByState?.done??0);}
+onClick(){if(this.popover.isOpen){this.popover.close();}else{this.popover.open(this.contentRef.el,{activityIds:this.props.activityIds,defaultActivityTypeId:this.props.activityTypeId,onActivityChanged:()=>{this.props.reloadFunc();this.popover.close();},resId:this.props.resId,resModel:this.props.resModel,});}}}
+return __exports;});;
+
+/* /mail/static/src/views/web/activity/activity_compiler.js */
+odoo.define('@mail/views/web/activity/activity_compiler',['@web/core/utils/xml','@web/views/view_compiler','@web/views/utils'],function(require){'use strict';let __exports={};const{createElement,extractAttributes}=require("@web/core/utils/xml");const{toInterpolatedStringExpression,ViewCompiler}=require("@web/views/view_compiler");const{toStringExpression}=require("@web/views/utils");const ActivityCompiler=__exports.ActivityCompiler=class ActivityCompiler extends ViewCompiler{compileField(el,params){let compiled;if(el.hasAttribute("widget")){compiled=super.compileField(el,params);}else{compiled=createElement("div",{"t-out":`record["${el.getAttribute("name")}"].value`,});}
+const classNames=[];const{bold,display,muted}=extractAttributes(el,["bold","display","muted"]);if(display==="right"){classNames.push("float-end");}
+if(display==="full"){classNames.push("d-block","text-truncate");}else{classNames.push("d-inline-block");}
+if(bold){classNames.push("fw-bold");}
+if(muted){classNames.push("text-muted");}
+if(classNames.length>0){const clsFormatted=el.hasAttribute("widget")?toStringExpression(classNames.join(" ")):classNames.join(" ");compiled.setAttribute("class",clsFormatted);}
+const attrs={};for(const attr of el.attributes){attrs[attr.name]=attr.value;}
+if(el.hasAttribute("widget")){const attrsParts=Object.entries(attrs).map(([key,value])=>{if(key.startsWith("t-attf-")){key=key.slice(7);value=toInterpolatedStringExpression(value);}else if(key.startsWith("t-att-")){key=key.slice(6);value=`"" + (${value})`;}else if(key.startsWith("t-att")){throw new Error("t-att on <field> nodes is not supported");}else if(!key.startsWith("t-")){value=toStringExpression(value);}
+return`'${key}':${value}`;});compiled.setAttribute("attrs",`{${attrsParts.join(",")}}`);}
+for(const attr in attrs){if(attr.startsWith("t-")&&!attr.startsWith("t-att")){compiled.setAttribute(attr,attrs[attr]);}}
+return compiled;}}
+ActivityCompiler.OWL_DIRECTIVE_WHITELIST=[...ViewCompiler.OWL_DIRECTIVE_WHITELIST,"t-name","t-esc","t-out","t-set","t-value","t-if","t-else","t-elif","t-foreach","t-as","t-key","t-att.*","t-call","t-translation",];return __exports;});;
+
+/* /mail/static/src/views/web/activity/activity_controller.js */
+odoo.define('@mail/views/web/activity/activity_controller',['@web/core/l10n/translation','@odoo/owl','@web/core/utils/hooks','@web/model/model','@web/model/relational_model/utils','@web/search/cog_menu/cog_menu','@web/search/layout','@web/search/search_bar/search_bar','@web/search/pager_hook','@web/views/standard_view_props','@web/views/view_dialogs/select_create_dialog'],function(require){'use strict';let __exports={};const{appTranslateFn}=require("@web/core/l10n/translation");const _t=(str,...args)=>appTranslateFn(str,"mail",...args);const{Component,useState}=require("@odoo/owl");const{useService}=require("@web/core/utils/hooks");const{useModel}=require("@web/model/model");const{extractFieldsFromArchInfo}=require("@web/model/relational_model/utils");const{CogMenu}=require("@web/search/cog_menu/cog_menu");const{Layout}=require("@web/search/layout");const{SearchBar}=require("@web/search/search_bar/search_bar");const{usePager}=require("@web/search/pager_hook");const{standardViewProps}=require("@web/views/standard_view_props");const{SelectCreateDialog}=require("@web/views/view_dialogs/select_create_dialog");const ActivityController=__exports.ActivityController=class ActivityController extends Component{static components={Layout,SearchBar,CogMenu};static props={...standardViewProps,Model:Function,Renderer:Function,archInfo:Object,};static template="mail.ActivityController";setup(){this.model=useState(useModel(this.props.Model,this.modelParams));this.dialog=useService("dialog");this.action=useService("action");this.store=useService("mail.store");this.ui=useService("ui");usePager(()=>{const{count,hasLimitedCount,limit,offset}=this.model.root;return{offset:offset,limit:limit,total:count,onUpdate:async(params)=>{params.domain=[...(this.model.originalDomain||[]),["activity_ids.active","in",[true,false]],];await Promise.all([this.model.root.load(params),this.model.fetchActivityData(params),]);},updateTotal:hasLimitedCount?()=>this.model.root.fetchCount():undefined,};});}
+get modelParams(){const{archInfo,resModel}=this.props;const{activeFields,fields}=extractFieldsFromArchInfo(archInfo,this.props.fields);return{config:{activeFields,resModel,fields,},};}
+getSearchProps(){const{comparision,context,domain,groupBy,orderBy}=this.env.searchModel;return{comparision,context,domain,groupBy,orderBy};}
+get getSelectCreateDialogProps(){return{resModel:this.props.resModel,searchViewId:this.env.searchModel.searchViewId,domain:this.model.originalDomain,title:_t("Search: %s",this.props.archInfo.title),multiSelect:false,context:this.props.context,noCreate:this.props.context?.create===false,onSelected:async(resIds)=>{await this.store.scheduleActivity(this.props.resModel,resIds);},};}
+scheduleActivity(){this.dialog.add(SelectCreateDialog,this.getSelectCreateDialogProps,{onClose:()=>this.model.load(this.getSearchProps()),});}
+openActivityFormView(resId,activityTypeId){this.action.doAction({type:"ir.actions.act_window",res_model:"mail.activity",views:[[false,"form"]],view_mode:"form",view_type:"form",res_id:false,target:"new",context:{default_res_id:resId,default_res_model:this.props.resModel,default_activity_type_id:activityTypeId,dialog_size:"large",},},{onClose:()=>this.model.load(this.getSearchProps()),});}
+sendMailTemplate(templateID,activityTypeID){const groupedActivities=this.model.activityData.grouped_activities;const resIds=[];for(const resId in groupedActivities){const activityByType=groupedActivities[resId];const activity=activityByType[activityTypeID];if(activity){resIds.push(parseInt(resId));}}
+this.model.orm.call(this.props.resModel,"activity_send_mail",[resIds,templateID],{});}
+async openRecord(record,{newWindow}={}){const activeIds=this.model.root.records.map((datapoint)=>datapoint.resId);this.props.selectRecord(record.resId,{activeIds,newWindow});}
+get rendererProps(){return{activityTypes:this.model.activityData.activity_types,activityResIds:this.model.activityData.activity_res_ids,fields:this.model.root.fields,records:this.model.root.records,resModel:this.props.resModel,archInfo:this.props.archInfo,groupedActivities:this.model.activityData.grouped_activities,scheduleActivity:this.scheduleActivity.bind(this),onReloadData:()=>this.model.load(this.getSearchProps()),onEmptyCell:this.openActivityFormView.bind(this),onSendMailTemplate:this.sendMailTemplate.bind(this),openRecord:this.openRecord.bind(this),};}}
+return __exports;});;
+
+/* /mail/static/src/views/web/activity/activity_model.js */
+odoo.define('@mail/views/web/activity/activity_model',['@web/model/relational_model/relational_model'],function(require){'use strict';let __exports={};const{RelationalModel}=require("@web/model/relational_model/relational_model");const ActivityModel=__exports.ActivityModel=class ActivityModel extends RelationalModel{static DEFAULT_LIMIT=100;async load(params={}){this.originalDomain=params.domain?[...params.domain]:[];params.domain=[...(params.domain||[]),["activity_ids.active","in",[true,false]]];if(params&&"groupBy"in params){params.groupBy=[];}
+await Promise.all([this.fetchActivityData(params),super.load(params)]);}
+async fetchActivityData(params){this.activityData=await this.orm.call("mail.activity","get_activity_data",[],{res_model:this.config.resModel,context:params.context,domain:params.domain||this.env.searchModel._domain,limit:params.limit||this.initialLimit,offset:params.offset||0,fetch_done:false,});}}
+return __exports;});;
+
+/* /mail/static/src/views/web/activity/activity_record.js */
+odoo.define('@mail/views/web/activity/activity_record',['@mail/views/web/activity/activity_compiler','@odoo/owl','@web/core/py_js/py','@web/core/user','@web/core/utils/html','@web/views/fields/field','@web/views/kanban/kanban_record','@web/views/view_compiler'],function(require){'use strict';let __exports={};const{ActivityCompiler}=require("@mail/views/web/activity/activity_compiler");const{Component}=require("@odoo/owl");const{evaluateBooleanExpr}=require("@web/core/py_js/py");const{user}=require("@web/core/user");const{isHtmlEmpty}=require("@web/core/utils/html");const{Field}=require("@web/views/fields/field");const{getFormattedRecord,getImageSrcFromRecordInfo}=require("@web/views/kanban/kanban_record");const{useViewCompiler}=require("@web/views/view_compiler");const ActivityRecord=__exports.ActivityRecord=class ActivityRecord extends Component{static components={Field,};static props={archInfo:{type:Object},openRecord:{type:Function},record:{type:Object},};static template="mail.ActivityRecord";setup(){this.evaluateBooleanExpr=evaluateBooleanExpr;this.widget={deletable:false,editable:false,isHtmlEmpty,};const{templateDocs}=this.props.archInfo;const templates=useViewCompiler(ActivityCompiler,templateDocs);this.recordTemplate=templates["activity-box"];}
+getRenderingContext(){const{record}=this.props;return{record:getFormattedRecord(record),activity_image:(...args)=>getImageSrcFromRecordInfo(record,...args),user_context:user.context,widget:this.widget,luxon,__comp__:Object.assign(Object.create(this),{this:this}),};}}
+return __exports;});;
+
+/* /mail/static/src/views/web/activity/activity_renderer.js */
+odoo.define('@mail/views/web/activity/activity_renderer',['@mail/core/web/mail_column_progress','@mail/views/web/activity/activity_cell','@mail/views/web/activity/activity_record','@odoo/owl','@web/core/browser/browser','@web/core/checkbox/checkbox','@web/core/dropdown/dropdown','@web/core/dropdown/dropdown_item','@web/core/l10n/translation'],function(require){'use strict';let __exports={};const{MailColumnProgress}=require("@mail/core/web/mail_column_progress");const{ActivityCell}=require("@mail/views/web/activity/activity_cell");const{ActivityRecord}=require("@mail/views/web/activity/activity_record");const{Component,useState}=require("@odoo/owl");const{browser}=require("@web/core/browser/browser");const{CheckBox}=require("@web/core/checkbox/checkbox");const{Dropdown}=require("@web/core/dropdown/dropdown");const{DropdownItem}=require("@web/core/dropdown/dropdown_item");const{appTranslateFn}=require("@web/core/l10n/translation");const _t=(str,...args)=>appTranslateFn(str,"mail",...args);const ActivityRenderer=__exports.ActivityRenderer=class ActivityRenderer extends Component{static components={ActivityCell,ActivityRecord,ColumnProgress:MailColumnProgress,Dropdown,DropdownItem,CheckBox,};static props={activityTypes:{type:Object},activityResIds:{type:Array},fields:{type:Object},resModel:{type:String},records:{type:Array},archInfo:{type:Object},groupedActivities:{type:Object},scheduleActivity:{type:Function},onReloadData:{type:Function},onEmptyCell:{type:Function},onSendMailTemplate:{type:Function},openRecord:{type:Function},};static template="mail.ActivityRenderer";setup(){this.activeFilter=useState({progressValue:{active:null,},activityTypeId:null,resIds:new Set(Object.keys(this.props.groupedActivities)),});this.storageKey=["activity_columns",this.props.resModel,this.env.config.viewId];this.setupStorageActiveColumns();}
+getGroupInfo(activityType){const types={done:{color:"secondary",inProgressBar:false,label:_t("done"),value:0,},planned:{color:"success",inProgressBar:true,value:0,},today:{color:"warning",inProgressBar:true,value:0,},overdue:{color:"danger",inProgressBar:true,value:0,},};for(const[type,label]of this.props.fields.activity_state.selection){types[type].label=label;}
+const typeId=activityType.id;const isColumnFiltered=this.activeFilter.activityTypeId===activityType.id;const progressValue=isColumnFiltered?this.activeFilter.progressValue:{active:null};let totalCountWithoutDone=0;for(const activities of Object.values(this.props.groupedActivities)){if(typeId in activities){for(const[state,stateCount]of Object.entries(activities[typeId].count_by_state)){types[state].value+=stateCount;if(state!=="done"){totalCountWithoutDone+=stateCount;}}}}
+const progressBar={bars:[],activeBar:isColumnFiltered?this.activeFilter.progressValue.active:null,isReady:true,};for(const[value,count]of Object.entries(types)){if(count.inProgressBar){progressBar.bars.push({count:count.value,value,string:types[value].label,color:count.color,});}}
+const ongoingActivityCount=types.overdue.value+types.today.value+types.planned.value;const ongoingAndDoneCount=ongoingActivityCount+types.done.value;const labelAggregate=`${types.overdue.label} + ${types.today.label} + ${types.planned.label}`;const aggregateOn=ongoingAndDoneCount?{title:`${types.done.label} + ${labelAggregate}`,value:ongoingAndDoneCount,}:undefined;return{aggregate:{title:labelAggregate,value:isColumnFiltered?types[progressValue.active].value:ongoingActivityCount,},aggregateOn:aggregateOn,data:{count:totalCountWithoutDone,filterProgressValue:(name)=>this.onSetProgressBarState(typeId,name),progressBar,progressValue,},};}
+getRecord(resId){return this.props.records.find((r)=>r.resId===resId);}
+onSetProgressBarState(typeId,bar){const name=bar.value;if(this.activeFilter.progressValue.active===name){this.activeFilter.progressValue.active=null;this.activeFilter.activityTypeId=null;this.activeFilter.resIds=new Set(Object.keys(this.props.groupedActivities));}else{this.activeFilter.progressValue.active=name;this.activeFilter.activityTypeId=typeId;this.activeFilter.resIds=new Set(Object.entries(this.props.groupedActivities).filter(([,resIds])=>typeId in resIds&&name in resIds[typeId].count_by_state).map(([key])=>parseInt(key)));}}
+get activeColumns(){return this.props.activityTypes.filter((activityType)=>this.storageActiveColumns[activityType.id]);}
+setupStorageActiveColumns(){const storageActiveColumnsList=browser.localStorage.getItem(this.storageKey)?.split(",");this.storageActiveColumns=useState({});for(const activityType of this.props.activityTypes){if(storageActiveColumnsList){this.storageActiveColumns[activityType.id]=storageActiveColumnsList.includes(activityType.id.toString());}else{this.storageActiveColumns[activityType.id]=true;}}}
+toggleDisplayColumn(typeId){this.storageActiveColumns[typeId]=!this.storageActiveColumns[typeId];browser.localStorage.setItem(this.storageKey.join(","),Object.keys(this.storageActiveColumns).filter((activityType)=>this.storageActiveColumns[activityType]));}}
+return __exports;});;
+
+/* /mail/static/src/views/web/activity/activity_view.js */
+odoo.define('@mail/views/web/activity/activity_view',['@mail/views/web/activity/activity_arch_parser','@mail/views/web/activity/activity_controller','@mail/views/web/activity/activity_model','@mail/views/web/activity/activity_renderer','@web/core/registry'],function(require){'use strict';let __exports={};const{ActivityArchParser}=require("@mail/views/web/activity/activity_arch_parser");const{ActivityController}=require("@mail/views/web/activity/activity_controller");const{ActivityModel}=require("@mail/views/web/activity/activity_model");const{ActivityRenderer}=require("@mail/views/web/activity/activity_renderer");const{registry}=require("@web/core/registry");const activityView=__exports.activityView={type:"activity",searchMenuTypes:["filter","favorite"],Controller:ActivityController,Renderer:ActivityRenderer,ArchParser:ActivityArchParser,Model:ActivityModel,props:(genericProps,view)=>{const{arch,relatedModels,resModel}=genericProps;const archInfo=new view.ArchParser().parse(arch,relatedModels,resModel);return{...genericProps,archInfo,Model:view.Model,Renderer:view.Renderer,};},};registry.category("views").add("activity",activityView);return __exports;});;
+
+/* /analytic/static/src/views/graph/graph_view.js */
+odoo.define('@analytic/views/graph/graph_view',['@web/core/registry','@web/views/graph/graph_view','@analytic/views/analytic_search_model'],function(require){'use strict';let __exports={};const{registry}=require("@web/core/registry");const{graphView}=require("@web/views/graph/graph_view");const{AnalyticSearchModel}=require("@analytic/views/analytic_search_model");const analyticGraphView=__exports.analyticGraphView={...graphView,SearchModel:AnalyticSearchModel,};registry.category("views").add("analytic_graph",analyticGraphView);return __exports;});;
+
+/* /analytic/static/src/views/pivot/pivot_renderer.js */
+odoo.define('@analytic/views/pivot/pivot_renderer',['@web/views/pivot/pivot_renderer'],function(require){'use strict';let __exports={};const{PivotRenderer}=require("@web/views/pivot/pivot_renderer");const AnalyticPivotRenderer=__exports.AnalyticPivotRenderer=class AnalyticPivotRenderer extends PivotRenderer{onGroupBySelected({itemId,optionId}){if(typeof(optionId)==="number"){itemId=optionId;}
+let searchItems=this.env.searchModel.getSearchItems((searchItem)=>["groupBy","dateGroupBy"].includes(searchItem.type)&&!searchItem.custom)
+searchItems=[...searchItems,...searchItems.flatMap((f)=>f.options).filter((f)=>typeof(f?.id)==="number")]
+const{fieldName}=searchItems.find(({id})=>id===itemId);this.model.addGroupBy({...this.dropdown.cellInfo,fieldName,interval:optionId});}}
+return __exports;});;
+
+/* /analytic/static/src/views/pivot/pivot_view.js */
+odoo.define('@analytic/views/pivot/pivot_view',['@web/core/registry','@web/views/pivot/pivot_view','@analytic/views/analytic_search_model','@analytic/views/pivot/pivot_renderer'],function(require){'use strict';let __exports={};const{registry}=require("@web/core/registry");const{pivotView}=require("@web/views/pivot/pivot_view");const{AnalyticSearchModel}=require("@analytic/views/analytic_search_model");const{AnalyticPivotRenderer}=require("@analytic/views/pivot/pivot_renderer");const analyticPivotView=__exports.analyticPivotView={...pivotView,Renderer:AnalyticPivotRenderer,SearchModel:AnalyticSearchModel,};registry.category("views").add("analytic_pivot",analyticPivotView);return __exports;});;
+
+/* /project/static/src/views/project_task_activity/project_task_activity_model.js */
+odoo.define('@project/views/project_task_activity/project_task_activity_model',['@mail/views/web/activity/activity_model','@project/views/project_task_model_mixin'],function(require){'use strict';let __exports={};const{ActivityModel}=require("@mail/views/web/activity/activity_model");const{ProjectTaskModelMixin}=require("@project/views/project_task_model_mixin");const ProjectTaskActivityModel=__exports.ProjectTaskActivityModel=class ProjectTaskActivityModel extends ProjectTaskModelMixin(ActivityModel){async load(params={}){const domain=params.domain||this.config.domain;params.domain=this._processSearchDomain(domain);return super.load(params);}}
+return __exports;});;
+
+/* /project/static/src/views/project_task_activity/project_task_activity_view.js */
+odoo.define('@project/views/project_task_activity/project_task_activity_view',['@mail/views/web/activity/activity_view','@project/views/project_task_control_panel/project_task_control_panel','@project/views/project_task_activity/project_task_activity_model','@web/core/registry'],function(require){'use strict';let __exports={};const{activityView}=require("@mail/views/web/activity/activity_view");const{ProjectTaskControlPanel}=require("@project/views/project_task_control_panel/project_task_control_panel");const{ProjectTaskActivityModel}=require("@project/views/project_task_activity/project_task_activity_model");const{registry}=require("@web/core/registry");const projectTaskActivityView=__exports.projectTaskActivityView={...activityView,ControlPanel:ProjectTaskControlPanel,Model:ProjectTaskActivityModel,}
+registry.category("views").add("project_task_activity",projectTaskActivityView);return __exports;});;
+
+/* /project/static/src/views/project_task_graph/project_task_graph_model.js */
+odoo.define('@project/views/project_task_graph/project_task_graph_model',['@web/views/graph/graph_model','@project/views/project_task_model_mixin'],function(require){'use strict';let __exports={};const{GraphModel}=require("@web/views/graph/graph_model");const{ProjectTaskModelMixin}=require("@project/views/project_task_model_mixin");const ProjectTaskGraphModel=__exports.ProjectTaskGraphModel=class ProjectTaskGraphModel extends ProjectTaskModelMixin(GraphModel){async load(searchParams){const domain=searchParams.domain||[];searchParams.domain=this._processSearchDomain(domain);return super.load(searchParams);}}
+return __exports;});;
+
+/* /project/static/src/views/project_task_graph/project_task_graph_view.js */
+odoo.define('@project/views/project_task_graph/project_task_graph_view',['@web/views/graph/graph_view','@project/views/project_task_control_panel/project_task_control_panel','@project/views/project_task_graph/project_task_graph_model','@web/core/registry'],function(require){'use strict';let __exports={};const{graphView}=require("@web/views/graph/graph_view");const{ProjectTaskControlPanel}=require("@project/views/project_task_control_panel/project_task_control_panel");const{ProjectTaskGraphModel}=require("@project/views/project_task_graph/project_task_graph_model");const{registry}=require("@web/core/registry");const projectTaskGraphView=__exports.projectTaskGraphView={...graphView,ControlPanel:ProjectTaskControlPanel,Model:ProjectTaskGraphModel,}
+registry.category("views").add("project_task_graph",projectTaskGraphView);return __exports;});;
+
+/* /project/static/src/views/project_task_pivot/project_task_pivot_model.js */
+odoo.define('@project/views/project_task_pivot/project_task_pivot_model',['@web/views/pivot/pivot_model','@project/views/project_task_model_mixin'],function(require){'use strict';let __exports={};const{PivotModel}=require("@web/views/pivot/pivot_model");const{ProjectTaskModelMixin}=require("@project/views/project_task_model_mixin");const ProjectTaskPivotModel=__exports.ProjectTaskPivotModel=class ProjectTaskPivotModel extends ProjectTaskModelMixin(PivotModel){async load(searchParams){const domain=searchParams.domain||[];searchParams.domain=this._processSearchDomain(domain);return super.load(searchParams);}}
+return __exports;});;
+
+/* /project/static/src/views/project_task_pivot/project_task_pivot_view.js */
+odoo.define('@project/views/project_task_pivot/project_task_pivot_view',['@project/views/project_task_control_panel/project_task_control_panel','@web/core/registry','@project/views/project_task_pivot/project_task_pivot_model','@web/views/pivot/pivot_view'],function(require){'use strict';let __exports={};const{ProjectTaskControlPanel}=require("@project/views/project_task_control_panel/project_task_control_panel");const{registry}=require("@web/core/registry");const{ProjectTaskPivotModel}=require("@project/views/project_task_pivot/project_task_pivot_model");const{pivotView}=require("@web/views/pivot/pivot_view");const projectTaskPivotView=__exports.projectTaskPivotView={...pivotView,ControlPanel:ProjectTaskControlPanel,Model:ProjectTaskPivotModel,}
+registry.category("views").add("project_task_pivot",projectTaskPivotView);return __exports;});;
+
+/* /project/static/src/views/project_task_analysis_renderer_mixin.js */
+odoo.define('@project/views/project_task_analysis_renderer_mixin',['@web/core/browser/browser','@web/core/domain'],function(require){'use strict';let __exports={};const{browser}=require("@web/core/browser/browser");const{Domain}=require("@web/core/domain");const ProjectTaskAnalysisRendererMixin=__exports.ProjectTaskAnalysisRendererMixin=(T)=>class ProjectTaskAnalysisRendererMixin extends T{openView(domain,views,context){const showSubtasks=JSON.parse(browser.localStorage.getItem("showSubtasks")||"false");if(!showSubtasks){context.show_task_options=false;}
+for(const leaf of domain){if(Array.isArray(leaf)&&leaf[0]==="task_id"){leaf[0]="id";}}
+const fieldsNotInBaseModel=["nbr","rating_last_value","rating_avg","delay_endings_days"];const newDomain=Domain.removeDomainLeaves(domain,fieldsNotInBaseModel).toList();this.actionService.doAction({context,domain:newDomain,name:"Tasks",res_model:"project.task",target:"current",type:"ir.actions.act_window",views,},{viewType:"list",});}}
+return __exports;});;
+
+/* /project/static/src/views/project_task_analysis_graph/project_task_analysis_graph_model.js */
+odoo.define('@project/views/project_task_analysis_graph/project_task_analysis_graph_model',['@web/views/graph/graph_model','@project/views/project_task_model_mixin'],function(require){'use strict';let __exports={};const{GraphModel}=require("@web/views/graph/graph_model");const{ProjectTaskModelMixin}=require("@project/views/project_task_model_mixin");const ProjectTaskAnalysisGraphModel=__exports.ProjectTaskAnalysisGraphModel=class ProjectTaskAnalysisGraphModel extends ProjectTaskModelMixin(GraphModel){async load(searchParams){const domain=searchParams.domain||[];searchParams.domain=this._processSearchDomain(domain);return super.load(searchParams);}}
+return __exports;});;
+
+/* /project/static/src/views/project_task_analysis_graph/project_task_analysis_graph_renderer.js */
+odoo.define('@project/views/project_task_analysis_graph/project_task_analysis_graph_renderer',['@web/views/graph/graph_renderer','@project/views/project_task_analysis_renderer_mixin'],function(require){'use strict';let __exports={};const{GraphRenderer}=require("@web/views/graph/graph_renderer");const{ProjectTaskAnalysisRendererMixin}=require("@project/views/project_task_analysis_renderer_mixin");const ProjectTaskAnalysisGraphRenderer=__exports.ProjectTaskAnalysisGraphRenderer=class ProjectTaskAnalysisGraphRenderer extends ProjectTaskAnalysisRendererMixin(GraphRenderer){}
+return __exports;});;
+
+/* /project/static/src/views/project_task_analysis_graph/project_task_analysis_graph_view.js */
+odoo.define('@project/views/project_task_analysis_graph/project_task_analysis_graph_view',['@web/core/registry','@web/views/graph/graph_view','@project/views/project_task_analysis_graph/project_task_analysis_graph_renderer','@project/views/project_task_analysis_graph/project_task_analysis_graph_model','@project/views/project_task_control_panel/project_task_control_panel'],function(require){'use strict';let __exports={};const{registry}=require("@web/core/registry");const{graphView}=require("@web/views/graph/graph_view");const{ProjectTaskAnalysisGraphRenderer}=require("@project/views/project_task_analysis_graph/project_task_analysis_graph_renderer");const{ProjectTaskAnalysisGraphModel}=require("@project/views/project_task_analysis_graph/project_task_analysis_graph_model");const{ProjectTaskControlPanel}=require("@project/views/project_task_control_panel/project_task_control_panel");registry.category("views").add("project_task_analysis_graph",{...graphView,ControlPanel:ProjectTaskControlPanel,Model:ProjectTaskAnalysisGraphModel,Renderer:ProjectTaskAnalysisGraphRenderer,});return __exports;});;
+
+/* /project/static/src/views/project_task_analysis_pivot/project_task_analysis_pivot_model.js */
+odoo.define('@project/views/project_task_analysis_pivot/project_task_analysis_pivot_model',['@web/views/pivot/pivot_model','@project/views/project_task_model_mixin'],function(require){'use strict';let __exports={};const{PivotModel}=require("@web/views/pivot/pivot_model");const{ProjectTaskModelMixin}=require("@project/views/project_task_model_mixin");const ProjectTaskAnalysisPivotModel=__exports.ProjectTaskAnalysisPivotModel=class ProjectTaskAnalysisPivotModel extends ProjectTaskModelMixin(PivotModel){async load(searchParams){const domain=searchParams.domain||[];searchParams.domain=this._processSearchDomain(domain);return super.load(searchParams);}}
+return __exports;});;
+
+/* /project/static/src/views/project_task_analysis_pivot/project_task_analysis_pivot_renderer.js */
+odoo.define('@project/views/project_task_analysis_pivot/project_task_analysis_pivot_renderer',['@web/views/pivot/pivot_renderer','@project/views/project_task_analysis_renderer_mixin'],function(require){'use strict';let __exports={};const{PivotRenderer}=require("@web/views/pivot/pivot_renderer");const{ProjectTaskAnalysisRendererMixin}=require("@project/views/project_task_analysis_renderer_mixin");const ProjectTaskAnalysisPivotRenderer=__exports.ProjectTaskAnalysisPivotRenderer=class ProjectTaskAnalysisPivotRenderer extends ProjectTaskAnalysisRendererMixin(PivotRenderer){}
+return __exports;});;
+
+/* /project/static/src/views/project_task_analysis_pivot/project_task_analysis_pivot_view.js */
+odoo.define('@project/views/project_task_analysis_pivot/project_task_analysis_pivot_view',['@web/core/registry','@web/views/pivot/pivot_view','@project/views/project_task_analysis_pivot/project_task_analysis_pivot_renderer','@project/views/project_task_control_panel/project_task_control_panel','@project/views/project_task_analysis_pivot/project_task_analysis_pivot_model'],function(require){'use strict';let __exports={};const{registry}=require("@web/core/registry");const{pivotView}=require("@web/views/pivot/pivot_view");const{ProjectTaskAnalysisPivotRenderer}=require("@project/views/project_task_analysis_pivot/project_task_analysis_pivot_renderer");const{ProjectTaskControlPanel}=require("@project/views/project_task_control_panel/project_task_control_panel");const{ProjectTaskAnalysisPivotModel}=require("@project/views/project_task_analysis_pivot/project_task_analysis_pivot_model");registry.category("views").add("project_task_analysis_pivot",{...pivotView,ControlPanel:ProjectTaskControlPanel,Model:ProjectTaskAnalysisPivotModel,Renderer:ProjectTaskAnalysisPivotRenderer,});return __exports;});;
+
+/* /project/static/src/views/burndown_chart/burndown_chart_model.js */
+odoo.define('@project/views/burndown_chart/burndown_chart_model',['@web/core/l10n/translation','@web/views/graph/graph_model','@web/core/utils/arrays'],function(require){'use strict';let __exports={};const{appTranslateFn}=require("@web/core/l10n/translation");const _t=(str,...args)=>appTranslateFn(str,"project",...args);const{GraphModel}=require("@web/views/graph/graph_model");const{sortBy}=require("@web/core/utils/arrays");const BurndownChartModel=__exports.BurndownChartModel=class BurndownChartModel extends GraphModel{setup(params){super.setup(params);this.stageSeqAndNamePerId={};}
+async _fetchStageInfo(context){const searchDomain=!context.active_id||!context.default_project_id?[]:[["project_ids","in",context.active_id]];const data=await this.orm.webSearchRead("project.task.type",searchDomain,{specification:{name:{},sequence:{},},});const stageSeqAndNamePerId={};for(const{id,name,sequence}of data.records){stageSeqAndNamePerId[id]={name,sequence};}
+return stageSeqAndNamePerId;}
+async load(searchParams){const{context,groupBy}=searchParams;if(groupBy.includes("stage_id")){if(context.stage_name_and_sequence_per_id&&context.default_project_id){this.stageSeqAndNamePerId=context.stage_name_and_sequence_per_id;}else{this.stageSeqAndNamePerId=await this._fetchStageInfo(context);}}else{this.stageSeqAndNamePerId={};}
+await super.load(searchParams);}
+_prepareData(){super._prepareData();const{groupBy}=this.searchParams;const{mode}=this.metaData;if(mode==="line"&&groupBy.includes("stage_id")){this.data.datasets=sortBy(this.data.datasets,(dataSet)=>{const firstIdentifier=[...dataSet.identifiers][0];const group=Object.assign(...JSON.parse(firstIdentifier));const val=group.stage_id;if(Array.isArray(val)){return this.stageSeqAndNamePerId[val[0]]?.sequence||-1;}
+return-1;});}}
+async _loadDataPoints(metaData){metaData.measures.__count.string=_t("# of Tasks");return super._loadDataPoints(metaData);}}
+return __exports;});;
+
+/* /project/static/src/views/burndown_chart/burndown_chart_search_model.js */
+odoo.define('@project/views/burndown_chart/burndown_chart_search_model',['@web/core/l10n/translation','@web/core/utils/hooks','@web/search/search_model'],function(require){'use strict';let __exports={};const{appTranslateFn}=require("@web/core/l10n/translation");const _t=(str,...args)=>appTranslateFn(str,"project",...args);const{useService}=require("@web/core/utils/hooks");const{SearchModel}=require("@web/search/search_model");const BurndownChartSearchModel=__exports.BurndownChartSearchModel=class BurndownChartSearchModel extends SearchModel{setup(services){this.notificationService=useService("notification");super.setup(...arguments);}
+async load(config){await super.load(...arguments);for(const searchItem of Object.values(this.searchItems)){if(['dateGroupBy','groupBy'].includes(searchItem.type)){if(this.stageIdSearchItemId&&this.dateSearchItemId&&this.isClosedSearchItemId){return;}
+switch(searchItem.fieldName){case'date':this.dateSearchItemId=searchItem.id;break;case'stage_id':this.stageIdSearchItemId=searchItem.id;break;case'is_closed':this.isClosedSearchItemId=searchItem.id;break;}}}}
+deactivateGroup(groupId){if(this.searchItems[this.dateSearchItemId].groupId==groupId){if(this.query.some(queryElem=>[this.stageIdSearchItemId,this.isClosedSearchItemId].includes(queryElem.searchItemId))){this._addGroupByNotification(_t("The report should be grouped either by \"Stage\" to represent a Burndown Chart or by \"Is Closed\" to represent a Burn-up chart. Without one of these groupings applied, the report will not provide relevant information."));}
+return;}
+super.deactivateGroup(groupId);}
+toggleDateGroupBy(searchItemId,intervalId){if(searchItemId===this.dateSearchItemId){let filtered_query=[];let triggerNotification=false;for(const queryElem of this.query){if(queryElem.searchItemId!==searchItemId){filtered_query.push(queryElem);}else if(queryElem.intervalId===intervalId){triggerNotification=true;}}
+if(filtered_query.length!==this.query.length){this.query=filtered_query;if(triggerNotification){this._addGroupByNotification(_t("The Burndown Chart must be grouped by Date"));}}}
+super.toggleDateGroupBy(...arguments);}
+toggleSearchItem(searchItemId){if(searchItemId===this.isClosedSearchItemId){super.toggleSearchItem(this.stageIdSearchItemId);}else if(searchItemId===this.stageIdSearchItemId){super.toggleSearchItem(this.isClosedSearchItemId);}
+super.toggleSearchItem(...arguments);}
+_addGroupByNotification(body){this.notificationService.add(body,{type:"danger"});}
+async _notify(){let stageIdIndex=-1;let dateIndex=-1;let isClosedIndex=-1;for(const[index,queryElem]of this.query.entries()){if(dateIndex!==-1&&(stageIdIndex!==-1||isClosedIndex!==-1)){break;}
+switch(queryElem.searchItemId){case this.dateSearchItemId:dateIndex=index;break;case this.stageIdSearchItemId:stageIdIndex=index;break;case this.isClosedSearchItemId:isClosedIndex=index;break;}}
+if(isClosedIndex>0){if(isClosedIndex>dateIndex){dateIndex+=1;}
+this.query.splice(0,0,this.query.splice(stageIdIndex,1)[0]);}else if(stageIdIndex>0){if(stageIdIndex>dateIndex){dateIndex+=1;}
+this.query.splice(0,0,this.query.splice(stageIdIndex,1)[0]);}
+if(dateIndex>0){this.query.splice(0,0,this.query.splice(dateIndex,1)[0]);}
+await super._notify(...arguments);}}
+return __exports;});;
+
+/* /project/static/src/views/burndown_chart/burndown_chart_view.js */
+odoo.define('@project/views/burndown_chart/burndown_chart_view',['@project/views/burndown_chart/burndown_chart_model','@web/views/graph/graph_view','@web/core/registry','@project/views/burndown_chart/burndown_chart_search_model'],function(require){'use strict';let __exports={};const{BurndownChartModel}=require("@project/views/burndown_chart/burndown_chart_model");const{graphView}=require("@web/views/graph/graph_view");const{registry}=require("@web/core/registry");const{BurndownChartSearchModel}=require("@project/views/burndown_chart/burndown_chart_search_model");const viewRegistry=registry.category("views");const burndownChartGraphView={...graphView,buttonTemplate:"project.BurndownChartView.Buttons",hideCustomGroupBy:true,Model:BurndownChartModel,SearchModel:BurndownChartSearchModel,};viewRegistry.add("burndown_chart",burndownChartGraphView);return __exports;});;
+
+/* /project/static/src/views/project_project_activity/project_project_activity_model.js */
+odoo.define('@project/views/project_project_activity/project_project_activity_model',['@mail/views/web/activity/activity_model','@project/views/project_model_mixin'],function(require){'use strict';let __exports={};const{ActivityModel}=require("@mail/views/web/activity/activity_model");const{ProjectModelMixin}=require("@project/views/project_model_mixin");const ProjectActivityModel=__exports.ProjectActivityModel=class ProjectActivityModel extends ProjectModelMixin(ActivityModel){async load(params={}){const domain=params.domain||this.config.domain;params.domain=this._processSearchDomain(domain);return super.load(params);}}
+return __exports;});;
+
+/* /project/static/src/views/project_project_activity/project_project_activity_view.js */
+odoo.define('@project/views/project_project_activity/project_project_activity_view',['@mail/views/web/activity/activity_view','@project/views/project_project_activity/project_project_activity_model','@web/core/registry'],function(require){'use strict';let __exports={};const{activityView}=require("@mail/views/web/activity/activity_view");const{ProjectActivityModel}=require("@project/views/project_project_activity/project_project_activity_model");const{registry}=require("@web/core/registry");const projectProjectActivityView=__exports.projectProjectActivityView={...activityView,Model:ProjectActivityModel,}
+registry.category("views").add("project_project_activity",projectProjectActivityView);return __exports;});;
+
+/* /hr_skills/static/src/views/skills_graph.js */
+odoo.define('@hr_skills/views/skills_graph',['@web/core/registry','@web/views/graph/graph_renderer','@web/views/graph/graph_view'],function(require){'use strict';let __exports={};const{registry}=require("@web/core/registry");const{GraphRenderer}=require("@web/views/graph/graph_renderer");const{graphView}=require("@web/views/graph/graph_view");const SkillsGraphRenderer=__exports.SkillsGraphRenderer=class SkillsGraphRenderer extends GraphRenderer{getScaleOptions(){const scaleOptions=super.getScaleOptions();if('y'in scaleOptions){scaleOptions.y.suggestedMax=100;}
+return scaleOptions;}}
+const skillsGraphView=__exports.skillsGraphView={...graphView,Renderer:SkillsGraphRenderer,};registry.category("views").add("skills_graph",skillsGraphView);return __exports;});;
+
+/* /hr_timesheet/static/src/views/project_task_analysis_graph/project_task_analysis_graph_model.js */
+odoo.define('@hr_timesheet/views/project_task_analysis_graph/project_task_analysis_graph_model',['@project/views/project_task_analysis_graph/project_task_analysis_graph_model','@hr_timesheet/views/graph_model_patch'],function(require){'use strict';let __exports={};const{ProjectTaskAnalysisGraphModel}=require("@project/views/project_task_analysis_graph/project_task_analysis_graph_model");const{patchGraphModel}=require("@hr_timesheet/views/graph_model_patch");patchGraphModel(ProjectTaskAnalysisGraphModel);return __exports;});;
+
+/* /hr_timesheet/static/src/views/project_task_graph/project_task_graph_model.js */
+odoo.define('@hr_timesheet/views/project_task_graph/project_task_graph_model',['@project/views/project_task_graph/project_task_graph_model','@hr_timesheet/views/graph_model_patch'],function(require){'use strict';let __exports={};const{ProjectTaskGraphModel}=require("@project/views/project_task_graph/project_task_graph_model");const{patchGraphModel}=require("@hr_timesheet/views/graph_model_patch");patchGraphModel(ProjectTaskGraphModel);return __exports;});;
+
+/* /hr_timesheet/static/src/views/timesheet_graph/timesheet_graph_model.js */
+odoo.define('@hr_timesheet/views/timesheet_graph/timesheet_graph_model',['@web/views/graph/graph_model','@hr_timesheet/views/graph_model_patch'],function(require){'use strict';let __exports={};const{GraphModel}=require("@web/views/graph/graph_model");const{patchGraphModel}=require("@hr_timesheet/views/graph_model_patch");const hrTimesheetGraphModel=__exports.hrTimesheetGraphModel=class hrTimesheetGraphModel extends GraphModel{}
+patchGraphModel(hrTimesheetGraphModel);return __exports;});;
+
+/* /hr_timesheet/static/src/views/timesheet_graph/timesheet_graph_view.js */
+odoo.define('@hr_timesheet/views/timesheet_graph/timesheet_graph_view',['@web/core/registry','@web/views/graph/graph_view','@hr_timesheet/views/timesheet_graph/timesheet_graph_model'],function(require){'use strict';let __exports={};const{registry}=require("@web/core/registry");const{graphView}=require("@web/views/graph/graph_view");const{hrTimesheetGraphModel}=require("@hr_timesheet/views/timesheet_graph/timesheet_graph_model");const viewRegistry=registry.category("views");const hrTimesheetGraphView=__exports.hrTimesheetGraphView={...graphView,Model:hrTimesheetGraphModel,};viewRegistry.add("hr_timesheet_graphview",hrTimesheetGraphView);return __exports;});;
+
+/* /web_hierarchy/static/src/hierarchy_arch_parser.js */
+odoo.define('@web_hierarchy/hierarchy_arch_parser',['@web/core/utils/xml','@web/search/utils/order_by','@web/views/fields/field','@web/views/utils','@web/core/utils/strings'],function(require){'use strict';let __exports={};const{visitXML}=require("@web/core/utils/xml");const{stringToOrderBy}=require("@web/search/utils/order_by");const{Field}=require("@web/views/fields/field");const{getActiveActions}=require("@web/views/utils");const{exprToBoolean}=require("@web/core/utils/strings");const HierarchyArchParser=__exports.HierarchyArchParser=class HierarchyArchParser{parse(xmlDoc,models,modelName){const archInfo={activeActions:getActiveActions(xmlDoc),defaultOrder:stringToOrderBy(xmlDoc.getAttribute("default_order")||null),draggable:false,icon:"fa-share-alt fa-rotate-90 align-text-top",parentFieldName:"parent_id",fieldNodes:{},templateDocs:{},xmlDoc,};const fieldNextIds={};const fields=models[modelName].fields;visitXML(xmlDoc,(node)=>{if(node.hasAttribute("t-name")){archInfo.templateDocs[node.getAttribute("t-name")]=node;return;}
+if(node.tagName==="hierarchy"){if(node.hasAttribute("parent_field")){const parentFieldName=node.getAttribute("parent_field");if(!(parentFieldName in fields)){throw new Error(`The parent field set (${parentFieldName}) is not defined in the model (${modelName}).`);}else if(fields[parentFieldName].type!=="many2one"){throw new Error(`Invalid parent field, it should be a Many2One field.`);}else if(fields[parentFieldName].relation!==modelName){throw new Error(`Invalid parent field, the co-model should be same model than the current one (expected: ${modelName}).`);}
+archInfo.parentFieldName=parentFieldName;}
+if(node.hasAttribute("child_field")){const childFieldName=node.getAttribute("child_field");if(!(childFieldName in fields)){throw new Error(`The child field set (${childFieldName}) is not defined in the model (${modelName}).`);}else if(fields[childFieldName].type!=="one2many"){throw new Error(`Invalid child field, it should be a One2Many field.`);}else if(fields[childFieldName].relation!==modelName){throw new Error(`Invalid child field, the co-model should be same model than the current one (expected: ${modelName}).`);}
+archInfo.childFieldName=childFieldName;}
+if(node.hasAttribute("draggable")){archInfo.draggable=exprToBoolean(node.getAttribute("draggable"));}
+if(node.hasAttribute("icon")){archInfo.icon=node.getAttribute("icon");}}else if(node.tagName==="field"){const fieldInfo=Field.parseFieldNode(node,models,modelName,"hierarchy");const name=fieldInfo.name;if(!(name in fieldNextIds)){fieldNextIds[name]=0;}
+const fieldId=`${name}_${fieldNextIds[name]++}`;archInfo.fieldNodes[fieldId]=fieldInfo;node.setAttribute("field_id",fieldId);}});const cardDoc=archInfo.templateDocs["hierarchy-box"];if(!cardDoc){throw new Error("Missing 'hierarchy-box' template.");}
+return archInfo;}}
+return __exports;});;
+
+/* /web_hierarchy/static/src/hierarchy_card.js */
+odoo.define('@web_hierarchy/hierarchy_card',['@odoo/owl','@web/core/py_js/py','@web/views/fields/field','@web/model/record','@web/views/view_button/view_button','@web/views/view_compiler','@web_hierarchy/hierarchy_compiler','@web/views/kanban/kanban_record'],function(require){'use strict';let __exports={};const{Component}=require("@odoo/owl");const{evaluateBooleanExpr}=require("@web/core/py_js/py");const{Field}=require("@web/views/fields/field");const{Record}=require("@web/model/record");const{ViewButton}=require("@web/views/view_button/view_button");const{useViewCompiler}=require("@web/views/view_compiler");const{HierarchyCompiler}=require("@web_hierarchy/hierarchy_compiler");const{getFormattedRecord}=require("@web/views/kanban/kanban_record");const HierarchyCard=__exports.HierarchyCard=class HierarchyCard extends Component{static components={Record,Field,ViewButton,};static props={node:Object,openRecord:Function,archInfo:Object,classNames:{type:String,optional:true},};static defaultProps={classNames:"",};static template="web_hierarchy.HierarchyCard";static Compiler=HierarchyCompiler;setup(){const{archInfo}=this.props;this.templates=useViewCompiler(this.constructor.Compiler,archInfo.templateDocs);this.evaluateBooleanExpr=evaluateBooleanExpr;}
+get classNames(){const classNames=[this.props.classNames];if(this.props.node.nodes.length){classNames.push("o_hierarchy_node_unfolded");}
+return classNames.join(" ");}
+getRenderingContext(data){const record=getFormattedRecord(data.record);return{context:this.props.node.context,JSON,luxon,record,__comp__:Object.assign(Object.create(this),{this:this}),__record__:data.record,};}
+onGlobalClick(ev,newWindow){if(ev.target.closest("button")){return;}
+this.props.openRecord(this.props.node,newWindow);}
+onClickArrowUp(ev){this.props.node.fetchParentNode();}
+onClickArrowDown(ev){if(this.props.node.nodes.length){this.props.node.collapseChildNodes();}else{this.props.node.showChildNodes();}}}
+return __exports;});;
+
+/* /web_hierarchy/static/src/hierarchy_compiler.js */
+odoo.define('@web_hierarchy/hierarchy_compiler',['@web/views/kanban/kanban_compiler'],function(require){'use strict';let __exports={};const{KanbanCompiler}=require("@web/views/kanban/kanban_compiler");const HierarchyCompiler=__exports.HierarchyCompiler=class HierarchyCompiler extends KanbanCompiler{compileField(el,params){const fieldName=el.getAttribute("name");return super.compileField(el,{...(params||{}),recordExpr:"__record__",dataPointIdExpr:"__comp__.props.node.id",formattedValueExpr:`record['${fieldName}'].value`,});}
+compileButton(el,params){return super.compileButton(el,{...(params||{}),recordExpr:"__record__",});}
+compileNode(node,params={},evalInvisible=true){return super.compileNode(node,{...params,recordExpr:"__record__",},evalInvisible);}}
+return __exports;});;
+
+/* /web_hierarchy/static/src/hierarchy_controller.js */
+odoo.define('@web_hierarchy/hierarchy_controller',['@odoo/owl','@web/core/utils/hooks','@web/model/model','@web/model/relational_model/utils','@web/search/action_hook','@web/search/cog_menu/cog_menu','@web/search/layout','@web/search/search_bar/search_bar','@web/search/search_bar/search_bar_toggler','@web/views/standard_view_props','@web/views/view_button/view_button_hook','@web/views/action_helper'],function(require){'use strict';let __exports={};const{Component,useRef}=require("@odoo/owl");const{useBus}=require("@web/core/utils/hooks");const{useModel}=require("@web/model/model");const{addFieldDependencies,extractFieldsFromArchInfo}=require("@web/model/relational_model/utils");const{useSetupAction}=require("@web/search/action_hook");const{CogMenu}=require("@web/search/cog_menu/cog_menu");const{Layout}=require("@web/search/layout");const{SearchBar}=require("@web/search/search_bar/search_bar");const{useSearchBarToggler}=require("@web/search/search_bar/search_bar_toggler");const{standardViewProps}=require("@web/views/standard_view_props");const{useViewButtons}=require("@web/views/view_button/view_button_hook");const{ActionHelper}=require("@web/views/action_helper");const HierarchyController=__exports.HierarchyController=class HierarchyController extends Component{static components={Layout,CogMenu,SearchBar,ActionHelper,};static props={...standardViewProps,Model:Function,Renderer:Function,buttonTemplate:String,archInfo:Object,};static template="web_hierarchy.HierarchyView";setup(){this.rootRef=useRef("root");const{parentFieldName,childFieldName}=this.props.archInfo;const{activeFields,fields}=extractFieldsFromArchInfo(this.props.archInfo,this.props.fields);const additionalFields=[{name:parentFieldName}];if(childFieldName){additionalFields.push({name:childFieldName});}
+addFieldDependencies(activeFields,fields,additionalFields);const modelConfig=this.props.state?.modelState?.config||{};this.model=useModel(this.props.Model,{config:modelConfig,resModel:this.props.resModel,activeFields,defaultOrderBy:this.props.archInfo.defaultOrder,fields,parentFieldName,childFieldName,});useBus(this.model.bus,"update",()=>{this.render(true);});useViewButtons(this.rootRef,{beforeExecuteAction:this.beforeExecuteActionButton.bind(this),afterExecuteAction:this.afterExecuteActionButton.bind(this),reload:this.model.reload.bind(this.model),});useSetupAction({rootRef:this.rootRef,getLocalState:()=>{return{modelState:this.model.exportState(),};},});this.searchBarToggler=useSearchBarToggler();}
+get displayNoContent(){return this.model.resIds.length===0;}
+async openRecord(node,newWindow){const activeIds=this.model.root.resIds;this.props.selectRecord(node.resId,{activeIds,newWindow});}
+async beforeExecuteActionButton(clickParams){}
+async afterExecuteActionButton(clickParams){}}
+return __exports;});;
+
+/* /web_hierarchy/static/src/hierarchy_model.js */
+odoo.define('@web_hierarchy/hierarchy_model',['@odoo/owl','@web/core/domain','@web/core/l10n/translation','@web/core/utils/concurrency','@web/model/model','@web/model/relational_model/utils','@web/search/utils/order_by'],function(require){'use strict';let __exports={};const{toRaw}=require("@odoo/owl");const{Domain}=require("@web/core/domain");const{appTranslateFn}=require("@web/core/l10n/translation");const _t=(str,...args)=>appTranslateFn(str,"web_hierarchy",...args);const{KeepLast,Mutex}=require("@web/core/utils/concurrency");const{Model}=require("@web/model/model");const{getFieldsSpec}=require("@web/model/relational_model/utils");const{orderByToString}=require("@web/search/utils/order_by");let nodeId=0;let forestId=0;let treeId=0;function getIdOfMany2oneField(value){return value&&value.id;}
+const HierarchyNode=__exports.HierarchyNode=class HierarchyNode{constructor(model,config,data,tree,parentNode=null,populateChildNodes=true){this.id=nodeId++;this.data=data;this.parentNode=parentNode;this.tree=tree;this.model=model;this._config=config;this.hidden=false;tree.addNode(this);if(populateChildNodes){this.populateChildNodes();}}
+get ancestorNode(){return this.parentNode?this.ancestorNode:this;}
+get isLeaf(){return!this.nodes.length;}
+get forest(){return this.tree.forest;}
+get resId(){return this.data.id;}
+get parentFieldName(){return this.model.parentFieldName;}
+get parentResId(){return this.parentNode?.resId||getIdOfMany2oneField(this.data[this.parentFieldName]);}
+get childResIds(){return this._nodes.length?this._nodes.map((node)=>node.resId):this.data[this.childFieldName]?.map((d)=>(typeof d==="number"?d:d.id))||[];}
+get childFieldName(){return this.model.childFieldName||this.model.defaultChildFieldName;}
+get hasChildren(){return this._nodes.length>0||this.data[this.childFieldName]?.length>0;}
+get canShowParentNode(){return(Boolean(this.parentResId)&&this.parentResId!==this.resId&&!this.parentNode&&this.tree.forest.resIds.filter((resId)=>resId===this.resId).length===1);}
+get canShowChildNodes(){return(this.hasChildren&&this.nodes.length===0&&this.tree.forest.resIds.filter((resId)=>resId===this.resId).length===1);}
+getDescendantNodes(hideNodesIncluded=false){const subNodes=[];const nodes=hideNodesIncluded?this._nodes:this.nodes;if(nodes.length){subNodes.push(...nodes);for(const node of nodes){const descendantNodes=node.getDescendantNodes(hideNodesIncluded);if(descendantNodes.length){subNodes.push(...descendantNodes);}}}
+return subNodes;}
+get descendantsParentNodes(){const descendantsParentNodes=[];if(!this.isLeaf){descendantsParentNodes.push(this);this.nodes.reduce((parents,node)=>{if(!node.isLeaf){parents.push(...node.descendantsParentNodes);}
+return parents;},descendantsParentNodes);}
+return descendantsParentNodes;}
+get allSubsidiaryResIds(){return this.getDescendantNodes().map((n)=>n.resId);}
+get nodes(){return this._nodes.filter((n)=>!n.hidden);}
+populateChildNodes(){this._nodes=[];const children=this.data[this.childFieldName]||[];if(children.length&&children[0]instanceof Object&&this.tree.forest.resIds.filter((resId)=>resId===this.resId).length===1){this.createChildNodes(children);}}
+createChildNodes(childNodesData){this._nodes=(childNodesData||this.data[this.childFieldName]).map((childData)=>new HierarchyNode(this.model,this._config,childData,this.tree,this));}
+removeParentNode(){this.parentNode?.removeChildNode(this);this.parentNode=null;this.data[this.parentFieldName]=false;}
+async fetchParentNode(){await this.model.fetchManager(this);}
+async showChildNodes(){if(this.hasChildren){if(this._nodes.length){const nodeToCollapse=this.model._searchNodeToCollapse(this);if(nodeToCollapse){nodeToCollapse.collapseChildNodes(true);}
+this.getDescendantNodes(true).map((n)=>{n.hidden=false;this.tree.addNode(n);});this.model.notify();}else{await this.model.fetchSubordinates(this);}}}
+collapseChildNodes(hideNodes=false){const childrenData=[];if(hideNodes){const nodesToHide=this.getDescendantNodes();nodesToHide.map((n)=>(n.hidden=true));this.tree.removeNodes(nodesToHide);}else{for(const childNode of this.nodes){childNode.data[this.childFieldName]=childNode.childResIds;childrenData.push(childNode.data);}
+this.data[this.childFieldName]=childrenData;this.removeChildNodes();}
+this.model.notify();}
+removeChildNode(node){node.removeChildNodes();this.tree.removeNodes([node]);this._nodes=this._nodes.filter((n)=>n.id!==node.id);this.data[this.childFieldName]=this._nodes.map((n)=>n.data);}
+removeChildNodes(rootNode=this){for(const childNode of this.nodes){if(!childNode.isLeaf&&childNode!==rootNode){childNode.removeChildNodes(rootNode);}}
+this.tree.removeNodes(this._nodes);this._nodes=[];}
+setParentNode(node){const tree=node.tree;if(tree.root===this){tree.root=node;}else if(this.tree.root===this){this.tree.removeRoot();this.setTree(node.tree);}
+this.parentNode=node;node.addChildNode(this);}
+setTree(tree){this.tree=tree;for(const childNode of this.nodes){childNode.setTree(tree);}}
+addChildNode(node){this._nodes.push(node);this.data[this.childFieldName].push(node.data);this.tree.addNode(node);}}
+const HierarchyTree=__exports.HierarchyTree=class HierarchyTree{constructor(model,config,data,forest){this.id=treeId++;this.nodePerNodeId={};this.forest=forest;if(data){this.root=new HierarchyNode(model,config,data,this);this.forest.nodePerNodeId={...this.forest.nodePerNodeId,...this.nodePerNodeId,};}
+this.model=model;this._config=config;}
+get resIds(){return Object.values(this.nodePerNodeId).map((node)=>node.resId);}
+addNode(node){this.nodePerNodeId[node.id]=node;this.forest.addNode(node);}
+removeNodes(nodes){const nodeIds=nodes.map((node)=>node.id);this.nodePerNodeId=Object.fromEntries(Object.entries(this.nodePerNodeId).filter(([nodeId])=>!nodeIds.includes(Number(nodeId))));this.forest.removeNodes(nodes);}
+removeRoot(){this.forest.removeTree(this);}}
+const HierarchyForest=__exports.HierarchyForest=class HierarchyForest{constructor(model,config,data){this.id=forestId++;this.nodePerNodeId={};this._trees=data.map((d)=>new HierarchyTree(model,config,d,this));this.model=model;this._config=config;}
+get trees(){return this._trees.filter((t)=>!t.root.hidden);}
+get resIds(){return Object.values(this.nodePerNodeId).map((node)=>node.resId);}
+get rootNodes(){return this.trees.map((t)=>t.root);}
+addNode(node){this.nodePerNodeId[node.id]=node;}
+removeNodes(nodes){const nodeIds=nodes.map((node)=>node.id);this.nodePerNodeId=Object.fromEntries(Object.entries(this.nodePerNodeId).filter(([nodeId])=>!nodeIds.includes(Number(nodeId))));}
+addNewRootNode(node){const tree=new HierarchyTree(this.model,this._config,null,this);tree.root=node;node.tree=tree;tree.addNode(node);for(const subNode of node.getDescendantNodes()){tree.addNode(subNode);}
+this._trees.push(tree);}
+removeTree(tree){this.nodePerNodeId=Object.fromEntries(Object.entries(this.nodePerNodeId).filter(([nodeId])=>!(nodeId in tree.nodePerNodeId)));this._trees=this.trees.filter((t)=>t.id!==tree.id);}}
+const HierarchyModel=__exports.HierarchyModel=class HierarchyModel extends Model{static services=["notification"];setup(params,{notification}){this.keepLast=new KeepLast();this.mutex=new Mutex();this.resModel=params.resModel;this.fields=params.fields;this.parentFieldName=params.parentFieldName;this.childFieldName=params.childFieldName;this.activeFields=params.activeFields;this.defaultOrderBy=params.defaultOrderBy;this.notification=notification;this.config={domain:[],...params.config,isRoot:true,};}
+get parentField(){return this.fields[this.parentFieldName];}
+get resIds(){return this.root?.resIds||[];}
+get defaultChildFieldName(){return"__child_ids__";}
+get defaultDomain(){return[[this.parentFieldName,"=",false]];}
+get globalDomain(){if(!this.env.searchModel?.globalDomain.length){return[];}
+return new Domain(this.env.searchModel.globalDomain).toList(this.env.searchModel.domainEvalContext);}
+get activeFieldNames(){return Object.keys(this.activeFields);}
+get context(){return{bin_size:true,...(this.config.context||{}),};}
+exportState(){return{config:toRaw({...this.config,resIds:this.resIds,}),};}
+async load(params={}){nodeId=forestId=treeId=0;const{resIds,...config}=this._getNextConfig(this.config,params);const data=await this.keepLast.add(this._loadData({...config,resIds}));this.root=this._createRoot(config,data);this.config=config;this.notify({scrollTarget:"none"});}
+async reload(){nodeId=forestId=treeId=0;const data=await this.keepLast.add(this._loadData(this.config,true));this.root=this._createRoot(this.config,data);this.notify({scrollTarget:"none"});}
+notify(payload={scrollTarget:"bottom"}){super.notify();this.bus.trigger("hierarchyScrollTarget",payload);}
+async fetchManager(node){if(this.root.trees.length>1){const treeExpanded=this._findTreeExpanded();const resIdsToFetch=[node.parentResId,node.resId,...node.allSubsidiaryResIds];if(treeExpanded&&treeExpanded.root.id!==node.id&&treeExpanded.root.parentResId===node.parentResId){resIdsToFetch.push(...treeExpanded.root.allSubsidiaryResIds);}
+const config={...this.config,domain:["|",[this.parentFieldName,"=",node.parentResId],["id","in",resIdsToFetch],],};const data=await this._loadData(config);this.root=this._createRoot(config,data);this.notify();return;}
+const managerData=await this.keepLast.add(this._fetchManager(node));if(managerData){const parentNode=new HierarchyNode(this,this.config,managerData,node.tree,null,false);parentNode.createChildNodes();node.setParentNode(parentNode);this.notify({scrollTarget:"up"});}}
+async fetchSubordinates(node){const childFieldName=this.childFieldName||this.defaultChildFieldName;const children=node.data[childFieldName];if(children.length){const nodesToUpdate=[];if(!(children[0]instanceof Object)){const allNodeResIds=this.root.resIds;let existingChildResIds=children.filter((childResId)=>allNodeResIds.includes(childResId));if(existingChildResIds.length){for(const tree of this.root.trees){if(existingChildResIds.includes(tree.root.resId)&&tree.root.id!==node.id){if(node.tree.id===tree.id){existingChildResIds=existingChildResIds.filter((resId)=>resId!==tree.root.resId);continue;}
+nodesToUpdate.push(tree.root);}}}
+const subordinates=await this.keepLast.add(this._fetchSubordinates(node,existingChildResIds));if(subordinates.length){node.data[childFieldName]=subordinates;}}
+const nodeToCollapse=this._searchNodeToCollapse(node);if(nodeToCollapse&&!nodesToUpdate.includes(nodeToCollapse)){nodeToCollapse.collapseChildNodes(true);}
+node.populateChildNodes();for(const n of nodesToUpdate){n.setParentNode(node);}
+this.notify();}}
+_searchNodeToCollapse(node){const parentNode=node.parentNode;let nodeToCollapse=null;if(parentNode){nodeToCollapse=parentNode.nodes.find((n)=>n.nodes.length);}else{const treeExpanded=this._findTreeExpanded();if(treeExpanded){nodeToCollapse=treeExpanded.root;}}
+return nodeToCollapse;}
+_findTreeExpanded(){return this.root.trees.find((t)=>t.root.nodes.length);}
+_getNextConfig(currentConfig,params){const config=Object.assign({},currentConfig);config.context="context"in params?params.context:config.context;if("domain"in params){config.domain=params.domain;if(this.isSearchDefaultOrEmpty()&&config.context.hierarchy_res_id){config.domain=[["id","=",config.context.hierarchy_res_id]];const globalDomain=this.globalDomain;if(globalDomain.length){config.domain=Domain.and([config.domain,globalDomain]);}
+delete config.context.hierarchy_res_id;}}
+config.orderBy="orderBy"in params?params.orderBy:config.orderBy;if(!config.orderBy.length){config.orderBy=currentConfig.orderBy||[];}
+if(this.defaultOrderBy&&!config.orderBy.length){config.orderBy=this.defaultOrderBy;}
+return config;}
+_getFieldsSpec(context=this.config.context){return getFieldsSpec(this.activeFields,this.fields,context);}
+isSearchDefaultOrEmpty(){if(!this.env.searchModel){return true;}
+const isDisabledOptionalSearchMenuType=(type)=>{return(["filter","groupBy","favorite"].includes(type)&&!this.env.searchModel.searchMenuTypes.has(type));};const activeSearchItems=this.env.searchModel.getSearchItems((item)=>item.isActive&&!isDisabledOptionalSearchMenuType(item.type));if(!activeSearchItems.length){return true;}
+const defaultSearchItems=this.env.searchModel.getSearchItems((item)=>item.isDefault&&item.type!=="favorite"&&!isDisabledOptionalSearchMenuType(item.type));return JSON.stringify(defaultSearchItems)===JSON.stringify(activeSearchItems);}
+async _loadData(config,reload=false){let onlyRoots=false;let domain=config.domain;const resIds=reload?this.resIds:config.resIds;if(resIds?.length>0){domain=[["id","in",resIds]];}else if(this.isSearchDefaultOrEmpty()){onlyRoots=true;domain=!domain.length?this.defaultDomain:Domain.and([this.defaultDomain,domain]).toList({});}
+const fieldsSpec=this._getFieldsSpec(config.context);const hierarchyRead=async()=>{return await this.orm.call(this.resModel,"hierarchy_read",[domain,fieldsSpec,this.parentFieldName,this.childFieldName,orderByToString(config.orderBy),],{context:this.context});};let result=await hierarchyRead();if(!result.length&&onlyRoots){domain=config.domain;result=await hierarchyRead();}
+return this._formatData(result);}
+_formatData(data){const dataStringified=JSON.stringify(data);const recordsPerParentId={};const recordPerId={};for(const record of data){recordPerId[record.id]=record;const parentId=getIdOfMany2oneField(record[this.parentFieldName]);if(!(parentId.toString()in recordsPerParentId)){recordsPerParentId[parentId]=[];}
+recordsPerParentId[parentId].push(record);}
+const formattedData=[];const recordIds=[];for(let[parentId,records]of Object.entries(recordsPerParentId)){records=[...new Map(records.map((record)=>[record.id,record])).values()];if(!parentId||!(parentId in recordPerId)){formattedData.push(...records);}else{const parentRecord=recordPerId[parentId];if(recordIds.includes(parentRecord.id)){return JSON.parse(dataStringified);}
+const ancestorId=getIdOfMany2oneField(parentRecord[this.parentFieldName]);if(ancestorId in recordsPerParentId){recordIds.push(...recordsPerParentId[ancestorId].map((r)=>r.id));}
+parentRecord[this.childFieldName||this.defaultChildFieldName]=records;}}
+if(!formattedData.length&&data?.length){formattedData.push(recordPerId[Object.keys(recordsPerParentId)[0]]);}
+return formattedData;}
+_createRoot(config,data){return new HierarchyForest(this,config,data);}
+async _fetchManager(node,exclude_node=true){let domain=new Domain(["|",["id","=",node.parentResId],[this.parentFieldName,"=",node.parentResId],]);if(exclude_node){domain=Domain.and([domain,[["id","!=",node.resId]]]);}
+const result=await this.orm.webSearchRead(this.resModel,domain.toList({}),{context:this.context,specification:this._getFieldsSpec(),order:orderByToString(this.config.orderBy),});let managerData={};if(result?.length){const children=[];for(const data of result.records){if(data.id===node.parentResId){managerData=data;}else{children.push(data);}}
+if(!this.childFieldName){if(children.length){await this._fetchDescendants(children);}}
+managerData[this.childFieldName||this.defaultChildFieldName]=children;}
+return managerData;}
+async _fetchSubordinates(node,excludeResIds=null){let childrenResIds=node.data[this.childFieldName||this.defaultChildFieldName];if(excludeResIds){childrenResIds=childrenResIds.filter((childResId)=>!excludeResIds.includes(childResId));}
+if(!childrenResIds.length){return[];}
+const{records}=await this.orm.webSearchRead(this.resModel,[["id","in",childrenResIds]],{specification:this._getFieldsSpec(),context:this.context,order:orderByToString(this.config.orderBy),});if(!this.childFieldName){await this._fetchDescendants(records);}
+return records;}
+async _fetchDescendants(childrenData){const resIds=childrenData.map((d)=>d.id);if(resIds.length){const fetchChildren=await this.orm.formattedReadGroup(this.resModel,[[this.parentFieldName,"in",resIds]],[this.parentFieldName],["id:array_agg"],{context:this.context||{},order:orderByToString(this.config.orderBy),},);const childIdsPerId=Object.fromEntries(fetchChildren.map((g)=>[g[this.parentFieldName][0],g["id:array_agg"]]));for(const d of childrenData){if(d.id.toString()in childIdsPerId){d[this.defaultChildFieldName]=childIdsPerId[d.id.toString()];}}}}
+async updateParentId(node,parentResId=false){return this.orm.write(this.resModel,[node.resId],{[this.parentFieldName]:parentResId},{context:this.context});}
+async updateParentNode(nodeId,{parentNodeId,parentResId}){const node=this.root.nodePerNodeId[nodeId];const resId=node.resId;if(!node){return;}
+const parentNode=parentNodeId?this.root.nodePerNodeId[parentNodeId]:null;parentResId=parentResId||parentNode?.resId||false;const oldParentNode=node.parentNode;if((parentNode&&!this.validateUpdateParentNode(node,parentNode))||parentNode?.resId===oldParentNode?.resId){return;}
+node.hidden=true;this.notify({scrollTarget:"none"});await this.mutex.exec(async()=>{try{await this.updateParentId(node,parentResId);}catch(error){node.hidden=false;this.notify({scrollTarget:"none"});throw error;}});const domain=this.computeUpdateParentNodeDomain(node,parentResId,parentNode);const data=await this.orm.webSearchRead(this.resModel,domain,{specification:this._getFieldsSpec(),context:this.context,order:orderByToString(this.config.orderBy),});if(!data.length){return this.reload();}
+const formattedData=this._formatData(data.records);for(const record of formattedData){if(getIdOfMany2oneField(record[this.parentFieldName])!==parentResId){node.hidden=false;this.notify({scrollTarget:"none"});this.notification.add(_t(`The parent of "%s" was successfully updated. Reloading records to account for other changes.`,node.data.display_name||node.data.name),{type:"success"});return this.reload();}}
+let nodeToCollapse;const treeExpanded=this._findTreeExpanded();const expandedParentNodeIds=treeExpanded?.root.descendantsParentNodes.map((node)=>node.id)||[];if(!node.isLeaf||!expandedParentNodeIds.includes(parentNode?.id)){const depth=expandedParentNodeIds.findIndex((id)=>id===parentNode?.parentNode?.id);if(depth===-1){nodeToCollapse=treeExpanded?.root;}else{const nodeIdToCollapse=expandedParentNodeIds.at(depth+1);if(nodeIdToCollapse){nodeToCollapse=treeExpanded?.nodePerNodeId[nodeIdToCollapse];}}}else{nodeToCollapse=parentNode;}
+if(oldParentNode){oldParentNode.removeChildNode(node);}else{node.tree.removeNodes([node]);}
+nodeToCollapse?.collapseChildNodes();if(!parentNode){nodeId=forestId=treeId=0;this.root=this._createRoot(this.config,formattedData);}else{parentNode.data[this.childFieldName||this.defaultChildFieldName]=formattedData;parentNode.populateChildNodes();}
+const newNodeId=Object.keys(this.root.nodePerNodeId).find((key)=>{return this.root.nodePerNodeId[key].resId===resId;});this.notify({scrollTarget:newNodeId});}
+validateUpdateParentNode(node,parentNode){if(parentNode.resId===node.resId){this.notification.add(_t("The parent record cannot be the record dragged."),{type:"danger",});return false;}else if(node.allSubsidiaryResIds.includes(parentNode.resId)){this.notification.add(_t("Cannot change the parent because it will cause a cyclic."),{type:"danger",});return false;}
+return true;}
+computeUpdateParentNodeDomain(node,parentResId,parentNode){const domainsOr=[[["id","=",node.resId]]];domainsOr.push([[this.parentFieldName,"=",parentResId]]);if(!node.isLeaf){const expandedTreeParentResIds=node.descendantsParentNodes.map((node)=>node.resId);domainsOr.push([[this.parentFieldName,"in",expandedTreeParentResIds]]);}else if(!parentNode){const expandedTreeParentResIds=node.tree.root.descendantsParentNodes.map((node)=>node.resId);domainsOr.push([[this.parentFieldName,"in",expandedTreeParentResIds]]);}else if(!parentNode.isLeaf){const expandedTreeParentResIds=parentNode.descendantsParentNodes.map((node)=>node.resId);domainsOr.push([[this.parentFieldName,"in",expandedTreeParentResIds]]);}
+let domain=Domain.or(domainsOr);const globalDomain=this.globalDomain;if(globalDomain.length){domain=Domain.and([domain,globalDomain]);}
+return domain.toList({});}}
+return __exports;});;
+
+/* /web_hierarchy/static/src/hierarchy_node_draggable.js */
+odoo.define('@web_hierarchy/hierarchy_node_draggable',['@odoo/owl','@web/core/utils/timing','@web/core/utils/objects','@web/core/utils/draggable_hook_builder'],function(require){'use strict';let __exports={};const{onWillUnmount,reactive,useEffect,useExternalListener}=require("@odoo/owl");const{useThrottleForAnimation}=require("@web/core/utils/timing");const{pick}=require("@web/core/utils/objects");const{makeDraggableHook}=require("@web/core/utils/draggable_hook_builder");const hookParams={name:"useHierarchyNodeDraggable",acceptedParams:{rows:[String],},defaultParams:{edgeScrolling:{speed:20,threshold:60},rows:null,},onComputeParams({ctx,params}){ctx.rowSelector=params.rows||null;if(ctx.rowSelector){ctx.fullSelector=`${ctx.rowSelector} ${ctx.fullSelector}`;}},onDragStart(params){const{ctx,addListener,callHandler}=params;const onElementPointerEnter=(ev)=>{const element=ev.currentTarget;current.hierarchyElement=element;callHandler("onElementEnter",{element});};const onElementPointerLeave=(ev)=>{const element=ev.currentTarget;current.hierarchyElement=null;callHandler("onElementLeave",{element});};const onRowPointerEnter=(ev)=>{const row=ev.currentTarget;current.hierarchyRow=row;callHandler("onRowEnter",{row});};const onRowPointerLeave=(ev)=>{const row=ev.currentTarget;current.hierarchyRow=null;callHandler("onRowLeave",{row});};const{ref,current,elementSelector,rowSelector}=ctx;for(const rowEl of ref.el.querySelectorAll(rowSelector)){addListener(rowEl,"pointerenter",onRowPointerEnter);addListener(rowEl,"pointerleave",onRowPointerLeave);}
+for(const siblingEl of ref.el.querySelectorAll(elementSelector)){if(siblingEl!==current.element){addListener(siblingEl,"pointerenter",onElementPointerEnter);addListener(siblingEl,"pointerleave",onElementPointerLeave);}}
+return pick(current,"element","row");},onDragEnd({ctx}){return pick(ctx.current,"element","row","hierarchyRow");},onDrop({ctx}){const{current}=ctx;const rowElement=current.hierarchyRow;const element=current.hierarchyElement;if((rowElement&&rowElement!==current.row)||element){return{element:current.element,row:current.row,nextRow:rowElement&&current.row!==rowElement?rowElement:null,newParentNode:element,};}},onWillStartDrag({ctx}){const{current,rowSelector}=ctx;if(rowSelector){current.row=current.element.closest(rowSelector);}
+return pick(current,"element","row");},};__exports.useHierarchyNodeDraggable=useHierarchyNodeDraggable;function useHierarchyNodeDraggable(params){const setupHooks={addListener:useExternalListener,setup:useEffect,teardown:onWillUnmount,throttle:useThrottleForAnimation,wrapState:reactive,}
+return makeDraggableHook({...hookParams,setupHooks})(params);}
+return __exports;});;
+
+/* /web_hierarchy/static/src/hierarchy_renderer.js */
+odoo.define('@web_hierarchy/hierarchy_renderer',['@odoo/owl','@web/core/l10n/translation','@web/core/utils/hooks','@web/core/utils/scrolling','@web_hierarchy/hierarchy_card','@web_hierarchy/hierarchy_node_draggable'],function(require){'use strict';let __exports={};const{Component,useRef,onPatched}=require("@odoo/owl");const{appTranslateFn}=require("@web/core/l10n/translation");const _t=(str,...args)=>appTranslateFn(str,"web_hierarchy",...args);const{useBus,useService}=require("@web/core/utils/hooks");const{scrollTo}=require("@web/core/utils/scrolling");const{HierarchyCard}=require("@web_hierarchy/hierarchy_card");const{useHierarchyNodeDraggable}=require("@web_hierarchy/hierarchy_node_draggable");const HierarchyRenderer=__exports.HierarchyRenderer=class HierarchyRenderer extends Component{static components={HierarchyCard,};static props={model:Object,openRecord:Function,archInfo:Object,};static template="web_hierarchy.HierarchyRenderer";setup(){this.rendererRef=useRef("renderer");this.notification=useService("notification");if(this.canDragAndDropRecord){useHierarchyNodeDraggable({ref:this.rendererRef,enable:this.draggable,elements:".o_hierarchy_node_container",handle:".o_hierarchy_node",rows:".o_hierarchy_row",ignore:"button",onDragStart:({addClass,element})=>{addClass(element,"o_hierarchy_dragged");addClass(element.querySelector(".o_hierarchy_node"),"shadow");},onDragEnd:({removeClass,element,row,hierarchyRow})=>{removeClass(element,"o_hierarchy_dragged");if(row){removeClass(row,"o_hierarchy_hover");}
+if(hierarchyRow){removeClass(hierarchyRow,"o_hierarchy_hover");}},onDrop:(params)=>{this.nodeDrop(params);},onElementEnter:({addClass,element})=>{addClass(element,"o_hierarchy_hover");},onElementLeave:({removeClass,element})=>{removeClass(element,"o_hierarchy_hover");},onRowEnter:({addClass,row})=>{addClass(row,"o_hierarchy_hover");},onRowLeave:({removeClass,row})=>{removeClass(row,"o_hierarchy_hover");},});}
+this.scrollTarget="none";useBus(this.props.model.bus,"hierarchyScrollTarget",(ev)=>{this.scrollTarget=ev.detail?.scrollTarget||"none";});onPatched(this.onPatched);}
+onPatched(){let row;switch(this.scrollTarget){case"none":return;case"bottom":row=this.rendererRef.el.querySelector(":scope .o_hierarchy_row:last-child");break;case"up":row=this.rendererRef.el.querySelector(":scope .o_hierarchy_row:first-child");break;default:row=this.rendererRef.el.querySelector(`:scope .o_hierarchy_node[data-node-id="${this.scrollTarget}"]`)?.closest(".o_hierarchy_row");}
+this.scrollTarget="none";if(!row){return;}
+scrollTo(row,{behavior:"smooth"});}
+get canDragAndDropRecord(){return this.draggable&&!this.env.isSmall;}
+get draggable(){return this.props.archInfo.draggable;}
+get rows(){const rootNodes=this.props.model.root.rootNodes;const rows=[{nodes:rootNodes}];const processNode=(node,rootNode)=>{const subNodes=node.nodes;if(subNodes.length&&!subNodes.includes(rootNode)){rows.push({parentNode:node,nodes:subNodes});for(const subNode of subNodes){processNode(subNode,rootNode);}}};for(const node of rootNodes){processNode(node,node);}
+return rows;}
+async nodeDrop({element,row,nextRow,newParentNode}){let parentNodeId,parentResId;if(newParentNode){parentNodeId=newParentNode.dataset.nodeId;}else if(nextRow?.dataset.rowId!==row.dataset.rowId){parentNodeId=nextRow.dataset.parentNodeId;if(!parentNodeId){const nodes=this.rows[nextRow.dataset.rowId].nodes||[];if(nodes){parentNodeId=nodes[0].parentNode?.id;if(!parentNodeId){parentResId=nodes[0].parentResId;if(!nodes.every((node)=>node.parentResId===parentResId)){this.notification.add(_t("Impossible to update the parent node of the dragged node because no parent has been found."),{type:"danger",});return;}}}}}
+await this.props.model.updateParentNode(element.dataset.nodeId,{parentResId,parentNodeId});}}
+return __exports;});;
+
+/* /web_hierarchy/static/src/hierarchy_view.js */
+odoo.define('@web_hierarchy/hierarchy_view',['@web/core/registry','@web_hierarchy/hierarchy_arch_parser','@web_hierarchy/hierarchy_controller','@web_hierarchy/hierarchy_model','@web_hierarchy/hierarchy_renderer'],function(require){'use strict';let __exports={};const{registry}=require("@web/core/registry");const{HierarchyArchParser}=require("@web_hierarchy/hierarchy_arch_parser");const{HierarchyController}=require("@web_hierarchy/hierarchy_controller");const{HierarchyModel}=require("@web_hierarchy/hierarchy_model");const{HierarchyRenderer}=require("@web_hierarchy/hierarchy_renderer");const hierarchyView=__exports.hierarchyView={type:"hierarchy",ArchParser:HierarchyArchParser,Controller:HierarchyController,Model:HierarchyModel,Renderer:HierarchyRenderer,buttonTemplate:"web_hierarchy.HierarchyButtons",searchMenuTypes:["filter"],props:(genericProps,view)=>{const{ArchParser,Model,Renderer,buttonTemplate:viewButtonTemplate}=view;const{arch,relatedModels,resModel,buttonTemplate}=genericProps;return{...genericProps,archInfo:new ArchParser().parse(arch,relatedModels,resModel),buttonTemplate:buttonTemplate||viewButtonTemplate,Model,Renderer,};}}
+registry.category("views").add("hierarchy",hierarchyView);return __exports;});;
+
+/* /hr_org_chart/static/src/views/hr_employee_hierarchy/hr_employee_hierarchy_card.js */
+odoo.define('@hr_org_chart/views/hr_employee_hierarchy/hr_employee_hierarchy_card',['@web_hierarchy/hierarchy_card'],function(require){'use strict';let __exports={};const{HierarchyCard}=require("@web_hierarchy/hierarchy_card");const HrEmployeeHierarchyCard=__exports.HrEmployeeHierarchyCard=class HrEmployeeHierarchyCard extends HierarchyCard{static template="hr_org_chart.HrEmployeeHierarchyCard";}
+return __exports;});;
+
+/* /hr_org_chart/static/src/views/hr_employee_hierarchy/hr_employee_hierarchy_renderer.js */
+odoo.define('@hr_org_chart/views/hr_employee_hierarchy/hr_employee_hierarchy_renderer',['@mail/views/web/fields/avatar/avatar','@web_hierarchy/hierarchy_renderer','@hr_org_chart/views/hr_employee_hierarchy/hr_employee_hierarchy_card'],function(require){'use strict';let __exports={};const{Avatar}=require("@mail/views/web/fields/avatar/avatar");const{HierarchyRenderer}=require("@web_hierarchy/hierarchy_renderer");const{HrEmployeeHierarchyCard}=require("@hr_org_chart/views/hr_employee_hierarchy/hr_employee_hierarchy_card");const HrEmployeeHierarchyRenderer=__exports.HrEmployeeHierarchyRenderer=class HrEmployeeHierarchyRenderer extends HierarchyRenderer{static template="hr_org_chart.HrEmployeeHierarchyRenderer";static components={...HierarchyRenderer.components,HierarchyCard:HrEmployeeHierarchyCard,Avatar,};}
+return __exports;});;
+
+/* /hr_org_chart/static/src/views/hr_employee_hierarchy/hr_employee_hierarchy_view.js */
+odoo.define('@hr_org_chart/views/hr_employee_hierarchy/hr_employee_hierarchy_view',['@web/core/registry','@web_hierarchy/hierarchy_view','@hr_org_chart/views/hr_employee_hierarchy/hr_employee_hierarchy_renderer'],function(require){'use strict';let __exports={};const{registry}=require("@web/core/registry");const{hierarchyView}=require("@web_hierarchy/hierarchy_view");const{HrEmployeeHierarchyRenderer}=require("@hr_org_chart/views/hr_employee_hierarchy/hr_employee_hierarchy_renderer");const hrEmployeeHierarchyView=__exports.hrEmployeeHierarchyView={...hierarchyView,Renderer:HrEmployeeHierarchyRenderer,};registry.category("views").add("hr_employee_hierarchy",hrEmployeeHierarchyView);return __exports;});
+
+                    /*******************************************
+                    *  Templates                               *
+                    *******************************************/
+
+                    odoo.define("web.assets_backend_lazy.bundle.xml", ["@web/core/templates"], function(require) {
+                        "use strict";
+                        const { checkPrimaryTemplateParents, registerTemplate, registerTemplateExtension } = require("@web/core/templates");
+                        /* web.assets_backend_lazy */
+                        registerTemplate("web.GraphView.Buttons", `/web/static/src/views/graph/graph_controller.xml`, `<t t-name="web.GraphView.Buttons" xml:space="preserve">
+        <div class="btn-group" role="toolbar" aria-label="Main actions">
+            <ReportViewMeasures measures="model.metaData.measures" activeMeasures="[model.metaData.measure]" onMeasureSelected.bind="this.onMeasureSelected"/>
+        </div>
+        <div class="btn-group" role="toolbar" aria-label="Change graph">
+            <button class="btn btn-secondary fa fa-bar-chart o_graph_button" data-tooltip="Bar Chart" aria-label="Bar Chart" data-mode="bar" t-on-click="() =&gt; this.onModeSelected('bar')" t-att-class="{ active: model.metaData.mode === 'bar' }"/>
+            <button class="btn btn-secondary fa fa-line-chart o_graph_button" data-tooltip="Line Chart" aria-label="Line Chart" data-mode="line" t-on-click="() =&gt; this.onModeSelected('line')" t-att-class="{ active: model.metaData.mode === 'line' }"/>
+            <button class="btn btn-secondary fa fa-pie-chart o_graph_button" data-tooltip="Pie Chart" aria-label="Pie Chart" data-mode="pie" t-on-click="() =&gt; this.onModeSelected('pie')" t-att-class="{ active: model.metaData.mode === 'pie' }"/>
+        </div>
+        <div t-if="model.metaData.mode === 'bar'" class="btn-group" role="toolbar" aria-label="Change graph">
+            <button class="btn btn-secondary fa fa-database o_graph_button" data-tooltip="Stacked" aria-label="Stacked" t-on-click="toggleStacked" t-att-class="{ active: model.metaData.stacked }"/>
+        </div>
+        <div t-if="model.metaData.mode === 'line'" class="btn-group" role="toolbar" aria-label="Change graph">
+            <button class="btn btn-secondary fa fa-database o_graph_button" data-tooltip="Stacked" aria-label="Stacked" t-on-click="toggleStacked" t-att-class="{ active: model.metaData.stacked }"/>
+            <button class="btn btn-secondary fa fa-signal o_graph_button" data-tooltip="Cumulative" aria-label="Cumulative" t-on-click="toggleCumulated" t-att-class="{ active: model.metaData.cumulated }"/>
+        </div>
+        <div t-if="model.metaData.mode !== 'pie'" class="btn-group" role="toolbar" aria-label="Sort graph" name="toggleOrderToolbar">
+            <button class="btn btn-secondary fa fa-sort-amount-desc o_graph_button" data-tooltip="Descending" aria-label="Descending" t-on-click="() =&gt; this.toggleOrder('DESC')" t-att-class="{ active: model.metaData.order === 'DESC' }"/>
+            <button class="btn btn-secondary fa fa-sort-amount-asc o_graph_button" data-tooltip="Ascending" aria-label="Ascending" t-on-click="() =&gt; this.toggleOrder('ASC')" t-att-class="{ active: model.metaData.order === 'ASC' }"/>
+        </div>
+    </t>
+
+    `);
+registerTemplate("web.GraphView", `/web/static/src/views/graph/graph_controller.xml`, `<t t-name="web.GraphView" xml:space="preserve">
+        <div t-att-class="props.className" t-ref="root">
+            <Layout className="model.useSampleModel ? 'o_view_sample_data' : ''" display="props.display">
+                <t t-set-slot="control-panel-additional-actions">
+                    <CogMenu/>
+                </t>
+                <t t-set-slot="layout-actions">
+                    <SearchBar toggler="searchBarToggler"/>
+                </t>
+                <t t-set-slot="control-panel-navigation-additional">
+                    <t t-component="searchBarToggler.component" t-props="searchBarToggler.props"/>
+                </t>
+                <t t-if="model.isReady and model.data">
+					<t t-if="!model.hasData() or model.useSampleModel and props.info.noContentHelp">
+						<ActionHelper noContentHelp="props.info.noContentHelp" showRibbon="model.useSampleModel"/>
+                    </t>
+                    <t t-component="props.Renderer" model="model" buttonTemplate="props.buttonTemplate"/>
+                </t>
+                <t t-elif="model.isReady" t-call="web.NoContentHelper">
+                    <t t-set="title">Invalid data</t>
+                    <t t-set="description">Pie chart cannot mix positive and negative numbers. Try to change your domain to only display positive results</t>
+                </t>
+            </Layout>
+        </div>
+    </t>
+
+`);
+registerTemplate("web.GraphRenderer.CustomTooltip", `/web/static/src/views/graph/graph_renderer.xml`, `<t t-name="web.GraphRenderer.CustomTooltip" xml:space="preserve">
+        <div class="o_graph_custom_tooltip popover show px-2 py-1 pe-none mw-100 position-absolute">
+            <table class="overflow-hidden m-0">
+                <thead>
+                    <tr>
+                        <th class="o_measure align-baseline border-0" t-esc="measure"/>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr t-foreach="tooltipItems" t-as="tooltipItem" t-key="tooltipItem_index">
+                        <td>
+                            <span class="o_square badge p-2 rounded-0 align-middle me-2" t-attf-style="background-color: {{ tooltipItem.boxColor }}"> </span>
+                            <small class="o_label d-inline-block text-truncate align-middle smaller" t-attf-style="max-width: {{ maxWidth }}" t-esc="tooltipItem.label"/>
+                        </td>
+                        <td class="o_value ps-2 text-end fw-bolder">
+                            <small class="smaller">
+                                <t t-out="tooltipItem.value"/>
+                                <t t-if="mode === 'pie' and tooltipItem.percentage">
+                                    (<t t-esc="tooltipItem.percentage"/>%)
+                                </t>
+                            </small>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </t>
+
+    `);
+registerTemplate("web.GraphRenderer", `/web/static/src/views/graph/graph_renderer.xml`, `<t t-name="web.GraphRenderer" xml:space="preserve">
+        <div t-att-class="'o_graph_renderer o_renderer h-100 d-flex flex-column border-top ' + props.class" t-ref="root">
+            <t t-if="model.data.exceeds">
+                <div class="alert alert-info text-center o_graph_alert m-3 mb-2" role="status">
+                    There are too many data. The graph only shows a sample. Use the filters to refine the scope.
+                    <a class="o_graph_load_all_btn" href="#" t-on-click="() =&gt; this.loadAll()">
+                        Load everything anyway.
+                    </a>
+                </div>
+            </t>
+            <div class="d-flex d-print-none gap-1 flex-shrink-0 mt-2 mx-3 mb-3 overflow-x-auto">
+                <t t-call="{{ props.buttonTemplate }}"/>
+            </div>
+            <div t-if="model.hasData()" class="o_graph_canvas_container flex-grow-1 position-relative px-3 pb-3" t-ref="container">
+                <canvas t-custom-click="(ev, isMiddleClick) =&gt; this.onGraphClicked(ev, isMiddleClick)" t-ref="canvas"/>
+            </div>
+        </div>
+    </t>
+
+`);
+registerTemplate("web.PivotView.Buttons", `/web/static/src/views/pivot/pivot_controller.xml`, `<t t-name="web.PivotView.Buttons" xml:space="preserve">
+        <div class="o_pivot_buttons d-flex d-print-none gap-1 mt-2 mx-3 mb-3">
+            <div class="btn-group" role="toolbar" aria-label="Main actions">
+                <ReportViewMeasures measures="model.metaData.measures" activeMeasures="model.metaData.activeMeasures" onMeasureSelected.bind="this.onMeasureSelected"/>
+            </div>
+            <div class="btn-group" role="toolbar" aria-label="Pivot settings">
+                <t t-set="noDataDisplayed" t-value="!model.hasData() || !model.metaData.activeMeasures.length"/>
+                <button class="btn btn-secondary fa fa-exchange o_pivot_flip_button" t-on-click="onFlipButtonClicked" data-tooltip="Flip axis" aria-label="Flip axis" t-attf-disabled="{{noDataDisplayed ? 'disabled' : false}}"/>
+                <button class="btn btn-secondary fa fa-arrows o_pivot_expand_button" t-on-click="onExpandButtonClicked" data-tooltip="Expand all" aria-label="Expand all" t-attf-disabled="{{noDataDisplayed ? 'disabled' : false}}"/>
+                <button class="btn btn-secondary fa fa-download o_pivot_download" t-on-click="onDownloadButtonClicked" data-tooltip="Download xlsx" aria-label="Download xlsx" t-attf-disabled="{{noDataDisplayed ? 'disabled' : false}}"/>
+            </div>
+        </div>
+    </t>
+
+    `);
+registerTemplate("web.PivotView", `/web/static/src/views/pivot/pivot_controller.xml`, `<t t-name="web.PivotView" xml:space="preserve">
+        <div t-att-class="props.className" t-ref="root">
+            <Layout className="model.useSampleModel ? 'o_view_sample_data' : ''" display="props.display">
+                <t t-set-slot="control-panel-additional-actions">
+                    <CogMenu/>
+                </t>
+                <t t-set-slot="layout-actions">
+                    <SearchBar toggler="searchBarToggler"/>
+                </t>
+                <t t-set-slot="control-panel-navigation-additional">
+                    <t t-component="searchBarToggler.component" t-props="searchBarToggler.props"/>
+                </t>
+				<t t-if="model.isReady and displayNoContent">
+    				<ActionHelper noContentHelp="props.info.noContentHelp" showRibbon="model.useSampleModel"/>
+                </t>
+                <t t-if="model.isReady" t-component="props.Renderer" model="model" buttonTemplate="props.buttonTemplate"/>
+            </Layout>
+        </div>
+    </t>
+
+`);
+registerTemplate("web.PivotRenderer", `/web/static/src/views/pivot/pivot_renderer.xml`, `<t t-name="web.PivotRenderer" xml:space="preserve">
+        <div>
+            <t t-call="{{ props.buttonTemplate }}"/>
+            <div t-if="model.hasData() and model.metaData.activeMeasures.length" t-att-class="env.isSmall ? 'table-responsive' : ''" class="o_pivot mx-3">
+                <table class="table-hover table table-sm table-bordered table-borderless" t-att-class="{ o_enable_linking: !model.metaData.disableLinking }" t-ref="table">
+                    <thead>
+                        <tr t-foreach="table.headers" t-as="row" t-key="'header_' + row_index" class="border-top-0">
+                            <t t-foreach="row" t-as="cell" t-key="'header_row_' + cell_index">
+                                <t t-if="cell.measure" t-call="web.PivotMeasure"/>
+                                <t t-elif="cell.isLeaf !== undefined">
+                                    <t t-call="web.PivotHeader.title">
+                                        <t t-set="isXAxis" t-value="true"/>
+                                        <t t-set="isInHead" t-value="true"/>
+                                    </t>
+                                </t>
+                                <th t-else="" t-att-colspan="cell.width" t-att-rowspan="cell.height" class="border-0 bg-100 fw-normal" t-att-class="{ 'border-0': cell_index != 0 }"/>
+                            </t>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-foreach="table.rows" t-as="row" t-key="'row_' + row_index">
+                            <t t-call="web.PivotHeader.title">
+                                <t t-set="cell" t-value="row"/>
+                                <t t-set="isXAxis" t-value="false"/>
+                                <t t-set="isInHead" t-value="false"/>
+                            </t>
+                            <t t-foreach="row.subGroupMeasurements" t-as="cell" t-key="'row_cell_' + cell_index">
+                                <td class="o_pivot_cell_value bg-100" t-att-class="{                                         o_empty: cell.value === undefined,                                         'cursor-pointer': cell.value !== undefined and !model.metaData.disableLinking,                                         'fw-bold': cell.isBold,                                     }" t-custom-click.synthetic="(ev, isMiddleClick) =&gt; this.onOpenView(cell, isMiddleClick)" t-on-mouseover="onMouseEnter" t-on-mouseout="onMouseLeave">
+                                    <t t-if="cell.value !== undefined">
+                                        <div t-if="model.metaData.measures[cell.measure].type === 'boolean'" class="o_value">
+                                            <CheckBox disabled="true" value="cell.value"/>
+                                        </div>
+                                        <div t-else="" class="o_value">
+                                            <t t-set="formattedValue" t-value="getFormattedValue(cell)"/>
+                                            <span t-att-data-tooltip="formattedValue.help">
+                                                <t t-esc="formattedValue.value"/>
+                                                <sup t-if="formattedValue.currencies" class="p-1 fw-bolder text-info" t-on-mouseover.stop="(ev) =&gt; this.openMultiCurrencyPopover(ev, formattedValue.rawValue, formattedValue.currencies)" t-on-touchstart.stop="(ev) =&gt; this.openMultiCurrencyPopover(ev, formattedValue.rawValue, formattedValue.currencies)">?</sup>
+                                            </span>
+                                        </div>
+                                    </t>
+                                </td>
+                            </t>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <PivotDropdown state="dropdown.state" manual="true">
+                <t t-set-slot="content">
+                    <t t-call="web.PivotHeader.menu"/>
+                </t>
+            </PivotDropdown>
+        </div>
+    </t>
+
+    `);
+registerTemplate("web.PivotHeader.menu", `/web/static/src/views/pivot/pivot_renderer.xml`, `<t t-name="web.PivotHeader.menu" xml:space="preserve">
+        <t t-set="currentGroup" t-value="null"/>
+        <t t-foreach="groupByItems" t-as="item" t-key="item.id">
+            <t t-if="currentGroup !== null and currentGroup !== item.groupNumber">
+                <div class="dropdown-divider" role="separator"/>
+            </t>
+            <t t-if="item.fieldType === 'properties'">
+                <PropertiesGroupByItem item="item" onGroup.bind="onGroupBySelected"/>
+            </t>
+            <t t-elif="item.options">
+                <Dropdown>
+                    <button class="o_menu_item" t-esc="item.description"/>
+                    <t t-set-slot="content">
+                        <t t-set="subGroup" t-value="null"/>
+                        <t t-foreach="item.options" t-as="option" t-key="option.id">
+                            <t t-if="subGroup !== null and subGroup !== option.groupNumber">
+                                <div class="dropdown-divider" role="separator"/>
+                            </t>
+                            <DropdownItem class="'o_item_option'" t-esc="option.description" onSelected="() =&gt; this.onGroupBySelected({ itemId: item.id, optionId: option.id})"/>
+                            <t t-set="subGroup" t-value="option.groupNumber"/>
+                        </t>
+                    </t>
+                </Dropdown>
+            </t>
+            <t t-else="">
+                <DropdownItem class="'o_menu_item'" t-esc="item.description" onSelected="() =&gt; this.onGroupBySelected({ itemId: item.id })"/>
+            </t>
+            <t t-set="currentGroup" t-value="item.groupNumber"/>
+        </t>
+        <t t-if="!hideCustomGroupBy and fields.length">
+            <div t-if="groupByItems.length" role="separator" class="dropdown-divider"/>
+            <CustomGroupByItem fields="fields" onAddCustomGroup.bind="onAddCustomGroupBy"/>
+        </t>
+    </t>
+
+    `);
+registerTemplate("web.PivotHeader.title", `/web/static/src/views/pivot/pivot_renderer.xml`, `<t t-name="web.PivotHeader.title" xml:space="preserve">
+        <t t-set="padding" t-value="5 + cell.indent * 30"/>
+        <th class="bg-view text-nowrap cursor-pointer fw-normal user-select-none" t-att-colspan="isXAxis ? cell.width : undefined" t-att-rowspan="isXAxis ? cell.height : undefined" t-att-class="{                 o_pivot_header_cell_closed: cell.isLeaf,                 o_pivot_header_cell_opened: !cell.isLeaf,                 'border-top': isInHead,             }" t-attf-style="{{                 isXAxis                     ? undefined                     : l10n.direction === 'ltr'                         ? 'padding-left: ' + padding + 'px;'                         : 'padding-right: ' + padding + 'px;'             }}" t-att-data-tooltip="cell.label" t-attf-data-tooltip-position="{{ l10n.direction === 'ltr' ? 'right' : 'left' }}" t-on-pointerdown.capture.stop.synthetic="" t-on-click.stop.synthetic="(ev) =&gt; this.onHeaderClick(ev, cell, isXAxis)">
+            <i t-attf-class="fa fa-{{ cell.isLeaf ? 'plus-square' : 'minus-square-o' }} me-1"/>
+            <span t-esc="cell.title"/>
+        </th>
+    </t>
+
+    `);
+registerTemplate("web.PivotMeasure", `/web/static/src/views/pivot/pivot_renderer.xml`, `<t t-name="web.PivotMeasure" xml:space="preserve">
+        <th class="bg-view text-muted text-center text-nowrap fw-normal o_pivot_measure_row cursor-pointer user-select-none" t-att-colspan="cell.width" t-att-rowspan="cell.height" t-att-class="{                 o_pivot_sort_order_asc: cell.order === 'asc',                 o_pivot_sort_order_desc: cell.order === 'desc',             }" t-on-click.prevent="() =&gt; this.onMeasureClick(cell)" t-on-mouseover="onMouseEnter" t-on-mouseout="onMouseLeave">
+            <t t-esc="cell.title"/>
+            <i t-if="cell.order === 'asc' || cell.order ==='desc'" t-attf-class="fa fa-caret-{{ cell.order === 'asc' ? 'up' : 'down' }} ms-1"/>
+        </th>
+    </t>
+
+`);
+registerTemplate("mail.ActivityCell", `/mail/static/src/views/web/activity/activity_cell.xml`, `<t t-name="mail.ActivityCell" xml:space="preserve">
+        <div class="h-100 cursor-pointer p-1 d-flex flex-column justify-content-between" t-on-click="onClick">
+            <div class="d-flex position-relative" t-ref="content">
+                <div class="position-absolute text-truncate px-2 w-100" t-out="displayedSummaries"/>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mt-4 px-2">
+                <div class="o-mail-ActivityCell-deadline" t-out="reportingDateFormatted"/>
+                <div class="d-flex justify-content-end">
+                    <div t-if="props.userAssignedIds" class="d-flex justify-content-start">
+                        <Avatar t-if="props.userAssignedIds.length &gt; 0" resModel="'res.users'" resId="props.userAssignedIds[0]" displayName="''" noSpacing="true"/>
+                        <Avatar t-if="props.userAssignedIds.length &gt; 1" resModel="'res.users'" resId="props.userAssignedIds[1]" displayName="''" noSpacing="true"/>
+                        <t t-set="nAdditionalAssignee" t-value="props.userAssignedIds.length - 2"/>
+                        <span t-if="nAdditionalAssignee &gt; 0">+<t t-out="nAdditionalAssignee"/></span>
+                    </div>
+                    <div t-else=""/>
+                    <div t-if="props.attachmentsInfo and ongoingActivityCount == 0" class="d-flex w-100 justify-content-center gap-1 px-2">
+                        <a t-attf-href="/web/content/#{props.attachmentsInfo.most_recent_id}?download=true" t-on-click.stop="" t-out="props.attachmentsInfo.most_recent_name" class="d-inline-block text-truncate" style="max-width: 120px;"/>
+                        <div t-if="props.attachmentsInfo.count &gt; 1" class="text-nowrap">
+                            +<t t-out="props.attachmentsInfo.count - 1"/>
+                        </div>
+                    </div>
+                    <div t-if="totalActivityCount &gt; 1" class="o-mail-ActivityCell-counter badge bg-light rounded-pill border-0 m-1 me-0">
+                        <t t-if="totalActivityCount == ongoingActivityCount or ongoingActivityCount == 0" t-out="totalActivityCount"/>
+                        <t t-else="">
+                            <t t-out="ongoingActivityCount"/> / <t t-out="totalActivityCount"/>
+                        </t>
+                    </div>
+                    <div t-else=""/>
+                </div>
+            </div>
+        </div>
+    </t>
+
+`);
+registerTemplate("mail.ActivityController", `/mail/static/src/views/web/activity/activity_controller.xml`, `<t t-name="mail.ActivityController" xml:space="preserve">
+        <div t-att-class="props.className + (ui.isSmall ? ' o_action_delegate_scroll': '')">
+            <Layout display="props.display">
+                <t t-set-slot="control-panel-additional-actions">
+                    <CogMenu/>
+                </t>
+                <t t-set-slot="layout-actions">
+                    <SearchBar/>
+                </t>
+                <t t-component="props.Renderer" t-props="rendererProps"/>
+            </Layout>
+        </div>
+    </t>
+`);
+registerTemplate("mail.ActivityRecord", `/mail/static/src/views/web/activity/activity_record.xml`, `<t t-name="mail.ActivityRecord" xml:space="preserve">
+    <td class="o_activity_record p-2 cursor-pointer" t-custom-click="(ev, newWindow) =&gt; this.props.openRecord(this.props.record, { newWindow })">
+        <t t-call="{{ recordTemplate }}" t-call-context="this.getRenderingContext()"/>
+    </td>
+</t>
+
+`);
+registerTemplate("mail.ActivityViewHeader", `/mail/static/src/views/web/activity/activity_renderer.xml`, `<t t-name="mail.ActivityViewHeader" xml:space="preserve">
+    <thead>
+        <tr>
+            <th/>
+            <th t-foreach="activeColumns" t-as="type" t-key="type.id" class="o_activity_type_cell p-3" t-attf-class="{{ activeFilter.activityTypeId === type.id ? 'o_activity_filter_' + activeFilter.progressValue.active : '' }}" t-attf-width="{{100/activeColumns.length}}%">
+                <div>
+                    <span t-esc="type.name"/>
+                    <span t-if="type.template_ids.length &gt; 0" class="dropdown float-end">
+                        <i class="oi oi-ellipsis-v oi-fw" data-bs-toggle="dropdown"/>
+                        <div class="dropdown-menu">
+                            <t t-foreach="type.template_ids" t-as="template" t-key="template.id">
+                                <div data-tooltip="This action will send an email." class="o_template_element o_send_mail_template cursor-pointer" t-on-click="() =&gt; props.onSendMailTemplate(template.id, type.id)">
+                                    <i class="fa fa-envelope fa-fw"/> <t t-esc="template.name"/>
+                                </div>
+                            </t>
+                        </div>
+                    </span>
+                </div>
+                <div class="o_activity_counter d-flex align-items-center justify-content-between mb-3 h-0 mt24">
+                    <t t-set="group" t-value="getGroupInfo(type)"/>
+                    <ColumnProgress t-if="group.data.count" group="group.data" aggregate="group.aggregate" aggregateOn="group.aggregateOn" progressBar="group.data.progressBar" onBarClicked.bind="group.data.filterProgressValue"/>
+                </div>
+            </th>
+            <th class="align-middle" style="width: 32px; min-width: 32px">
+                <div class="o_optional_columns_dropdown text-center border-top-0">
+                    <Dropdown position="'bottom-end'">
+                        <button class="btn p-0" tabindex="-1">
+                            <i class="o_optional_columns_dropdown_toggle oi oi-fw oi-settings-adjust"/>
+                        </button>
+
+                        <t t-set-slot="content">
+                            <t t-foreach="props.activityTypes" t-as="type" t-key="type_index">
+                                <DropdownItem closingMode="'none'" onSelected="() =&gt; this.toggleDisplayColumn(type.id)">
+                                    <CheckBox onChange="() =&gt; this.toggleDisplayColumn(type.id)" value="storageActiveColumns[type.id]" name="type.name">
+                                        <t t-esc="type.name"/>
+                                    </CheckBox>
+                                </DropdownItem>
+                            </t>
+                        </t>
+                    </Dropdown>
+                </div>
+            </th>
+        </tr>
+    </thead>
+</t>
+
+`);
+registerTemplate("mail.ActivityViewBody", `/mail/static/src/views/web/activity/activity_renderer.xml`, `<t t-name="mail.ActivityViewBody" xml:space="preserve">
+    <tbody>
+        <t t-foreach="props.activityResIds" t-as="resId" t-key="resId">
+            <t t-call="mail.ActivityViewRow"/>
+        </t>
+    </tbody>
+</t>
+
+`);
+registerTemplate("mail.ActivityViewRow", `/mail/static/src/views/web/activity/activity_renderer.xml`, `<t t-name="mail.ActivityViewRow" xml:space="preserve">
+    <t t-set="record" t-value="getRecord(resId)"/>
+    <t t-if="record">
+        <tr class="o_data_row h-100" t-attf-class="{{ activeFilter.resIds.has(resId) ? 'o_activity_filter_' + activeFilter.progressValue.active : '' }}">
+                <ActivityRecord archInfo="props.archInfo" record="record" openRecord="props.openRecord"/>
+                <t t-foreach="activeColumns" t-as="type" t-key="type.id">
+                    <t t-call="mail.ActivityViewCell"/>
+                </t>
+            <td/>
+        </tr>
+    </t>
+</t>
+
+`);
+registerTemplate("mail.ActivityViewCell", `/mail/static/src/views/web/activity/activity_renderer.xml`, `<t t-name="mail.ActivityViewCell" xml:space="preserve">
+    <t t-set="activityGroup" t-value="props.groupedActivities[resId] and props.groupedActivities[resId][type.id] or {count: 0, ids: [], state: false}"/>
+    <t t-set="isCellHidden" t-value="!activeFilter.resIds.has(resId) and activeFilter.activityTypeId === type.id"/>
+    <td t-if="activityGroup.state and !isCellHidden" t-attf-class="o_activity_summary_cell p-0 h-100 {{activityGroup.state}} {{ activeFilter.resIds.has(resId) ? 'o_activity_filter_' + activeFilter.progressValue.active : '' }}">
+        <ActivityCell activityIds="activityGroup.ids" activityTypeId="type.id" attachmentsInfo="activityGroup.attachments_info" reportingDate="activityGroup.reporting_date" countByState="activityGroup.count_by_state" summaries="activityGroup.summaries" reloadFunc="props.onReloadData" resId="record.resId" resModel="record.resModel" userAssignedIds="activityGroup.user_assigned_ids"/>
+    </td>
+    <td t-else="" class="o_activity_summary_cell o_activity_empty_cell cursor-pointer" t-attf-class="{{ activeFilter.resIds.has(resId) ? 'o_activity_filter_' + activeFilter.progressValue.active : '' }}" t-on-click.prevent.stop="() =&gt; props.onEmptyCell(resId, type.id)">
+        <i data-tooltip="Create" class="text-center fa fa-plus mt-2 align-items-center justify-content-center h-100"/>
+    </td>
+</t>
+
+`);
+registerTemplate("mail.ActivityViewFooter", `/mail/static/src/views/web/activity/activity_renderer.xml`, `<t t-name="mail.ActivityViewFooter" xml:space="preserve">
+    <tfoot class="o_activity_view_table_footer">
+        <tr class="o_data_row">
+            <td class="p-3" colspan="100">
+                <span class="btn btn-link o_record_selector cursor-pointer" t-on-click.prevent.stop="props.scheduleActivity">
+                    <i class="fa fa-plus pe-2"/> Schedule activity
+                </span>
+            </td>
+        </tr>
+    </tfoot>
+</t>
+
+`);
+registerTemplate("mail.ActivityRenderer", `/mail/static/src/views/web/activity/activity_renderer.xml`, `<div t-name="mail.ActivityRenderer" class="o_activity_view h-100" xml:space="preserve">
+    <t t-if="!props.activityTypes.length" t-call="web.NoContentHelper"/>
+    <table t-else="" class="table table-bordered mb-5 bg-view o_activity_view_table" t-attf-style="max-width: {{activeColumns.length &gt; 4 ? 100 : 20 * (activeColumns.length + 1) }}%; min-width: 600px;">
+        <t t-call="mail.ActivityViewHeader"/>
+        <t t-call="mail.ActivityViewBody"/>
+        <t t-call="mail.ActivityViewFooter"/>
+    </table>
+</div>
+
+`);
+registerTemplate("project.BurndownChartView.Buttons", `/project/static/src/views/burndown_chart/burndown_chart_view.xml`, `<t t-name="project.BurndownChartView.Buttons" t-inherit="web.GraphView.Buttons" t-inherit-mode="primary" xml:space="preserve">
+        <xpath expr="//button[@data-mode='pie']" position="replace">
+        </xpath>
+        <xpath expr="//div[@role='toolbar'][@name='toggleOrderToolbar']" position="replace">
+        </xpath>
+    </t>
+
+`);
+registerTemplate("web_hierarchy.HierarchyCard", `/web_hierarchy/static/src/hierarchy_card.xml`, `<t t-name="web_hierarchy.HierarchyCard" xml:space="preserve">
+        <div class="o_hierarchy_node_container d-flex flex-column" t-att-class="classNames" t-att-data-node-id="props.node.id">
+            <div class="o_hierarchy_node_button_container w-100 d-flex justify-content-end">
+                <button t-if="props.node.canShowParentNode" name="hierarchy_search_parent_node" class="btn p-0" t-on-click.synthetic="onClickArrowUp">
+                    <i class="fa fa-chevron-up"/>
+                </button>
+            </div>
+            <div class="o_hierarchy_node w-100 h-100 d-flex flex-column justify-content-between border" t-att-class="{                     'border-bottom-0': props.node.nodes.length or props.node.canShowChildNodes,                 }" t-att-data-node-id="props.node.id" t-custom-click.synthetic="onGlobalClick">
+                <div class="o_hierarchy_node_content">
+                    <Record resModel="props.node.model.resModel" resId="props.node.resId" fields="props.node.model.fields" activeFields="props.node.model.activeFields" values="props.node.data" t-slot-scope="data">
+                        <t t-call="{{ templates['hierarchy-box'] }}" t-call-context="getRenderingContext(data)"/>
+                    </Record>
+                </div>
+                <button t-if="props.node.nodes.length or props.node.canShowChildNodes" name="hierarchy_search_subsidiaries" class="o_hierarchy_node_button btn rounded-0 d-grid" t-att-class="{                             'btn-primary': !props.node.nodes.length,                             'btn-secondary': props.node.nodes.length &gt; 0,                         }" t-on-click.synthetic="onClickArrowDown">
+                    <t t-if="!props.node.nodes.length">
+                        <span style="grid-column: 2;">
+                            Unfold
+                        </span>
+                        <span class="text-end" style="grid-column: 3;">
+                            <t t-out="props.node.childResIds.length"/>
+                            <i class="fa ps-1" t-att-class="props.archInfo.icon"/>
+                        </span>
+                    </t>
+                    <t t-else="">
+                        <span style="grid-column: 2;">
+                            Fold
+                        </span>
+                    </t>
+                </button>
+            </div>
+        </div>
+    </t>
+
+`);
+registerTemplate("web_hierarchy.HierarchyButtons", `/web_hierarchy/static/src/hierarchy_controller.xml`, `<t t-name="web_hierarchy.HierarchyButtons" xml:space="preserve">
+        <div class="d-flex o_grid_buttons">
+            <div class="me-2" t-if="props.archInfo.activeActions.create and (!props.archInfo.createInline or displayNoContent)">
+                <button class="btn btn-primary o_hierarchy_button_add" type="button" t-on-click="props.createRecord">
+                    New
+                </button>
+            </div>
+        </div>
+    </t>
+    `);
+registerTemplate("web_hierarchy.HierarchyView", `/web_hierarchy/static/src/hierarchy_controller.xml`, `<t t-name="web_hierarchy.HierarchyView" xml:space="preserve">
+        <div t-attf-class="o_hierarchy_view {{ isMobile ? 'o_action_delegate_scroll' : '' }} {{ props.className }}" t-ref="root">
+            <Layout className="(model.useSampleModel ? 'o_view_sample_data' : '') + ' d-flex'" display="props.display">
+                <t t-set-slot="control-panel-additional-actions">
+                    <CogMenu/>
+                </t>
+                <t t-set-slot="layout-buttons">
+                    <t t-call="{{ props.buttonTemplate }}"/>
+                </t>
+                <t t-set-slot="layout-actions">
+                    <SearchBar toggler="searchBarToggler"/>
+                </t>
+                <t t-set-slot="control-panel-navigation-additional">
+                    <t t-component="searchBarToggler.component" t-props="searchBarToggler.props"/>
+                </t>
+                <t t-set-slot="default" t-slot-scope="layout">
+                <t t-if="displayNoContent">
+					<ActionHelper noContentHelp="props.info.noContentHelp"/>
+                </t>
+                    <t t-component="props.Renderer" model="model" openRecord.bind="openRecord" archInfo="props.archInfo"/>
+                </t>
+            </Layout>
+        </div>
+    </t>
+`);
+registerTemplate("web_hierarchy.HierarchyRenderer", `/web_hierarchy/static/src/hierarchy_renderer.xml`, `<t t-name="web_hierarchy.HierarchyRenderer" xml:space="preserve">
+        <div class="o_hierarchy_renderer w-100 d-flex justify-content-center" t-ref="renderer">
+            <div class="o_hierarchy_container d-flex flex-column w-100 w-lg-75 h-100 p-2">
+                <t t-foreach="rows" t-as="row" t-key="row_index">
+                    <t t-set="previousRow" t-value="!row_first ? rows[row_index - 1] : null"/>
+                    <t t-if="!row_first">
+                        <div t-if="row.parentNode and previousRow.nodes.length &gt; 1" class="o_hierarchy_parent_node_container d-flex justify-content-center">
+                            <span t-esc="row.parentNode.data.display_name || row.parentNode.data.name"/>
+                        </div>
+                        <div class="o_hierarchy_separator d-flex">
+                            <div class="o_hierarchy_line_part o_hierarchy_line_left"/>
+                            <div class="o_hierarchy_line_part o_hierarchy_line_right"/>
+                        </div>
+                    </t>
+                    <div class="o_hierarchy_row row justify-content-center flex-wrap row-cols-2 row-cols-lg-5 g-2 g-lg-3" t-att-class="{ 'pb-4': row_last }" t-att-data-parent-node-id="row.parentNode?.id" t-att-data-row-id="row_index">
+                        <t t-foreach="row.nodes" t-as="node" t-key="node.id">
+                            <HierarchyCard node="node" openRecord="props.openRecord" archInfo="props.archInfo"/>
+                        </t>
+                    </div>
+                </t>
+            </div>
+        </div>
+    </t>
+
+`);
+registerTemplate("hr_org_chart.HrEmployeeHierarchyCard", `/hr_org_chart/static/src/views/hr_employee_hierarchy/hr_employee_hierarchy_card.xml`, `<t t-name="hr_org_chart.HrEmployeeHierarchyCard" t-inherit="web_hierarchy.HierarchyCard" xml:space="preserve">
+        <xpath expr="//button[@name='hierarchy_search_subsidiaries']" position="attributes">
+            <attribute name="class" separator=" " remove="d-grid"/>
+            <attribute name="class" separator=" " remove="rounded-0"/>
+        </xpath>
+        <xpath expr="//button[@name='hierarchy_search_subsidiaries']" position="inside">
+            <t t-out="props.node.childResIds.length"/> people
+        </xpath>
+        <xpath expr="//button[@name='hierarchy_search_subsidiaries']/t[@t-if]" position="replace">
+            <t t-if="!props.node.nodes.length">
+                <i class="fa fa-fw fa-caret-right"/>
+            </t>
+        </xpath>
+        <xpath expr="//button[@name='hierarchy_search_subsidiaries']/t[@t-else]" position="replace">
+            <t t-else="">
+                <i class="fa fa-fw fa-caret-down"/>
+            </t>
+        </xpath>
+    </t>
+
+`);
+registerTemplate("hr_org_chart.HrEmployeeHierarchyRenderer", `/hr_org_chart/static/src/views/hr_employee_hierarchy/hr_employee_hierarchy_renderer.xml`, `<t t-name="hr_org_chart.HrEmployeeHierarchyRenderer" t-inherit="web_hierarchy.HierarchyRenderer" xml:space="preserve">
+        <xpath expr="//div[hasclass('o_hierarchy_parent_node_container')]/span" position="replace">
+            <Avatar resModel="row.parentNode.model.resModel" resId="row.parentNode.resId" displayName="row.parentNode.data.display_name || row.parentNode.data.name"/>
+        </xpath>
+    </t>
+
+`);
+                    });
