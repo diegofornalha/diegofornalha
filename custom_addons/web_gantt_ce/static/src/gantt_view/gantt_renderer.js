@@ -27,6 +27,11 @@ export class GanttRenderer extends Component {
             sourceTaskId: null,
             tempLine: null,
         };
+        this.isFullscreen = false;
+        this.pendingDeleteArrow = null;
+
+        // Load saved preferences
+        this.loadPreferences();
 
         onMounted(() => {
             this.renderGantt();
@@ -60,11 +65,103 @@ export class GanttRenderer extends Component {
     handleKeyDown(e) {
         if ((e.key === 'Delete' || e.key === 'Backspace') && this.selectedArrow) {
             e.preventDefault();
-            this.deleteSelectedDependency();
+            this.confirmDeleteDependency();
         }
         if (e.key === 'Escape') {
             this.deselectArrow();
             this.cancelArrowDrag();
+            this.closeConfirmDialog();
+            if (this.isFullscreen) {
+                this.toggleFullscreen();
+            }
+        }
+    }
+
+    // Confirmation dialog for delete
+    confirmDeleteDependency() {
+        this.pendingDeleteArrow = this.selectedArrow;
+
+        const overlay = document.createElement('div');
+        overlay.className = 'gantt-confirm-overlay';
+        overlay.id = 'gantt-confirm-overlay';
+
+        const dialog = document.createElement('div');
+        dialog.className = 'gantt-confirm-dialog';
+        dialog.id = 'gantt-confirm-dialog';
+        dialog.innerHTML = `
+            <h4>Remover Dependência</h4>
+            <p>Tem certeza que deseja remover esta dependência?</p>
+            <div class="dialog-buttons">
+                <button class="btn-cancel">Cancelar</button>
+                <button class="btn-confirm">Remover</button>
+            </div>
+        `;
+
+        document.body.appendChild(overlay);
+        document.body.appendChild(dialog);
+
+        overlay.addEventListener('click', () => this.closeConfirmDialog());
+        dialog.querySelector('.btn-cancel').addEventListener('click', () => this.closeConfirmDialog());
+        dialog.querySelector('.btn-confirm').addEventListener('click', () => {
+            this.deleteSelectedDependency();
+            this.closeConfirmDialog();
+        });
+    }
+
+    closeConfirmDialog() {
+        const overlay = document.getElementById('gantt-confirm-overlay');
+        const dialog = document.getElementById('gantt-confirm-dialog');
+        if (overlay) overlay.remove();
+        if (dialog) dialog.remove();
+        this.pendingDeleteArrow = null;
+    }
+
+    // Preferences management
+    loadPreferences() {
+        try {
+            const saved = localStorage.getItem('gantt_preferences');
+            if (saved) {
+                this.preferences = JSON.parse(saved);
+            } else {
+                this.preferences = {
+                    scale: 'Day',
+                    showWeekends: true,
+                };
+            }
+        } catch (e) {
+            this.preferences = { scale: 'Day', showWeekends: true };
+        }
+    }
+
+    savePreferences() {
+        try {
+            localStorage.setItem('gantt_preferences', JSON.stringify(this.preferences));
+        } catch (e) {
+            console.warn('[Gantt] Could not save preferences');
+        }
+    }
+
+    // Fullscreen toggle
+    toggleFullscreen() {
+        const ganttView = this.ganttRef.el?.closest('.o_gantt_view');
+        if (!ganttView) return;
+
+        this.isFullscreen = !this.isFullscreen;
+
+        if (this.isFullscreen) {
+            ganttView.classList.add('fullscreen');
+            this.updateFullscreenButton('Sair');
+        } else {
+            ganttView.classList.remove('fullscreen');
+            this.updateFullscreenButton('Expandir');
+        }
+    }
+
+    updateFullscreenButton(text) {
+        const btn = document.querySelector('.o_gantt_fullscreen_btn');
+        if (btn) {
+            const icon = this.isFullscreen ? '✕' : '⛶';
+            btn.innerHTML = `<span class="fullscreen-icon">${icon}</span> ${text}`;
         }
     }
 
@@ -94,23 +191,36 @@ export class GanttRenderer extends Component {
 
         const tasks = this.formatTasks();
 
+        // Get user data for avatars
+        const userMap = this.getUserMap();
+
         // Initialize Frappe Gantt
         this.gantt = new Gantt(container, tasks, {
             view_mode: this.viewMode,
             date_format: "YYYY-MM-DD HH:mm",
-            popup_trigger: "click",
+            popup_trigger: "hover", // Changed from click to hover
             custom_popup_html: (task) => {
+                const userData = userMap[task.id] || {};
+                const userName = userData.name || 'Não atribuído';
+                const startDate = this.formatDisplayDate(task.start);
+                const endDate = this.formatDisplayDate(task.end);
                 return `
                     <div class="gantt-popup">
                         <h5>${task.name}</h5>
-                        <p>Start: ${task.start}</p>
-                        <p>End: ${task.end}</p>
-                        <p>Progress: ${task.progress}%</p>
+                        <p>👤 ${userName}</p>
+                        <p>📅 ${startDate} → ${endDate}</p>
+                        <p>📊 Progresso: ${task.progress}%</p>
+                        <p style="font-size: 10px; color: #aaa; margin-top: 8px;">Ctrl+Click para abrir em nova aba</p>
                     </div>
                 `;
             },
-            on_click: (task) => {
-                this.onTaskClick(task);
+            on_click: (task, e) => {
+                // Ctrl+Click or Cmd+Click opens in new tab
+                if (e && (e.ctrlKey || e.metaKey)) {
+                    this.openTaskInNewTab(task);
+                } else {
+                    this.onTaskClick(task);
+                }
             },
             on_date_change: (task, start, end) => {
                 this.onDateChange(task, start, end);
@@ -128,6 +238,145 @@ export class GanttRenderer extends Component {
 
         // Setup dependency creation (drag from task edge)
         this.setupDependencyCreation(container);
+
+        // Highlight weekends
+        this.highlightWeekends(container);
+
+        // Add user avatars to bars
+        this.addUserAvatars(container, userMap);
+    }
+
+    formatDisplayDate(dateStr) {
+        if (!dateStr) return '';
+        const date = new Date(dateStr);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        return `${day}/${month}`;
+    }
+
+    getUserMap() {
+        const userMap = {};
+        const records = this.props.model.data.records || [];
+        records.forEach(record => {
+            const userIds = record.data.user_ids || [];
+            const userName = userIds.length > 0 ?
+                (record.data.user_id?.[1] || 'Atribuído') : 'Não atribuído';
+            userMap[String(record.resId)] = {
+                name: userName,
+                initials: this.getInitials(userName),
+            };
+        });
+        return userMap;
+    }
+
+    getInitials(name) {
+        if (!name || name === 'Não atribuído') return '?';
+        const parts = name.split(' ').filter(p => p.length > 0);
+        if (parts.length >= 2) {
+            return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+        }
+        return name.substring(0, 2).toUpperCase();
+    }
+
+    openTaskInNewTab(task) {
+        const recordId = parseInt(task.id);
+        const baseUrl = window.location.origin;
+        const url = `${baseUrl}/odoo/project.task/${recordId}`;
+        window.open(url, '_blank');
+    }
+
+    highlightWeekends(container) {
+        // Wait for Gantt to render
+        setTimeout(() => {
+            const svg = container.querySelector('svg.gantt');
+            if (!svg) return;
+
+            const dates = svg.querySelectorAll('.upper-text, .lower-text');
+            const gridRows = svg.querySelector('.grid-rows');
+            if (!gridRows) return;
+
+            // Get the date columns from the header
+            const lowerTexts = svg.querySelectorAll('.lower-text');
+            lowerTexts.forEach((text, index) => {
+                const dateText = text.textContent;
+                // Parse date to check if weekend
+                const rect = text.getBoundingClientRect();
+                const svgRect = svg.getBoundingClientRect();
+                const x = rect.left - svgRect.left;
+
+                // Try to determine if this is a weekend column
+                // This is approximate - Frappe Gantt doesn't expose date info directly
+                const day = new Date();
+                day.setDate(day.getDate() + index - Math.floor(lowerTexts.length / 2));
+
+                if (day.getDay() === 0 || day.getDay() === 6) {
+                    // Create weekend highlight
+                    const highlight = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                    const columnWidth = svg.clientWidth / lowerTexts.length;
+                    highlight.setAttribute('x', index * columnWidth);
+                    highlight.setAttribute('y', '0');
+                    highlight.setAttribute('width', columnWidth);
+                    highlight.setAttribute('height', svg.clientHeight);
+                    highlight.setAttribute('class', 'weekend-highlight');
+                    highlight.style.pointerEvents = 'none';
+
+                    // Insert at the beginning so it's behind everything
+                    const firstChild = gridRows.firstChild;
+                    if (firstChild) {
+                        gridRows.insertBefore(highlight, firstChild);
+                    }
+                }
+            });
+        }, 100);
+    }
+
+    addUserAvatars(container, userMap) {
+        setTimeout(() => {
+            const barWrappers = container.querySelectorAll('.bar-wrapper');
+
+            barWrappers.forEach(wrapper => {
+                const taskId = wrapper.getAttribute('data-id');
+                const userData = userMap[taskId];
+                if (!userData) return;
+
+                const bar = wrapper.querySelector('.bar');
+                if (!bar) return;
+
+                const barRect = bar.getBBox();
+
+                // Create avatar group
+                const avatarGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                avatarGroup.setAttribute('class', 'task-avatar');
+
+                // Avatar circle
+                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                circle.setAttribute('cx', barRect.x - 15);
+                circle.setAttribute('cy', barRect.y + barRect.height / 2);
+                circle.setAttribute('r', '10');
+                circle.setAttribute('fill', '#714b67');
+                circle.setAttribute('class', 'avatar-circle');
+
+                // Avatar text (initials)
+                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                text.setAttribute('x', barRect.x - 15);
+                text.setAttribute('y', barRect.y + barRect.height / 2 + 4);
+                text.setAttribute('text-anchor', 'middle');
+                text.setAttribute('fill', 'white');
+                text.setAttribute('font-size', '9');
+                text.setAttribute('font-weight', 'bold');
+                text.textContent = userData.initials;
+
+                avatarGroup.appendChild(circle);
+                avatarGroup.appendChild(text);
+
+                // Add tooltip
+                const title = document.createElementNS('http://www.w3.org/2000/svg', 'title');
+                title.textContent = userData.name;
+                avatarGroup.appendChild(title);
+
+                wrapper.appendChild(avatarGroup);
+            });
+        }, 100);
     }
 
     setupVerticalDrag(container) {

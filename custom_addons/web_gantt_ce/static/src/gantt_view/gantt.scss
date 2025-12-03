@@ -158,6 +158,137 @@
     fill: rgba(113, 75, 103, 0.15);
 }
 
+/* Weekend highlight */
+.gantt .weekend-highlight {
+    fill: rgba(108, 117, 125, 0.08);
+}
+
+/* Fullscreen mode */
+.o_gantt_view.fullscreen {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 10000;
+    background: #ffffff;
+
+    .o_gantt_content {
+        height: calc(100vh - 60px);
+    }
+}
+
+/* Fullscreen button */
+.o_gantt_fullscreen_btn {
+    padding: 6px 10px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    background-color: #ffffff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 14px;
+    color: #495057;
+    transition: all 0.2s ease;
+
+    &:hover {
+        background-color: #f8f9fa;
+        border-color: #714b67;
+        color: #714b67;
+    }
+
+    .fullscreen-icon {
+        font-size: 16px;
+    }
+}
+
+/* Delete confirmation dialog */
+.gantt-confirm-dialog {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #ffffff;
+    padding: 20px 24px;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    z-index: 10001;
+    min-width: 300px;
+
+    h4 {
+        margin: 0 0 12px;
+        font-size: 16px;
+        font-weight: 600;
+        color: #212529;
+    }
+
+    p {
+        margin: 0 0 16px;
+        font-size: 14px;
+        color: #6c757d;
+    }
+
+    .dialog-buttons {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+
+        button {
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+
+            &.btn-cancel {
+                background: #f8f9fa;
+                border: 1px solid #ced4da;
+                color: #495057;
+
+                &:hover {
+                    background: #e9ecef;
+                }
+            }
+
+            &.btn-confirm {
+                background: #dc3545;
+                border: 1px solid #dc3545;
+                color: #ffffff;
+
+                &:hover {
+                    background: #c82333;
+                }
+            }
+        }
+    }
+}
+
+.gantt-confirm-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 10000;
+}
+
+/* User avatar on task bar */
+.gantt {
+    .task-avatar {
+        cursor: pointer;
+
+        .avatar-circle {
+            transition: transform 0.2s ease;
+        }
+
+        &:hover .avatar-circle {
+            transform: scale(1.1);
+        }
+    }
+}
+
 /* Grid styling */
 .gantt {
     .grid-header {
