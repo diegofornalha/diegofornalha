@@ -7,7 +7,7 @@
         <field name="arch" type="xml">
             <gantt date_start="date_assign"
                    date_stop="date_deadline"
-                   default_scale="Half Day"
+                   default_scale="Day"
                    progress="progress"
                    dependency_field="depend_on_ids"
                    color="color"
