@@ -305,6 +305,29 @@
     }
 }
 
+/* Frappe Gantt resize handles - ensure they work */
+svg.gantt {
+    .handle-group {
+        pointer-events: auto !important;
+    }
+
+    .handle {
+        pointer-events: auto !important;
+        cursor: ew-resize !important;
+        visibility: visible !important;
+        opacity: 0;
+        transition: opacity 0.15s ease;
+
+        &:hover {
+            opacity: 1 !important;
+        }
+    }
+
+    .bar-wrapper:hover .handle {
+        opacity: 1 !important;
+    }
+}
+
 /* Vertical drag handle for reordering */
 .gantt {
     .bar-wrapper {

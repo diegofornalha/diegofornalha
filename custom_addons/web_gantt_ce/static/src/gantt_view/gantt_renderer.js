@@ -409,13 +409,11 @@ export class GanttRenderer extends Component {
             const bar = wrapper.querySelector('.bar');
             if (!bar) return;
 
-            // Add visual indicator that bars can be reordered
-            wrapper.style.cursor = 'move';
-
-            // Listen for mousedown on the bar
+            // Listen for mousedown on the bar (not handles)
             bar.addEventListener('mousedown', (e) => {
-                // Don't interfere with resize handles
+                // Don't interfere with resize handles or other elements
                 if (e.target.classList.contains('handle')) return;
+                if (e.target.closest('.handle-group')) return;
 
                 const taskId = wrapper.getAttribute('data-id');
                 const barWrappers = Array.from(container.querySelectorAll('.bar-wrapper'));
