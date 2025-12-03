@@ -78,5 +78,33 @@ export class GanttController extends Component {
         const scale = ev.target.value;
         this.state.scale = scale;
         this.model.setScale(scale);
+        // Save preference
+        this.savePreference('scale', scale);
+    }
+
+    onFullscreenClick() {
+        const ganttView = document.querySelector('.o_gantt_view');
+        if (!ganttView) return;
+
+        const isFullscreen = ganttView.classList.toggle('fullscreen');
+        const btn = document.querySelector('.o_gantt_fullscreen_btn');
+
+        if (btn) {
+            if (isFullscreen) {
+                btn.innerHTML = '<span class="fullscreen-icon">✕</span> Sair';
+            } else {
+                btn.innerHTML = '<span class="fullscreen-icon">⛶</span> Expandir';
+            }
+        }
+    }
+
+    savePreference(key, value) {
+        try {
+            const prefs = JSON.parse(localStorage.getItem('gantt_preferences') || '{}');
+            prefs[key] = value;
+            localStorage.setItem('gantt_preferences', JSON.stringify(prefs));
+        } catch (e) {
+            console.warn('[Gantt] Could not save preference');
+        }
     }
 }

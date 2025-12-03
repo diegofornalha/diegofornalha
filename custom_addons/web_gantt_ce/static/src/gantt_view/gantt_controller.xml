@@ -3,13 +3,18 @@
     <t t-name="web_gantt_ce.GanttController">
         <Layout className="'o_gantt_view'" display="props.display">
             <t t-set-slot="control-panel-additional-actions">
-                <select class="o_gantt_scale_selector form-select" t-on-change="onScaleChange">
-                    <t t-foreach="scales" t-as="scale" t-key="scale">
-                        <option t-att-value="scale" t-att-selected="scale === state.scale">
-                            <t t-esc="scale"/>
-                        </option>
-                    </t>
-                </select>
+                <div class="d-flex gap-2 align-items-center">
+                    <select class="o_gantt_scale_selector form-select" t-on-change="onScaleChange">
+                        <t t-foreach="scales" t-as="scale" t-key="scale">
+                            <option t-att-value="scale" t-att-selected="scale === state.scale">
+                                <t t-esc="scale"/>
+                            </option>
+                        </t>
+                    </select>
+                    <button class="o_gantt_fullscreen_btn" t-on-click="onFullscreenClick" title="Tela cheia">
+                        <span class="fullscreen-icon">⛶</span> Expandir
+                    </button>
+                </div>
             </t>
             <t t-set-slot="layout-actions"/>
             <div class="o_gantt_content h-100">
