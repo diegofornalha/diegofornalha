@@ -29519,3 +29519,24 @@ FileNotFoundError: [Errno 2] No such file or directory: '/Users/2a/Desktop/odoo1
 2025-12-03 16:20:11,715 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 16:20:11] "POST /web/dataset/call_kw/mail.push.device/register_devices#mail.push.device.register_devices HTTP/1.1" 200 - 6 0.004 0.003
 2025-12-03 16:20:13,154 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 16:20:13] "GET /web/service-worker.js HTTP/1.1" 200 - 1 0.001 0.006
 2025-12-03 16:20:16,476 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 16:20:16] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.013 0.015
+2025-12-03 16:23:10,333 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc="title or 'Odoo'" in template 184. Replace by @t-out 
+2025-12-03 16:23:10,334 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='request.csrf_token(None)' in template 184. Replace by @t-out 
+2025-12-03 16:23:10,334 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='debug' in template 184. Replace by @t-out 
+2025-12-03 16:23:10,338 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 16:23:10] "GET /odoo/project/3/tasks?view_type=gantt HTTP/1.1" 200 - 65 0.034 0.311
+2025-12-03 16:23:10,387 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 16:23:10] "GET /web/assets/ddc6edf/web.assets_web.min.css HTTP/1.1" 200 - 3 0.002 0.004
+2025-12-03 16:23:10,397 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 16:23:10] "GET /web/assets/bdffe25/web.assets_web.min.js HTTP/1.1" 200 - 3 0.012 0.004
+2025-12-03 16:23:10,414 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 16:23:10] "GET /web/webclient/load_menus HTTP/1.1" 200 - 1 0.002 0.003
+2025-12-03 16:23:10,419 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 16:23:10] "GET /web/assets/4bbf4dc/web.assets_web_print.min.css HTTP/1.1" 200 - 3 0.003 0.007
+2025-12-03 16:23:10,629 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 16:23:10] "GET /web/webclient/translations?hash=00877677c7b4d23b2a90ab91924efccdb9ca5cea&lang=pt_BR HTTP/1.1" 200 - 1 0.001 0.001
+2025-12-03 16:23:10,638 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 16:23:10] "GET /bus/websocket_worker_bundle?v=19.0-2 HTTP/1.1" 304 - 4 0.001 0.003
+2025-12-03 16:23:10,719 42818 INFO diegofornalha odoo.addons.base.models.ir_attachment: _read_file reading /Users/2a/Desktop/odoo19framework/diegofornalha/filestore/filestore/diegofornalha/66/66ae48cdda39173a7c40302137fd7fe47b649b16 
+Traceback (most recent call last):
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/addons/base/models/ir_attachment.py", line 138, in _file_read
+    with open(full_path, 'rb') as f:
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/2a/Desktop/odoo19framework/diegofornalha/filestore/filestore/diegofornalha/66/66ae48cdda39173a7c40302137fd7fe47b649b16'
+2025-12-03 16:23:10,721 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 16:23:10] "GET /web/image?model=res.users&field=avatar_128&id=2 HTTP/1.1" 304 - 19 0.016 0.011
+2025-12-03 16:23:10,725 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 16:23:10] "GET /websocket?version=19.0-2 HTTP/1.1" 101 - 1 0.001 0.007
+2025-12-03 16:23:10,739 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 16:23:10] "POST /mail/data HTTP/1.1" 200 - 31 0.026 0.010
+2025-12-03 16:23:10,832 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 16:23:10] "POST /web/dataset/call_kw/project.task/get_views#project.task.get_views HTTP/1.1" 200 - 78 0.048 0.085
+2025-12-03 16:23:10,861 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 16:23:10] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.011 0.009
+2025-12-03 16:23:12,342 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 16:23:12] "GET /web/service-worker.js HTTP/1.1" 200 - 1 0.001 0.003

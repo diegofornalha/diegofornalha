@@ -15,10 +15,11 @@ export class GanttRenderer extends Component {
         this.gantt = null;
         this.dragState = {
             isDragging: false,
+            isVerticalDrag: false,
             draggedRow: null,
             draggedTaskId: null,
+            startX: 0,
             startY: 0,
-            placeholder: null,
         };
 
         onMounted(() => {
@@ -47,7 +48,6 @@ export class GanttRenderer extends Component {
     }
 
     get hasData() {
-        // Verifica se há tarefas com datas válidas para exibir no Gantt
         const tasks = this.formatTasks();
         return tasks.length > 0;
     }
@@ -58,10 +58,8 @@ export class GanttRenderer extends Component {
 
     renderGantt() {
         const container = this.ganttRef.el;
-        // Se não há container (template mostra NoContent) ou não há dados, não renderiza
         if (!container || !this.hasData) return;
 
-        // Clear previous gantt
         container.innerHTML = "";
 
         const tasks = this.formatTasks();
@@ -92,185 +90,173 @@ export class GanttRenderer extends Component {
             },
         });
 
-        // Setup vertical drag for reordering
+        // Setup vertical drag detection on bars
         this.setupVerticalDrag(container);
     }
 
     setupVerticalDrag(container) {
-        // Find SVG and create HTML overlay for drag handles
-        const svg = container.querySelector('svg.gantt');
-        if (!svg) return;
-
-        // Create overlay container positioned over SVG
-        let overlay = container.querySelector('.gantt-drag-overlay');
-        if (!overlay) {
-            overlay = document.createElement('div');
-            overlay.className = 'gantt-drag-overlay';
-            overlay.style.cssText = `
-                position: absolute;
-                top: 0;
-                left: 0;
-                pointer-events: none;
-                z-index: 50;
-            `;
-            container.style.position = 'relative';
-            container.appendChild(overlay);
-        }
-        overlay.innerHTML = '';
-
-        // Find all bar-wrapper elements and create handles
         const barWrappers = container.querySelectorAll('.bar-wrapper');
+
+        // Bind event handlers
+        this.handleVerticalDrag = this.handleVerticalDrag.bind(this);
+        this.handleVerticalDragEnd = this.handleVerticalDragEnd.bind(this);
 
         barWrappers.forEach((wrapper) => {
             const bar = wrapper.querySelector('.bar');
             if (!bar) return;
 
-            // Get bar position from SVG
-            const barRect = bar.getBBox();
-            const svgRect = svg.getBoundingClientRect();
-            const containerRect = container.getBoundingClientRect();
+            // Add visual indicator that bars can be reordered
+            wrapper.style.cursor = 'move';
 
-            // Create drag handle in HTML overlay - positioned at fixed left margin
-            const dragHandle = document.createElement('div');
-            dragHandle.className = 'gantt-drag-handle';
-            dragHandle.innerHTML = '⋮⋮';
-            dragHandle.dataset.taskId = wrapper.getAttribute('data-id');
-            dragHandle.style.cssText = `
-                position: absolute;
-                left: 5px;
-                top: ${barRect.y + barRect.height / 2 - 10}px;
-                cursor: grab;
-                padding: 4px 6px;
-                color: #999;
-                font-size: 14px;
-                user-select: none;
-                pointer-events: auto;
-                background: rgba(255, 255, 255, 0.9);
-                border-radius: 3px;
-                opacity: 0;
-                transition: opacity 0.2s ease;
-            `;
+            // Listen for mousedown on the bar
+            bar.addEventListener('mousedown', (e) => {
+                // Don't interfere with resize handles
+                if (e.target.classList.contains('handle')) return;
 
-            // Show on hover
-            dragHandle.addEventListener('mouseenter', () => {
-                dragHandle.style.opacity = '1';
-                dragHandle.style.color = '#714b67';
-            });
-            dragHandle.addEventListener('mouseleave', () => {
-                if (!this.dragState.isDragging) {
-                    dragHandle.style.opacity = '0';
-                }
-            });
+                const taskId = wrapper.getAttribute('data-id');
+                const barWrappers = Array.from(container.querySelectorAll('.bar-wrapper'));
+                const barRect = bar.getBBox();
 
-            dragHandle.addEventListener('mousedown', (e) => {
-                this.startVerticalDrag(e, wrapper, dragHandle);
-            });
+                this.dragState = {
+                    isDragging: true,
+                    isVerticalDrag: false,
+                    draggedRow: wrapper,
+                    draggedTaskId: taskId,
+                    startX: e.clientX,
+                    startY: e.clientY,
+                    initialIndex: barWrappers.indexOf(wrapper),
+                    barWrappers: barWrappers,
+                    barY: barRect.y,
+                    rowHeight: 38,
+                    verticalThreshold: 15, // Pixels to move before considering vertical drag
+                };
 
-            overlay.appendChild(dragHandle);
-        });
-
-        // Also show handles when hovering over bars
-        barWrappers.forEach((wrapper) => {
-            const taskId = wrapper.getAttribute('data-id');
-            wrapper.addEventListener('mouseenter', () => {
-                const handle = overlay.querySelector(`[data-task-id="${taskId}"]`);
-                if (handle) handle.style.opacity = '0.7';
-            });
-            wrapper.addEventListener('mouseleave', () => {
-                const handle = overlay.querySelector(`[data-task-id="${taskId}"]`);
-                if (handle && !this.dragState.isDragging) handle.style.opacity = '0';
+                document.addEventListener('mousemove', this.handleVerticalDrag);
+                document.addEventListener('mouseup', this.handleVerticalDragEnd);
             });
         });
 
-        // Bind event handlers
-        this.handleVerticalDrag = this.handleVerticalDrag.bind(this);
-        this.handleVerticalDragEnd = this.handleVerticalDragEnd.bind(this);
+        // Add tooltip hint
+        this.addDragHint(container);
     }
 
-    startVerticalDrag(e, wrapper, handle) {
-        e.preventDefault();
-        e.stopPropagation();
+    addDragHint(container) {
+        // Add a subtle tooltip on first hover
+        let hintShown = false;
+        const barWrappers = container.querySelectorAll('.bar-wrapper');
 
-        const container = this.ganttRef.el;
-        const barWrappers = Array.from(container.querySelectorAll('.bar-wrapper'));
-        const taskId = wrapper.getAttribute('data-id');
+        barWrappers.forEach((wrapper) => {
+            wrapper.addEventListener('mouseenter', () => {
+                if (!hintShown && !this.dragState.isDragging) {
+                    // Show hint only once per session
+                    const hint = document.createElement('div');
+                    hint.className = 'gantt-drag-hint';
+                    hint.innerHTML = 'Arraste para cima/baixo para reordenar';
+                    hint.style.cssText = `
+                        position: fixed;
+                        bottom: 20px;
+                        left: 50%;
+                        transform: translateX(-50%);
+                        background: rgba(113, 75, 103, 0.9);
+                        color: white;
+                        padding: 8px 16px;
+                        border-radius: 4px;
+                        font-size: 13px;
+                        z-index: 9999;
+                        animation: fadeInOut 3s ease forwards;
+                    `;
+                    document.body.appendChild(hint);
+                    hintShown = true;
 
-        // Get bar positions for visual feedback
-        const bar = wrapper.querySelector('.bar');
-        const barY = bar ? bar.getBBox().y : 0;
-        const rowHeight = 38; // Standard row height in Frappe Gantt
+                    // Add animation style if not exists
+                    if (!document.querySelector('#gantt-hint-style')) {
+                        const style = document.createElement('style');
+                        style.id = 'gantt-hint-style';
+                        style.textContent = `
+                            @keyframes fadeInOut {
+                                0% { opacity: 0; }
+                                10% { opacity: 1; }
+                                80% { opacity: 1; }
+                                100% { opacity: 0; }
+                            }
+                        `;
+                        document.head.appendChild(style);
+                    }
 
-        this.dragState = {
-            isDragging: true,
-            draggedRow: wrapper,
-            draggedTaskId: taskId,
-            startY: e.clientY,
-            initialIndex: barWrappers.indexOf(wrapper),
-            barWrappers: barWrappers,
-            handle: handle,
-            barY: barY,
-            rowHeight: rowHeight,
-        };
-
-        // Visual feedback - change bar opacity
-        wrapper.style.opacity = '0.5';
-        handle.style.opacity = '1';
-        handle.style.cursor = 'grabbing';
-
-        document.addEventListener('mousemove', this.handleVerticalDrag);
-        document.addEventListener('mouseup', this.handleVerticalDragEnd);
+                    setTimeout(() => hint.remove(), 3000);
+                }
+            });
+        });
     }
 
     handleVerticalDrag(e) {
         if (!this.dragState.isDragging) return;
 
-        const { draggedRow, barWrappers, handle, rowHeight, initialIndex } = this.dragState;
-        const deltaY = e.clientY - this.dragState.startY;
-        const moveCount = Math.round(deltaY / rowHeight);
+        const { draggedRow, barWrappers, startX, startY, rowHeight, initialIndex, verticalThreshold } = this.dragState;
+        const deltaX = Math.abs(e.clientX - startX);
+        const deltaY = e.clientY - startY;
 
-        // Move the handle visually to follow cursor
-        if (handle) {
-            const currentTop = parseFloat(handle.style.top) || 0;
-            handle.style.top = `${this.dragState.barY + rowHeight / 2 - 10 + deltaY}px`;
+        // Determine if this is a vertical drag (more vertical movement than horizontal)
+        if (!this.dragState.isVerticalDrag) {
+            if (Math.abs(deltaY) > verticalThreshold && Math.abs(deltaY) > deltaX) {
+                // This is a vertical drag - cancel Frappe's horizontal drag
+                this.dragState.isVerticalDrag = true;
+
+                // Visual feedback
+                draggedRow.style.opacity = '0.5';
+                draggedRow.style.transition = 'opacity 0.2s';
+
+                // Stop Frappe Gantt's internal drag
+                e.stopPropagation();
+            } else if (deltaX > verticalThreshold) {
+                // This is a horizontal drag - let Frappe handle it
+                this.cleanupDragState();
+                return;
+            }
         }
 
-        if (moveCount !== 0) {
-            let newIndex = initialIndex + moveCount;
-            newIndex = Math.max(0, Math.min(barWrappers.length - 1, newIndex));
+        if (this.dragState.isVerticalDrag) {
+            e.preventDefault();
+            e.stopPropagation();
 
-            // Highlight target row
-            barWrappers.forEach((wrapper, index) => {
-                if (index === newIndex && wrapper !== draggedRow) {
-                    wrapper.style.outline = '2px dashed #714b67';
-                } else if (wrapper !== draggedRow) {
-                    wrapper.style.outline = '';
-                }
-            });
+            const moveCount = Math.round(deltaY / rowHeight);
 
-            this.dragState.targetIndex = newIndex;
+            if (moveCount !== 0) {
+                let newIndex = initialIndex + moveCount;
+                newIndex = Math.max(0, Math.min(barWrappers.length - 1, newIndex));
+
+                // Highlight target row
+                barWrappers.forEach((wrapper, index) => {
+                    if (index === newIndex && wrapper !== draggedRow) {
+                        wrapper.style.outline = '2px dashed #714b67';
+                        wrapper.style.outlineOffset = '-2px';
+                    } else if (wrapper !== draggedRow) {
+                        wrapper.style.outline = '';
+                    }
+                });
+
+                this.dragState.targetIndex = newIndex;
+            }
         }
     }
 
     handleVerticalDragEnd(e) {
         if (!this.dragState.isDragging) return;
 
-        const { draggedRow, draggedTaskId, initialIndex, targetIndex, barWrappers, handle } = this.dragState;
+        const { draggedRow, draggedTaskId, initialIndex, targetIndex, barWrappers, isVerticalDrag } = this.dragState;
 
         // Reset visual state
-        draggedRow.style.opacity = '';
-        barWrappers.forEach((wrapper) => {
+        if (draggedRow) {
+            draggedRow.style.opacity = '';
+            draggedRow.style.transition = '';
+        }
+
+        barWrappers?.forEach((wrapper) => {
             wrapper.style.outline = '';
         });
 
-        // Reset handle
-        if (handle) {
-            handle.style.cursor = 'grab';
-            handle.style.opacity = '0';
-        }
-
-        // If position changed, update sequence
-        if (targetIndex !== undefined && targetIndex !== initialIndex) {
-            // Calculate new sequences based on position
+        // If was a vertical drag and position changed, update sequence
+        if (isVerticalDrag && targetIndex !== undefined && targetIndex !== initialIndex) {
             const movedTaskId = parseInt(draggedTaskId);
 
             // Build new order array
@@ -288,34 +274,35 @@ export class GanttRenderer extends Component {
                 newOrder.push(movedTaskId);
             }
 
-            // Update sequences for all affected tasks
-            console.log('[Gantt] Updating task sequences:', newOrder);
+            console.log('[Gantt] Vertical drag - updating task sequences:', newOrder);
             this.updateTaskSequences(newOrder);
         }
 
-        // Cleanup
+        this.cleanupDragState();
+    }
+
+    cleanupDragState() {
         document.removeEventListener('mousemove', this.handleVerticalDrag);
         document.removeEventListener('mouseup', this.handleVerticalDragEnd);
 
         this.dragState = {
             isDragging: false,
+            isVerticalDrag: false,
             draggedRow: null,
             draggedTaskId: null,
+            startX: 0,
             startY: 0,
-            handle: null,
         };
     }
 
     async updateTaskSequences(newOrder) {
-        // Update sequence for each task based on new order
         for (let i = 0; i < newOrder.length; i++) {
             const taskId = newOrder[i];
             await this.props.onTaskUpdate(taskId, {
-                sequence: i * 10, // Use increments of 10 for flexibility
+                sequence: i * 10,
             });
         }
 
-        // Reload to reflect changes
         if (this.props.model && this.props.model.load) {
             await this.props.model.load({});
         }
@@ -350,8 +337,6 @@ export class GanttRenderer extends Component {
     formatDate(date) {
         if (!date) return null;
         if (typeof date === "string") {
-            // Preservar data e hora para escalas como Half Day
-            // Formato esperado: "YYYY-MM-DD HH:MM"
             const d = new Date(date);
             if (!isNaN(d.getTime())) {
                 const year = d.getFullYear();
@@ -391,9 +376,9 @@ export class GanttRenderer extends Component {
 
     getTaskClass(record) {
         const priority = record.data.priority;
-        if (priority === "3") return "gantt-urgent";  // Urgente (verde)
-        if (priority === "2") return "gantt-very-high"; // Muito alta (vermelho)
-        if (priority === "1") return "gantt-high";    // Alta (laranja)
+        if (priority === "3") return "gantt-urgent";
+        if (priority === "2") return "gantt-very-high";
+        if (priority === "1") return "gantt-high";
         return "gantt-normal";
     }
 
