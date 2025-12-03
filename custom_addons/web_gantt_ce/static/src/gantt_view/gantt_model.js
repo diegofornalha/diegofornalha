@@ -38,6 +38,8 @@ export class GanttModel extends Model {
             archInfo.dateStopField || "date_deadline",
             archInfo.dependencyField || "depend_on_ids",
             "priority",
+            "sequence",
+            "parent_id",
             "create_date",
         ]);
         return [...fieldNames];
@@ -57,7 +59,7 @@ export class GanttModel extends Model {
                     this.resModel,
                     domain,
                     this.meta.fieldNames,
-                    { context }
+                    { context, order: "sequence, id" }
                 )
             );
 

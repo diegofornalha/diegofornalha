@@ -10,6 +10,7 @@
                    default_scale="Half Day"
                    progress="progress"
                    dependency_field="depend_on_ids"
+                   color="color"
                    string="Tasks Gantt">
             </gantt>
         </field>

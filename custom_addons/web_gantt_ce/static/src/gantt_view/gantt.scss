@@ -102,7 +102,16 @@
 .gantt {
     .gantt-urgent {
         .bar {
-            fill: #dc3545;
+            fill: #28a745;  /* Verde - Urgente (prioridade 3) */
+        }
+        .bar-progress {
+            fill: #1e7e34;
+        }
+    }
+
+    .gantt-very-high {
+        .bar {
+            fill: #dc3545;  /* Vermelho - Muito alta (prioridade 2) */
         }
         .bar-progress {
             fill: #c82333;
@@ -111,7 +120,7 @@
 
     .gantt-high {
         .bar {
-            fill: #fd7e14;
+            fill: #fd7e14;  /* Laranja - Alta (prioridade 1) */
         }
         .bar-progress {
             fill: #e96d0a;
@@ -120,7 +129,7 @@
 
     .gantt-normal {
         .bar {
-            fill: #714b67;
+            fill: #714b67;  /* Roxo - Normal (prioridade 0) */
         }
         .bar-progress {
             fill: #5a3d52;
@@ -130,6 +139,9 @@
     /* Hover states */
     .bar-wrapper:hover {
         .gantt-urgent .bar {
+            fill: #34ce57;
+        }
+        .gantt-very-high .bar {
             fill: #e04757;
         }
         .gantt-high .bar {

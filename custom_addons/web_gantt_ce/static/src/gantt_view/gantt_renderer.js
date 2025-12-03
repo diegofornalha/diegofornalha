@@ -56,7 +56,7 @@ export class GanttRenderer extends Component {
         // Initialize Frappe Gantt
         this.gantt = new Gantt(container, tasks, {
             view_mode: this.viewMode,
-            date_format: "YYYY-MM-DD",
+            date_format: "YYYY-MM-DD HH:mm",
             popup_trigger: "click",
             custom_popup_html: (task) => {
                 return `
@@ -109,10 +109,26 @@ export class GanttRenderer extends Component {
     formatDate(date) {
         if (!date) return null;
         if (typeof date === "string") {
+            // Preservar data e hora para escalas como Half Day
+            // Formato esperado: "YYYY-MM-DD HH:MM"
+            const d = new Date(date);
+            if (!isNaN(d.getTime())) {
+                const year = d.getFullYear();
+                const month = String(d.getMonth() + 1).padStart(2, '0');
+                const day = String(d.getDate()).padStart(2, '0');
+                const hours = String(d.getHours()).padStart(2, '0');
+                const minutes = String(d.getMinutes()).padStart(2, '0');
+                return `${year}-${month}-${day} ${hours}:${minutes}`;
+            }
             return date.split(" ")[0];
         }
         if (date instanceof Date) {
-            return date.toISOString().split("T")[0];
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            return `${year}-${month}-${day} ${hours}:${minutes}`;
         }
         if (date.toISODate) {
             return date.toISODate();
@@ -134,8 +150,9 @@ export class GanttRenderer extends Component {
 
     getTaskClass(record) {
         const priority = record.data.priority;
-        if (priority === "2") return "gantt-urgent";
-        if (priority === "1") return "gantt-high";
+        if (priority === "3") return "gantt-urgent";  // Urgente (verde)
+        if (priority === "2") return "gantt-very-high"; // Muito alta (vermelho)
+        if (priority === "1") return "gantt-high";    // Alta (laranja)
         return "gantt-normal";
     }
 
