@@ -41,6 +41,7 @@ export class GanttModel extends Model {
             "sequence",
             "parent_id",
             "create_date",
+            "user_ids",  // For user avatars
         ]);
         return [...fieldNames];
     }
@@ -65,9 +66,38 @@ export class GanttModel extends Model {
 
             console.log("[GanttModel] searchRead result:", result);
 
+            // Collect all user IDs to fetch their names
+            const allUserIds = new Set();
+            result.forEach(record => {
+                const userIds = record.user_ids || [];
+                userIds.forEach(id => allUserIds.add(id));
+            });
+
+            // Fetch user names
+            let userNames = {};
+            if (allUserIds.size > 0) {
+                try {
+                    const users = await this.orm.searchRead(
+                        'res.users',
+                        [['id', 'in', [...allUserIds]]],
+                        ['id', 'name'],
+                        { context }
+                    );
+                    users.forEach(user => {
+                        userNames[user.id] = user.name;
+                    });
+                    console.log("[GanttModel] User names loaded:", userNames);
+                } catch (e) {
+                    console.warn("[GanttModel] Could not load user names:", e);
+                }
+            }
+
             this.data.records = result.map((record) => ({
                 resId: record.id,
-                data: record,
+                data: {
+                    ...record,
+                    _userNames: userNames, // Store user names for avatar lookup
+                },
             }));
         } catch (e) {
             console.error("GanttModel load error:", e);

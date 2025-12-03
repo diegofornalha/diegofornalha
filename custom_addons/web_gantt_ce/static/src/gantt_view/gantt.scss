@@ -278,14 +278,6 @@
 .gantt {
     .task-avatar {
         cursor: pointer;
-
-        .avatar-circle {
-            transition: transform 0.2s ease;
-        }
-
-        &:hover .avatar-circle {
-            transform: scale(1.1);
-        }
     }
 }
 

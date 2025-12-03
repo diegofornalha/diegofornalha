@@ -259,8 +259,14 @@ export class GanttRenderer extends Component {
         const records = this.props.model.data.records || [];
         records.forEach(record => {
             const userIds = record.data.user_ids || [];
-            const userName = userIds.length > 0 ?
-                (record.data.user_id?.[1] || 'Atribuído') : 'Não atribuído';
+            const userNames = record.data._userNames || {};
+
+            // Get first user's name if available
+            let userName = 'Não atribuído';
+            if (userIds.length > 0 && userNames[userIds[0]]) {
+                userName = userNames[userIds[0]];
+            }
+
             userMap[String(record.resId)] = {
                 name: userName,
                 initials: this.getInitials(userName),
@@ -343,36 +349,49 @@ export class GanttRenderer extends Component {
                 if (!bar) return;
 
                 const barRect = bar.getBBox();
+                const cx = barRect.x - 15;
+                const cy = barRect.y + barRect.height / 2;
 
                 // Create avatar group
                 const avatarGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
                 avatarGroup.setAttribute('class', 'task-avatar');
 
-                // Avatar circle
+                // Invisible larger hit area - prevents flickering
+                const hitArea = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                hitArea.setAttribute('cx', cx);
+                hitArea.setAttribute('cy', cy);
+                hitArea.setAttribute('r', '16'); // Larger than visible
+                hitArea.setAttribute('fill', 'transparent');
+                hitArea.style.cursor = 'pointer';
+
+                // Avatar circle (visible)
                 const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-                circle.setAttribute('cx', barRect.x - 15);
-                circle.setAttribute('cy', barRect.y + barRect.height / 2);
+                circle.setAttribute('cx', cx);
+                circle.setAttribute('cy', cy);
                 circle.setAttribute('r', '10');
                 circle.setAttribute('fill', '#714b67');
                 circle.setAttribute('class', 'avatar-circle');
+                circle.style.pointerEvents = 'none'; // Events on hitArea only
 
                 // Avatar text (initials)
                 const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                text.setAttribute('x', barRect.x - 15);
-                text.setAttribute('y', barRect.y + barRect.height / 2 + 4);
+                text.setAttribute('x', cx);
+                text.setAttribute('y', cy + 4);
                 text.setAttribute('text-anchor', 'middle');
                 text.setAttribute('fill', 'white');
                 text.setAttribute('font-size', '9');
                 text.setAttribute('font-weight', 'bold');
                 text.textContent = userData.initials;
+                text.style.pointerEvents = 'none'; // Events on hitArea only
+
+                // Add tooltip to hitArea
+                const title = document.createElementNS('http://www.w3.org/2000/svg', 'title');
+                title.textContent = userData.name;
+                hitArea.appendChild(title);
 
                 avatarGroup.appendChild(circle);
                 avatarGroup.appendChild(text);
-
-                // Add tooltip
-                const title = document.createElementNS('http://www.w3.org/2000/svg', 'title');
-                title.textContent = userData.name;
-                avatarGroup.appendChild(title);
+                avatarGroup.appendChild(hitArea);
 
                 wrapper.appendChild(avatarGroup);
             });
