@@ -17,25 +17,26 @@
     </record>
 
     <!-- Add gantt to project.task action view_modes -->
+    <!-- GANTT FIRST: Para que /odoo/project/X/tasks abra direto no Gantt -->
 
     <!-- act_project_project_2_project_task_all is used in /odoo/project/X/tasks -->
     <record id="project.act_project_project_2_project_task_all" model="ir.actions.act_window">
-        <field name="view_mode">kanban,list,form,calendar,pivot,graph,activity,gantt</field>
+        <field name="view_mode">gantt,kanban,list,form,calendar,pivot,graph,activity</field>
     </record>
 
     <!-- action_view_task is used in My Tasks view -->
     <record id="project.action_view_task" model="ir.actions.act_window">
-        <field name="view_mode">kanban,list,form,calendar,pivot,graph,activity,gantt</field>
+        <field name="view_mode">gantt,kanban,list,form,calendar,pivot,graph,activity</field>
     </record>
 
     <!-- action_view_all_task is used in "All Tasks" menu -->
     <record id="project.action_view_all_task" model="ir.actions.act_window">
-        <field name="view_mode">list,kanban,form,calendar,activity,pivot,graph,gantt</field>
+        <field name="view_mode">gantt,list,kanban,form,calendar,activity,pivot,graph</field>
     </record>
 
-    <!-- Link gantt view to act_project_project_2_project_task_all action -->
+    <!-- Link gantt view to act_project_project_2_project_task_all action (sequence 1 = first) -->
     <record id="act_project_task_gantt_view" model="ir.actions.act_window.view">
-        <field name="sequence" eval="80"/>
+        <field name="sequence" eval="1"/>
         <field name="view_mode">gantt</field>
         <field name="view_id" ref="view_project_task_gantt"/>
         <field name="act_window_id" ref="project.act_project_project_2_project_task_all"/>
@@ -43,7 +44,7 @@
 
     <!-- Link gantt view to action_view_task action -->
     <record id="action_view_task_gantt_view" model="ir.actions.act_window.view">
-        <field name="sequence" eval="80"/>
+        <field name="sequence" eval="1"/>
         <field name="view_mode">gantt</field>
         <field name="view_id" ref="view_project_task_gantt"/>
         <field name="act_window_id" ref="project.action_view_task"/>
@@ -51,7 +52,7 @@
 
     <!-- Link gantt view to action_view_all_task action -->
     <record id="action_view_all_task_gantt_view" model="ir.actions.act_window.view">
-        <field name="sequence" eval="80"/>
+        <field name="sequence" eval="1"/>
         <field name="view_mode">gantt</field>
         <field name="view_id" ref="view_project_task_gantt"/>
         <field name="act_window_id" ref="project.action_view_all_task"/>
