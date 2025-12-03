@@ -516,25 +516,65 @@ export class GanttRenderer extends Component {
             const barRect = bar.getBBox();
 
             // Add right-side connector point (for creating dependencies)
+            // Create a group to hold both the visible circle and invisible hit area
+            const connectorGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+            connectorGroup.setAttribute('class', 'connector-group');
+
+            const cx = barRect.x + barRect.width;
+            const cy = barRect.y + barRect.height / 2;
+
+            // Invisible larger hit area - always present, never changes opacity
+            const hitArea = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            hitArea.setAttribute('cx', cx);
+            hitArea.setAttribute('cy', cy);
+            hitArea.setAttribute('r', '16'); // Larger invisible hit area
+            hitArea.setAttribute('fill', 'transparent');
+            hitArea.style.cursor = 'crosshair';
+            hitArea.style.pointerEvents = 'auto';
+
+            // Visible connector circle
             const connector = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-            connector.setAttribute('cx', barRect.x + barRect.width);
-            connector.setAttribute('cy', barRect.y + barRect.height / 2);
+            connector.setAttribute('cx', cx);
+            connector.setAttribute('cy', cy);
             connector.setAttribute('r', '6');
             connector.setAttribute('fill', '#714b67');
             connector.setAttribute('stroke', 'white');
             connector.setAttribute('stroke-width', '2');
             connector.setAttribute('class', 'dependency-connector');
-            connector.style.cursor = 'crosshair';
             connector.style.opacity = '0';
-            connector.style.transition = 'opacity 0.2s';
+            connector.style.transition = 'opacity 0.15s ease';
+            connector.style.pointerEvents = 'none'; // Visual only, hit area handles events
 
-            wrapper.appendChild(connector);
+            connectorGroup.appendChild(connector);
+            connectorGroup.appendChild(hitArea);
+            wrapper.appendChild(connectorGroup);
 
-            // CSS handles hover visibility via .bar-wrapper:hover .dependency-connector
-            // JS only handles the drag interaction
+            // Simple hover state - controlled by bar and hitArea
+            let hoverCount = 0;
 
-            // Start dragging from connector
-            connector.addEventListener('mousedown', (e) => {
+            const show = () => {
+                hoverCount++;
+                connector.style.opacity = '1';
+            };
+
+            const hide = () => {
+                hoverCount--;
+                if (hoverCount <= 0 && !this.arrowDragState.isDragging) {
+                    hoverCount = 0;
+                    connector.style.opacity = '0';
+                }
+            };
+
+            // Bar hover
+            bar.addEventListener('mouseenter', show);
+            bar.addEventListener('mouseleave', hide);
+
+            // Hit area hover (not the visible connector)
+            hitArea.addEventListener('mouseenter', show);
+            hitArea.addEventListener('mouseleave', hide);
+
+            // Start dragging from hit area (the invisible larger circle)
+            hitArea.addEventListener('mousedown', (e) => {
                 e.stopPropagation();
                 e.preventDefault();
 

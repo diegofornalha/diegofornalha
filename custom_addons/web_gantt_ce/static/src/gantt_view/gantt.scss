@@ -250,20 +250,10 @@
         }
     }
 
-    /* Dependency connector point - show on bar-wrapper hover */
+    /* Dependency connector - visibility controlled via JS */
     .bar-wrapper {
         .dependency-connector {
-            opacity: 0;
-            transition: opacity 0.2s, transform 0.2s;
-        }
-
-        &:hover .dependency-connector {
-            opacity: 1;
-        }
-
-        .dependency-connector:hover {
-            transform: scale(1.2);
-            opacity: 1 !important;
+            pointer-events: none; /* Hit area handles events */
         }
     }
 }

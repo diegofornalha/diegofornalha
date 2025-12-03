@@ -30252,3 +30252,237 @@ FileNotFoundError: [Errno 2] No such file or directory: '/Users/2a/Desktop/odoo1
 2025-12-03 19:04:27,691 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:04:27] "POST /web/dataset/call_kw/mail.push.device/register_devices#mail.push.device.register_devices HTTP/1.1" 200 - 6 0.007 0.003
 2025-12-03 19:04:29,142 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:04:29] "GET /web/service-worker.js HTTP/1.1" 200 - 1 0.001 0.004
 2025-12-03 19:04:30,233 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:04:30] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.011 0.016
+2025-12-03 19:14:37,286 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc="title or 'Odoo'" in template 184. Replace by @t-out 
+2025-12-03 19:14:37,287 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='request.csrf_token(None)' in template 184. Replace by @t-out 
+2025-12-03 19:14:37,288 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='debug' in template 184. Replace by @t-out 
+2025-12-03 19:14:37,291 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:14:37] "GET /odoo/project/3/tasks?view_type=gantt HTTP/1.1" 200 - 65 0.027 0.333
+2025-12-03 19:14:37,323 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:14:37] "GET /web/webclient/load_menus HTTP/1.1" 200 - 1 0.007 0.009
+2025-12-03 19:14:38,404 42818 INFO diegofornalha odoo.addons.base.models.assetsbundle: Generating a new asset bundle attachment /web/assets/72c5b19/web.assets_web.min.css (id:980) 
+2025-12-03 19:14:38,407 42818 INFO diegofornalha odoo.addons.base.models.assetsbundle: Deleting attachments [977] (matching /web/assets/_______/web.assets_web.min.css) because it was replaced with /web/assets/72c5b19/web.assets_web.min.css 
+2025-12-03 19:14:38,459 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:14:38] "GET /web/assets/72c5b19/web.assets_web.min.css HTTP/1.1" 200 - 25 0.101 1.054
+2025-12-03 19:14:40,729 42818 INFO diegofornalha odoo.addons.base.models.assetsbundle: Generating a new asset bundle attachment /web/assets/bac3ec2/web.assets_web_print.min.css (id:981) 
+2025-12-03 19:14:40,730 42818 INFO diegofornalha odoo.addons.base.models.assetsbundle: Deleting attachments [978] (matching /web/assets/_______/web.assets_web_print.min.css) because it was replaced with /web/assets/bac3ec2/web.assets_web_print.min.css 
+2025-12-03 19:14:40,759 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:14:40] "GET /web/assets/bac3ec2/web.assets_web_print.min.css HTTP/1.1" 200 - 22 0.117 2.155
+2025-12-03 19:14:40,973 42818 INFO diegofornalha odoo.addons.base.models.assetsbundle: Generating a new asset bundle attachment /web/assets/29ca4a6/web.assets_web.min.js (id:982) 
+2025-12-03 19:14:40,983 42818 INFO diegofornalha odoo.addons.base.models.assetsbundle: Deleting attachments [979] (matching /web/assets/_______/web.assets_web.min.js) because it was replaced with /web/assets/29ca4a6/web.assets_web.min.js 
+2025-12-03 19:14:41,029 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:14:41] "GET /web/assets/29ca4a6/web.assets_web.min.js HTTP/1.1" 200 - 25 0.030 3.695
+2025-12-03 19:14:41,231 42818 INFO ? werkzeug: 127.0.0.1 - - [03/Dec/2025 19:14:41] "GET /web/static/img/favicon.ico HTTP/1.1" 200 - 0 0.000 0.003
+2025-12-03 19:14:41,236 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:14:41] "GET /web/webclient/translations?hash=00877677c7b4d23b2a90ab91924efccdb9ca5cea&lang=pt_BR HTTP/1.1" 200 - 1 0.001 0.001
+2025-12-03 19:14:41,252 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:14:41] "GET /web/manifest.webmanifest HTTP/1.1" 200 - 9 0.008 0.016
+2025-12-03 19:14:41,253 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:14:41] "GET /bus/websocket_worker_bundle?v=19.0-2 HTTP/1.1" 304 - 4 0.002 0.004
+2025-12-03 19:14:41,335 42818 INFO ? werkzeug: 127.0.0.1 - - [03/Dec/2025 19:14:41] "GET /web/static/src/libs/fontawesome/fonts/fontawesome-webfont.woff2?v=4.7.0 HTTP/1.1" 200 - 0 0.000 0.009
+2025-12-03 19:14:41,372 42818 INFO diegofornalha odoo.addons.base.models.ir_attachment: _read_file reading /Users/2a/Desktop/odoo19framework/diegofornalha/filestore/filestore/diegofornalha/66/66ae48cdda39173a7c40302137fd7fe47b649b16 
+Traceback (most recent call last):
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/addons/base/models/ir_attachment.py", line 138, in _file_read
+    with open(full_path, 'rb') as f:
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/2a/Desktop/odoo19framework/diegofornalha/filestore/filestore/diegofornalha/66/66ae48cdda39173a7c40302137fd7fe47b649b16'
+2025-12-03 19:14:41,376 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:14:41] "GET /web/image?model=res.users&field=avatar_128&id=2 HTTP/1.1" 304 - 19 0.033 0.021
+2025-12-03 19:14:41,382 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:14:41] "POST /web/dataset/call_kw/project.project/get_template_tasks#project.project.get_template_tasks HTTP/1.1" 200 - 7 0.017 0.017
+2025-12-03 19:14:41,385 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:14:41] "POST /web/dataset/call_kw/project.task/read_progress_bar#project.task.read_progress_bar HTTP/1.1" 200 - 8 0.026 0.015
+2025-12-03 19:14:41,389 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:14:41] "POST /web/dataset/call_kw/res.users/has_group#res.users.has_group HTTP/1.1" 200 - 1 0.001 0.006
+2025-12-03 19:14:41,414 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:14:41] "POST /mail/data HTTP/1.1" 200 - 31 0.062 0.017
+2025-12-03 19:14:41,442 42818 INFO ? werkzeug: 127.0.0.1 - - [03/Dec/2025 19:14:41] "GET /web/static/lib/odoo_ui_icons/fonts/odoo_ui_icons.woff2 HTTP/1.1" 200 - 0 0.000 0.005
+2025-12-03 19:14:41,478 42818 INFO diegofornalha odoo.addons.base.models.ir_attachment: _read_file reading /Users/2a/Desktop/odoo19framework/diegofornalha/filestore/filestore/diegofornalha/66/66ae48cdda39173a7c40302137fd7fe47b649b16 
+Traceback (most recent call last):
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/addons/base/models/ir_attachment.py", line 138, in _file_read
+    with open(full_path, 'rb') as f:
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/2a/Desktop/odoo19framework/diegofornalha/filestore/filestore/diegofornalha/66/66ae48cdda39173a7c40302137fd7fe47b649b16'
+2025-12-03 19:14:41,480 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:14:41] "GET /web/image/res.users/2/avatar_128 HTTP/1.1" 304 - 19 0.028 0.012
+2025-12-03 19:14:41,480 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:14:41] "POST /web/dataset/call_kw/project.task/web_read_group#project.task.web_read_group HTTP/1.1" 200 - 43 0.086 0.045
+2025-12-03 19:14:41,480 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:14:41] "GET /web/image/res.users/5/avatar_128 HTTP/1.1" 304 - 20 0.028 0.011
+2025-12-03 19:14:41,530 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:14:41] "GET /websocket?version=19.0-2 HTTP/1.1" 101 - 1 0.001 0.004
+2025-12-03 19:14:41,532 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:14:41] "POST /web/dataset/call_kw/mail.push.device/register_devices#mail.push.device.register_devices HTTP/1.1" 200 - 6 0.001 0.004
+2025-12-03 19:14:41,564 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:14:41] "POST /web/dataset/call_kw/project.task/get_views#project.task.get_views HTTP/1.1" 200 - 78 0.057 0.183
+2025-12-03 19:15:01,364 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:15:01] "POST /web/dataset/call_kw/project.task/get_views#project.task.get_views HTTP/1.1" 200 - 78 0.053 0.123
+2025-12-03 19:15:01,458 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:15:01] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.040 0.043
+2025-12-03 19:15:28,974 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc="title or 'Odoo'" in template 184. Replace by @t-out 
+2025-12-03 19:15:28,974 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='request.csrf_token(None)' in template 184. Replace by @t-out 
+2025-12-03 19:15:28,974 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='debug' in template 184. Replace by @t-out 
+2025-12-03 19:15:28,977 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:15:28] "GET /odoo/project/3/tasks?view_type=gantt HTTP/1.1" 200 - 65 0.027 0.300
+2025-12-03 19:15:29,003 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:15:29] "GET /web/webclient/load_menus HTTP/1.1" 200 - 1 0.003 0.006
+2025-12-03 19:15:29,144 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:15:29] "GET /web/webclient/translations?hash=00877677c7b4d23b2a90ab91924efccdb9ca5cea&lang=pt_BR HTTP/1.1" 200 - 1 0.001 0.002
+2025-12-03 19:15:29,147 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:15:29] "GET /web/manifest.webmanifest HTTP/1.1" 200 - 9 0.005 0.005
+2025-12-03 19:15:29,151 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:15:29] "GET /bus/websocket_worker_bundle?v=19.0-2 HTTP/1.1" 304 - 4 0.002 0.004
+2025-12-03 19:15:29,310 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:15:29] "POST /web/dataset/call_kw/project.task/read_progress_bar#project.task.read_progress_bar HTTP/1.1" 200 - 8 0.047 0.017
+2025-12-03 19:15:29,361 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:15:29] "POST /web/dataset/call_kw/project.project/get_template_tasks#project.project.get_template_tasks HTTP/1.1" 200 - 7 0.064 0.028
+2025-12-03 19:15:29,363 42818 INFO diegofornalha odoo.addons.base.models.ir_attachment: _read_file reading /Users/2a/Desktop/odoo19framework/diegofornalha/filestore/filestore/diegofornalha/66/66ae48cdda39173a7c40302137fd7fe47b649b16 
+Traceback (most recent call last):
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/addons/base/models/ir_attachment.py", line 138, in _file_read
+    with open(full_path, 'rb') as f:
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/2a/Desktop/odoo19framework/diegofornalha/filestore/filestore/diegofornalha/66/66ae48cdda39173a7c40302137fd7fe47b649b16'
+2025-12-03 19:15:29,367 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:15:29] "GET /web/image?model=res.users&field=avatar_128&id=2 HTTP/1.1" 304 - 19 0.111 0.024
+2025-12-03 19:15:29,384 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:15:29] "POST /mail/data HTTP/1.1" 200 - 31 0.116 0.032
+2025-12-03 19:15:29,384 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:15:29] "GET /websocket?version=19.0-2 HTTP/1.1" 101 - 1 0.001 0.016
+2025-12-03 19:15:29,388 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:15:29] "POST /web/dataset/call_kw/mail.push.device/register_devices#mail.push.device.register_devices HTTP/1.1" 200 - 6 0.010 0.007
+2025-12-03 19:15:29,406 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:15:29] "POST /web/dataset/call_kw/project.task/web_read_group#project.task.web_read_group HTTP/1.1" 200 - 43 0.101 0.057
+2025-12-03 19:15:29,419 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:15:29] "POST /web/dataset/call_kw/res.users/has_group#res.users.has_group HTTP/1.1" 200 - 1 0.000 0.001
+2025-12-03 19:15:29,497 42818 INFO diegofornalha odoo.addons.base.models.ir_attachment: _read_file reading /Users/2a/Desktop/odoo19framework/diegofornalha/filestore/filestore/diegofornalha/66/66ae48cdda39173a7c40302137fd7fe47b649b16 
+Traceback (most recent call last):
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/addons/base/models/ir_attachment.py", line 138, in _file_read
+    with open(full_path, 'rb') as f:
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/2a/Desktop/odoo19framework/diegofornalha/filestore/filestore/diegofornalha/66/66ae48cdda39173a7c40302137fd7fe47b649b16'
+2025-12-03 19:15:29,498 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:15:29] "GET /web/image/res.users/2/avatar_128 HTTP/1.1" 304 - 19 0.021 0.024
+2025-12-03 19:15:29,501 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:15:29] "POST /web/dataset/call_kw/project.task/get_views#project.task.get_views HTTP/1.1" 200 - 78 0.102 0.167
+2025-12-03 19:15:29,502 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:15:29] "GET /web/image/res.users/5/avatar_128 HTTP/1.1" 304 - 20 0.024 0.007
+2025-12-03 19:15:31,050 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:15:31] "GET /web/service-worker.js HTTP/1.1" 200 - 1 0.001 0.006
+2025-12-03 19:15:31,806 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:15:31] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.012 0.015
+2025-12-03 19:15:55,915 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:15:55] "GET /web/manifest.webmanifest HTTP/1.1" 200 - 9 0.019 0.024
+2025-12-03 19:15:55,960 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc="title or 'Odoo'" in template 185. Replace by @t-out 
+2025-12-03 19:15:55,960 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='request.csrf_token(None)' in template 185. Replace by @t-out 
+2025-12-03 19:15:55,960 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='debug' in template 185. Replace by @t-out 
+2025-12-03 19:15:56,097 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc="title or 'Odoo'" in template 185. Replace by @t-out 
+2025-12-03 19:15:56,098 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='request.csrf_token(None)' in template 185. Replace by @t-out 
+2025-12-03 19:15:56,099 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='debug' in template 185. Replace by @t-out 
+2025-12-03 19:15:56,113 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc="title or 'Odoo'" in template 185. Replace by @t-out 
+2025-12-03 19:15:56,114 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='request.csrf_token(None)' in template 185. Replace by @t-out 
+2025-12-03 19:15:56,114 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='debug' in template 185. Replace by @t-out 
+2025-12-03 19:15:56,122 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc="user_id.name[:23] + '...' if user_id.name and len(user_id.name) > 25 else user_id.name" in template 2622. Replace by @t-out 
+2025-12-03 19:15:56,128 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc="active_lang.name.split('/').pop()" in template 2621. Replace by @t-out 
+2025-12-03 19:15:56,128 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc="active_lang.url_code.split('_').pop(0).upper()" in template 2621. Replace by @t-out 
+2025-12-03 19:15:56,129 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc="lg.name.split('/').pop()" in template 2621. Replace by @t-out 
+2025-12-03 19:15:56,130 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc="lg.url_code.split('_').pop(0).upper()" in template 2621. Replace by @t-out 
+2025-12-03 19:15:56,138 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:15:56] "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 - 47 0.044 0.220
+2025-12-03 19:15:56,393 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc="title or 'Odoo'" in template 184. Replace by @t-out 
+2025-12-03 19:15:56,394 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='request.csrf_token(None)' in template 184. Replace by @t-out 
+2025-12-03 19:15:56,394 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='debug' in template 184. Replace by @t-out 
+2025-12-03 19:15:56,396 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:15:56] "GET /odoo/project/3/tasks?view_type=gantt HTTP/1.1" 200 - 65 0.037 0.484
+2025-12-03 19:17:48,976 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc="title or 'Odoo'" in template 184. Replace by @t-out 
+2025-12-03 19:17:48,976 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='request.csrf_token(None)' in template 184. Replace by @t-out 
+2025-12-03 19:17:48,976 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='debug' in template 184. Replace by @t-out 
+2025-12-03 19:17:48,979 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:17:48] "GET /odoo/project/3/tasks?view_type=gantt HTTP/1.1" 200 - 65 0.029 0.326
+2025-12-03 19:17:49,020 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:17:49] "GET /web/webclient/load_menus HTTP/1.1" 200 - 1 0.001 0.003
+2025-12-03 19:17:49,130 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:17:49] "GET /web/manifest.webmanifest HTTP/1.1" 200 - 9 0.011 0.015
+2025-12-03 19:17:49,136 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:17:49] "GET /web/webclient/translations?hash=00877677c7b4d23b2a90ab91924efccdb9ca5cea&lang=pt_BR HTTP/1.1" 200 - 1 0.001 0.001
+2025-12-03 19:17:49,148 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:17:49] "GET /bus/websocket_worker_bundle?v=19.0-2 HTTP/1.1" 304 - 4 0.002 0.003
+2025-12-03 19:17:49,241 42818 INFO diegofornalha odoo.addons.base.models.ir_attachment: _read_file reading /Users/2a/Desktop/odoo19framework/diegofornalha/filestore/filestore/diegofornalha/66/66ae48cdda39173a7c40302137fd7fe47b649b16 
+Traceback (most recent call last):
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/addons/base/models/ir_attachment.py", line 138, in _file_read
+    with open(full_path, 'rb') as f:
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/2a/Desktop/odoo19framework/diegofornalha/filestore/filestore/diegofornalha/66/66ae48cdda39173a7c40302137fd7fe47b649b16'
+2025-12-03 19:17:49,245 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:17:49] "GET /web/image?model=res.users&field=avatar_128&id=2 HTTP/1.1" 304 - 19 0.016 0.017
+2025-12-03 19:17:49,260 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:17:49] "POST /web/dataset/call_kw/project.task/read_progress_bar#project.task.read_progress_bar HTTP/1.1" 200 - 8 0.019 0.011
+2025-12-03 19:17:49,261 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:17:49] "POST /web/dataset/call_kw/project.project/get_template_tasks#project.project.get_template_tasks HTTP/1.1" 200 - 7 0.014 0.011
+2025-12-03 19:17:49,264 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:17:49] "POST /web/dataset/call_kw/res.users/has_group#res.users.has_group HTTP/1.1" 200 - 1 0.001 0.008
+2025-12-03 19:17:49,267 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:17:49] "POST /mail/data HTTP/1.1" 200 - 31 0.037 0.011
+2025-12-03 19:17:49,303 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:17:49] "GET /websocket?version=19.0-2 HTTP/1.1" 101 - 1 0.002 0.007
+2025-12-03 19:17:49,320 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:17:49] "POST /web/dataset/call_kw/project.task/web_read_group#project.task.web_read_group HTTP/1.1" 200 - 43 0.049 0.040
+2025-12-03 19:17:49,333 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:17:49] "POST /web/dataset/call_kw/mail.push.device/register_devices#mail.push.device.register_devices HTTP/1.1" 200 - 6 0.010 0.011
+2025-12-03 19:17:49,338 42818 INFO diegofornalha odoo.addons.base.models.ir_attachment: _read_file reading /Users/2a/Desktop/odoo19framework/diegofornalha/filestore/filestore/diegofornalha/66/66ae48cdda39173a7c40302137fd7fe47b649b16 
+Traceback (most recent call last):
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/addons/base/models/ir_attachment.py", line 138, in _file_read
+    with open(full_path, 'rb') as f:
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/2a/Desktop/odoo19framework/diegofornalha/filestore/filestore/diegofornalha/66/66ae48cdda39173a7c40302137fd7fe47b649b16'
+2025-12-03 19:17:49,340 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:17:49] "GET /web/image/res.users/2/avatar_128 HTTP/1.1" 304 - 19 0.021 0.010
+2025-12-03 19:17:49,340 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:17:49] "GET /web/image/res.users/5/avatar_128 HTTP/1.1" 304 - 20 0.017 0.014
+2025-12-03 19:17:49,403 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:17:49] "POST /web/dataset/call_kw/project.task/get_views#project.task.get_views HTTP/1.1" 200 - 78 0.058 0.133
+2025-12-03 19:17:50,868 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:17:50] "GET /web/service-worker.js HTTP/1.1" 200 - 1 0.001 0.006
+2025-12-03 19:17:54,566 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:17:54] "POST /web/dataset/call_kw/project.task/get_views#project.task.get_views HTTP/1.1" 200 - 78 0.042 0.089
+2025-12-03 19:17:54,596 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:17:54] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.014 0.010
+2025-12-03 19:19:05,152 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:19:05] "GET /web/manifest.webmanifest HTTP/1.1" 200 - 9 0.014 0.015
+2025-12-03 19:19:05,204 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc="title or 'Odoo'" in template 185. Replace by @t-out 
+2025-12-03 19:19:05,205 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='request.csrf_token(None)' in template 185. Replace by @t-out 
+2025-12-03 19:19:05,205 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='debug' in template 185. Replace by @t-out 
+2025-12-03 19:19:05,328 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc="title or 'Odoo'" in template 185. Replace by @t-out 
+2025-12-03 19:19:05,329 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='request.csrf_token(None)' in template 185. Replace by @t-out 
+2025-12-03 19:19:05,329 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='debug' in template 185. Replace by @t-out 
+2025-12-03 19:19:05,343 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc="title or 'Odoo'" in template 185. Replace by @t-out 
+2025-12-03 19:19:05,343 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='request.csrf_token(None)' in template 185. Replace by @t-out 
+2025-12-03 19:19:05,343 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='debug' in template 185. Replace by @t-out 
+2025-12-03 19:19:05,354 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc="user_id.name[:23] + '...' if user_id.name and len(user_id.name) > 25 else user_id.name" in template 2622. Replace by @t-out 
+2025-12-03 19:19:05,360 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc="active_lang.name.split('/').pop()" in template 2621. Replace by @t-out 
+2025-12-03 19:19:05,360 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc="active_lang.url_code.split('_').pop(0).upper()" in template 2621. Replace by @t-out 
+2025-12-03 19:19:05,361 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc="lg.name.split('/').pop()" in template 2621. Replace by @t-out 
+2025-12-03 19:19:05,362 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc="lg.url_code.split('_').pop(0).upper()" in template 2621. Replace by @t-out 
+2025-12-03 19:19:05,369 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:19:05] "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 - 47 0.039 0.207
+2025-12-03 19:19:05,605 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc="title or 'Odoo'" in template 184. Replace by @t-out 
+2025-12-03 19:19:05,605 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='request.csrf_token(None)' in template 184. Replace by @t-out 
+2025-12-03 19:19:05,605 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='debug' in template 184. Replace by @t-out 
+2025-12-03 19:19:05,608 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:19:05] "GET /odoo/project/3/tasks?view_type=gantt HTTP/1.1" 200 - 65 0.054 0.438
+2025-12-03 19:20:29,969 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:20:29] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 34 0.048 0.046
+2025-12-03 19:20:30,000 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:20:30] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.011 0.014
+2025-12-03 19:20:30,024 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:20:30] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 11 0.010 0.011
+2025-12-03 19:20:34,610 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:20:34] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 35 0.023 0.025
+2025-12-03 19:20:34,643 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:20:34] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.016 0.013
+2025-12-03 19:20:34,668 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:20:34] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 11 0.010 0.012
+2025-12-03 19:20:50,122 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:20:50] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 34 0.038 0.051
+2025-12-03 19:20:50,149 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:20:50] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.008 0.014
+2025-12-03 19:20:50,176 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:20:50] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 11 0.011 0.012
+2025-12-03 19:20:56,043 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:20:56] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 35 0.025 0.033
+2025-12-03 19:20:56,069 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:20:56] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.011 0.012
+2025-12-03 19:20:56,091 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:20:56] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 11 0.008 0.011
+2025-12-03 19:21:05,067 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc="title or 'Odoo'" in template 184. Replace by @t-out 
+2025-12-03 19:21:05,068 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='request.csrf_token(None)' in template 184. Replace by @t-out 
+2025-12-03 19:21:05,068 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='debug' in template 184. Replace by @t-out 
+2025-12-03 19:21:05,071 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:21:05] "GET /odoo/project/3/tasks?view_type=gantt HTTP/1.1" 200 - 65 0.038 0.397
+2025-12-03 19:21:05,107 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:21:05] "GET /web/webclient/load_menus HTTP/1.1" 200 - 1 0.002 0.008
+2025-12-03 19:21:05,221 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc="title or 'Odoo'" in template 185. Replace by @t-out 
+2025-12-03 19:21:05,222 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='request.csrf_token(None)' in template 185. Replace by @t-out 
+2025-12-03 19:21:05,222 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='debug' in template 185. Replace by @t-out 
+2025-12-03 19:21:05,408 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc="title or 'Odoo'" in template 185. Replace by @t-out 
+2025-12-03 19:21:05,408 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='request.csrf_token(None)' in template 185. Replace by @t-out 
+2025-12-03 19:21:05,409 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='debug' in template 185. Replace by @t-out 
+2025-12-03 19:21:05,421 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc="title or 'Odoo'" in template 185. Replace by @t-out 
+2025-12-03 19:21:05,421 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='request.csrf_token(None)' in template 185. Replace by @t-out 
+2025-12-03 19:21:05,422 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='debug' in template 185. Replace by @t-out 
+2025-12-03 19:21:05,430 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc="user_id.name[:23] + '...' if user_id.name and len(user_id.name) > 25 else user_id.name" in template 2622. Replace by @t-out 
+2025-12-03 19:21:05,435 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc="active_lang.name.split('/').pop()" in template 2621. Replace by @t-out 
+2025-12-03 19:21:05,436 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc="active_lang.url_code.split('_').pop(0).upper()" in template 2621. Replace by @t-out 
+2025-12-03 19:21:05,437 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc="lg.name.split('/').pop()" in template 2621. Replace by @t-out 
+2025-12-03 19:21:05,437 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc="lg.url_code.split('_').pop(0).upper()" in template 2621. Replace by @t-out 
+2025-12-03 19:21:05,444 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:21:05] "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 - 47 0.088 0.253
+2025-12-03 19:21:06,384 42818 INFO diegofornalha odoo.addons.base.models.assetsbundle: Generating a new asset bundle attachment /web/assets/11057c2/web.assets_web.min.css (id:983) 
+2025-12-03 19:21:06,385 42818 INFO diegofornalha odoo.addons.base.models.assetsbundle: Deleting attachments [980] (matching /web/assets/_______/web.assets_web.min.css) because it was replaced with /web/assets/11057c2/web.assets_web.min.css 
+2025-12-03 19:21:06,408 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:21:06] "GET /web/assets/11057c2/web.assets_web.min.css HTTP/1.1" 200 - 25 0.129 1.187
+2025-12-03 19:21:08,449 42818 INFO diegofornalha odoo.addons.base.models.assetsbundle: Generating a new asset bundle attachment /web/assets/3291bc7/web.assets_web_print.min.css (id:984) 
+2025-12-03 19:21:08,450 42818 INFO diegofornalha odoo.addons.base.models.assetsbundle: Deleting attachments [981] (matching /web/assets/_______/web.assets_web_print.min.css) because it was replaced with /web/assets/3291bc7/web.assets_web_print.min.css 
+2025-12-03 19:21:08,460 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:21:08] "GET /web/assets/3291bc7/web.assets_web_print.min.css HTTP/1.1" 200 - 22 0.132 1.902
+2025-12-03 19:21:08,466 42818 INFO diegofornalha odoo.addons.base.models.assetsbundle: Generating a new asset bundle attachment /web/assets/caf1c4d/web.assets_web.min.js (id:985) 
+2025-12-03 19:21:08,466 42818 INFO diegofornalha odoo.addons.base.models.assetsbundle: Deleting attachments [982] (matching /web/assets/_______/web.assets_web.min.js) because it was replaced with /web/assets/caf1c4d/web.assets_web.min.js 
+2025-12-03 19:21:08,477 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:21:08] "GET /web/assets/caf1c4d/web.assets_web.min.js HTTP/1.1" 200 - 25 0.052 3.331
+2025-12-03 19:21:08,605 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:21:08] "GET /web/webclient/translations?hash=00877677c7b4d23b2a90ab91924efccdb9ca5cea&lang=pt_BR HTTP/1.1" 200 - 1 0.001 0.001
+2025-12-03 19:21:08,608 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:21:08] "GET /web/manifest.webmanifest HTTP/1.1" 200 - 9 0.004 0.003
+2025-12-03 19:21:08,614 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:21:08] "GET /bus/websocket_worker_bundle?v=19.0-2 HTTP/1.1" 304 - 4 0.002 0.003
+2025-12-03 19:21:08,720 42818 INFO diegofornalha odoo.addons.base.models.ir_attachment: _read_file reading /Users/2a/Desktop/odoo19framework/diegofornalha/filestore/filestore/diegofornalha/66/66ae48cdda39173a7c40302137fd7fe47b649b16 
+Traceback (most recent call last):
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/addons/base/models/ir_attachment.py", line 138, in _file_read
+    with open(full_path, 'rb') as f:
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/2a/Desktop/odoo19framework/diegofornalha/filestore/filestore/diegofornalha/66/66ae48cdda39173a7c40302137fd7fe47b649b16'
+2025-12-03 19:21:08,725 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:21:08] "GET /web/image?model=res.users&field=avatar_128&id=2 HTTP/1.1" 304 - 19 0.027 0.013
+2025-12-03 19:21:08,739 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:21:08] "POST /mail/data HTTP/1.1" 200 - 31 0.035 0.012
+2025-12-03 19:21:08,752 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:21:08] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.029 0.015
+2025-12-03 19:21:08,855 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:21:08] "POST /web/dataset/call_kw/project.task/get_views#project.task.get_views HTTP/1.1" 200 - 78 0.054 0.115
+2025-12-03 19:21:08,869 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:21:08] "GET /websocket?version=19.0-2 HTTP/1.1" 101 - 1 0.001 0.003
+2025-12-03 19:21:08,874 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:21:08] "POST /web/dataset/call_kw/mail.push.device/register_devices#mail.push.device.register_devices HTTP/1.1" 200 - 6 0.003 0.002
+2025-12-03 19:21:10,319 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:21:10] "GET /web/service-worker.js HTTP/1.1" 200 - 1 0.001 0.004
+2025-12-03 19:21:10,811 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc="title or 'Odoo'" in template 184. Replace by @t-out 
+2025-12-03 19:21:10,812 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='request.csrf_token(None)' in template 184. Replace by @t-out 
+2025-12-03 19:21:10,812 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='debug' in template 184. Replace by @t-out 
+2025-12-03 19:21:10,815 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:21:10] "GET /odoo/project/3/tasks?view_type=gantt HTTP/1.1" 200 - 65 0.026 0.325
+2025-12-03 19:21:10,836 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:21:10] "GET /web/webclient/load_menus HTTP/1.1" 200 - 1 0.002 0.003
+2025-12-03 19:21:10,909 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:21:10] "GET /web/webclient/translations?hash=00877677c7b4d23b2a90ab91924efccdb9ca5cea&lang=pt_BR HTTP/1.1" 200 - 1 0.002 0.004
+2025-12-03 19:21:10,917 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:21:10] "GET /web/manifest.webmanifest HTTP/1.1" 200 - 9 0.009 0.007
+2025-12-03 19:21:10,919 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:21:10] "GET /bus/websocket_worker_bundle?v=19.0-2 HTTP/1.1" 304 - 4 0.003 0.005
+2025-12-03 19:21:11,031 42818 INFO diegofornalha odoo.addons.base.models.ir_attachment: _read_file reading /Users/2a/Desktop/odoo19framework/diegofornalha/filestore/filestore/diegofornalha/66/66ae48cdda39173a7c40302137fd7fe47b649b16 
+Traceback (most recent call last):
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/addons/base/models/ir_attachment.py", line 138, in _file_read
+    with open(full_path, 'rb') as f:
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/2a/Desktop/odoo19framework/diegofornalha/filestore/filestore/diegofornalha/66/66ae48cdda39173a7c40302137fd7fe47b649b16'
+2025-12-03 19:21:11,032 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:21:11] "GET /web/image?model=res.users&field=avatar_128&id=2 HTTP/1.1" 304 - 19 0.026 0.011
+2025-12-03 19:21:11,042 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:21:11] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.019 0.019
+2025-12-03 19:21:11,047 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:21:11] "POST /mail/data HTTP/1.1" 200 - 31 0.037 0.011
+2025-12-03 19:21:11,150 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:21:11] "POST /web/dataset/call_kw/project.task/get_views#project.task.get_views HTTP/1.1" 200 - 78 0.052 0.101
+2025-12-03 19:21:11,198 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:21:11] "GET /websocket?version=19.0-2 HTTP/1.1" 101 - 1 0.000 0.003
+2025-12-03 19:21:11,200 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:21:11] "POST /web/dataset/call_kw/mail.push.device/register_devices#mail.push.device.register_devices HTTP/1.1" 200 - 6 0.002 0.002
+2025-12-03 19:21:12,622 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:21:12] "GET /web/service-worker.js HTTP/1.1" 200 - 1 0.001 0.005
+2025-12-03 19:21:19,875 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:21:19] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 34 0.031 0.044
+2025-12-03 19:21:19,910 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:21:19] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.013 0.018
+2025-12-03 19:21:19,939 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:21:19] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 11 0.011 0.015
+2025-12-03 19:21:22,476 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:21:22] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 35 0.026 0.038
+2025-12-03 19:21:22,503 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:21:22] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.012 0.013
+2025-12-03 19:21:22,526 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:21:22] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 11 0.009 0.012
+2025-12-03 19:21:30,400 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:21:30] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 34 0.025 0.048
+2025-12-03 19:21:30,435 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:21:30] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.013 0.019
+2025-12-03 19:21:30,463 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:21:30] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 11 0.011 0.014
+2025-12-03 19:21:33,359 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:21:33] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 35 0.025 0.027
+2025-12-03 19:21:33,389 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:21:33] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.012 0.015
+2025-12-03 19:21:33,413 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:21:33] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 11 0.010 0.012
