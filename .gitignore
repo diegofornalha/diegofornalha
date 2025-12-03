@@ -1,2 +1,4 @@
 .env
 filestore*
+logs/odoo.log
+logs/startup.log
