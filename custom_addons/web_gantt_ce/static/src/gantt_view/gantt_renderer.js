@@ -21,9 +21,16 @@ export class GanttRenderer extends Component {
             startX: 0,
             startY: 0,
         };
+        this.selectedArrow = null;
+        this.arrowDragState = {
+            isDragging: false,
+            sourceTaskId: null,
+            tempLine: null,
+        };
 
         onMounted(() => {
             this.renderGantt();
+            this.setupKeyboardHandler();
         });
 
         onPatched(() => {
@@ -35,7 +42,30 @@ export class GanttRenderer extends Component {
                 this.gantt = null;
             }
             this.cleanupVerticalDrag();
+            this.cleanupArrowHandlers();
         });
+    }
+
+    setupKeyboardHandler() {
+        this.handleKeyDown = this.handleKeyDown.bind(this);
+        document.addEventListener('keydown', this.handleKeyDown);
+    }
+
+    cleanupArrowHandlers() {
+        document.removeEventListener('keydown', this.handleKeyDown);
+        document.removeEventListener('mousemove', this.handleArrowDrag);
+        document.removeEventListener('mouseup', this.handleArrowDragEnd);
+    }
+
+    handleKeyDown(e) {
+        if ((e.key === 'Delete' || e.key === 'Backspace') && this.selectedArrow) {
+            e.preventDefault();
+            this.deleteSelectedDependency();
+        }
+        if (e.key === 'Escape') {
+            this.deselectArrow();
+            this.cancelArrowDrag();
+        }
     }
 
     cleanupVerticalDrag() {
@@ -92,6 +122,12 @@ export class GanttRenderer extends Component {
 
         // Setup vertical drag detection on bars
         this.setupVerticalDrag(container);
+
+        // Setup arrow interaction (click to select, delete to remove)
+        this.setupArrowInteraction(container);
+
+        // Setup dependency creation (drag from task edge)
+        this.setupDependencyCreation(container);
     }
 
     setupVerticalDrag(container) {
@@ -293,6 +329,392 @@ export class GanttRenderer extends Component {
             startX: 0,
             startY: 0,
         };
+    }
+
+    // =============================================
+    // Arrow Interaction Methods
+    // =============================================
+
+    setupArrowInteraction(container) {
+        // Wait a bit for Frappe Gantt to render arrows
+        setTimeout(() => {
+            const arrowGroup = container.querySelector('g.arrow');
+            if (!arrowGroup) return;
+
+            const arrows = arrowGroup.querySelectorAll('path');
+            arrows.forEach((arrow, index) => {
+                // Make arrows clickable
+                arrow.style.cursor = 'pointer';
+                arrow.style.strokeWidth = '2';
+                arrow.style.pointerEvents = 'stroke';
+
+                // Store dependency info on the arrow
+                const depInfo = this.getArrowDependencyInfo(index);
+                if (depInfo) {
+                    arrow.dataset.fromTask = depInfo.from;
+                    arrow.dataset.toTask = depInfo.to;
+                }
+
+                // Click to select
+                arrow.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    this.selectArrow(arrow);
+                });
+
+                // Hover effect
+                arrow.addEventListener('mouseenter', () => {
+                    if (arrow !== this.selectedArrow?.element) {
+                        arrow.style.stroke = '#714b67';
+                        arrow.style.strokeWidth = '3';
+                    }
+                });
+
+                arrow.addEventListener('mouseleave', () => {
+                    if (arrow !== this.selectedArrow?.element) {
+                        arrow.style.stroke = '';
+                        arrow.style.strokeWidth = '2';
+                    }
+                });
+            });
+
+            // Click outside to deselect
+            container.addEventListener('click', (e) => {
+                if (!e.target.closest('g.arrow')) {
+                    this.deselectArrow();
+                }
+            });
+        }, 100);
+    }
+
+    getArrowDependencyInfo(arrowIndex) {
+        // Build dependency map from tasks
+        const tasks = this.formatTasks();
+        const dependencies = [];
+
+        tasks.forEach(task => {
+            if (task.dependencies) {
+                const deps = task.dependencies.split(',').map(d => d.trim()).filter(d => d);
+                deps.forEach(depId => {
+                    dependencies.push({ from: depId, to: task.id });
+                });
+            }
+        });
+
+        return dependencies[arrowIndex] || null;
+    }
+
+    selectArrow(arrowElement) {
+        // Deselect previous
+        this.deselectArrow();
+
+        // Select new
+        this.selectedArrow = {
+            element: arrowElement,
+            fromTask: arrowElement.dataset.fromTask,
+            toTask: arrowElement.dataset.toTask,
+        };
+
+        // Visual feedback
+        arrowElement.style.stroke = '#dc3545';
+        arrowElement.style.strokeWidth = '4';
+        arrowElement.style.filter = 'drop-shadow(0 0 3px rgba(220, 53, 69, 0.5))';
+
+        // Show hint
+        this.showArrowHint('Pressione Delete para remover dependência');
+
+        console.log('[Gantt] Arrow selected:', this.selectedArrow.fromTask, '->', this.selectedArrow.toTask);
+    }
+
+    deselectArrow() {
+        if (this.selectedArrow?.element) {
+            this.selectedArrow.element.style.stroke = '';
+            this.selectedArrow.element.style.strokeWidth = '2';
+            this.selectedArrow.element.style.filter = '';
+        }
+        this.selectedArrow = null;
+        this.hideArrowHint();
+    }
+
+    async deleteSelectedDependency() {
+        if (!this.selectedArrow) return;
+
+        const { fromTask, toTask } = this.selectedArrow;
+        if (!fromTask || !toTask) {
+            console.warn('[Gantt] Cannot delete: missing task info');
+            return;
+        }
+
+        console.log('[Gantt] Deleting dependency:', fromTask, '->', toTask);
+
+        // Get current dependencies of the target task
+        const targetTaskId = parseInt(toTask);
+        const sourceTaskId = parseInt(fromTask);
+
+        // Find the record and update depend_on_ids
+        const record = this.tasks.find(r => r.resId === targetTaskId);
+        if (record) {
+            const currentDeps = record.data.depend_on_ids || [];
+            const newDeps = currentDeps.filter(id => id !== sourceTaskId);
+
+            await this.props.onTaskUpdate(targetTaskId, {
+                depend_on_ids: [[6, 0, newDeps]], // Odoo Many2many replace command
+            });
+
+            // Reload to refresh arrows
+            if (this.props.model && this.props.model.load) {
+                await this.props.model.load({});
+            }
+        }
+
+        this.selectedArrow = null;
+        this.hideArrowHint();
+    }
+
+    showArrowHint(message) {
+        this.hideArrowHint();
+
+        const hint = document.createElement('div');
+        hint.id = 'gantt-arrow-hint';
+        hint.innerHTML = message;
+        hint.style.cssText = `
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(220, 53, 69, 0.9);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 13px;
+            z-index: 9999;
+        `;
+        document.body.appendChild(hint);
+    }
+
+    hideArrowHint() {
+        const hint = document.getElementById('gantt-arrow-hint');
+        if (hint) hint.remove();
+    }
+
+    // =============================================
+    // Dependency Creation Methods
+    // =============================================
+
+    setupDependencyCreation(container) {
+        const barWrappers = container.querySelectorAll('.bar-wrapper');
+
+        this.handleArrowDrag = this.handleArrowDrag.bind(this);
+        this.handleArrowDragEnd = this.handleArrowDragEnd.bind(this);
+
+        barWrappers.forEach((wrapper) => {
+            const bar = wrapper.querySelector('.bar');
+            if (!bar) return;
+
+            const taskId = wrapper.getAttribute('data-id');
+
+            // Create a drag handle on the right side of the bar
+            const barRect = bar.getBBox();
+
+            // Add right-side connector point (for creating dependencies)
+            const connector = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            connector.setAttribute('cx', barRect.x + barRect.width);
+            connector.setAttribute('cy', barRect.y + barRect.height / 2);
+            connector.setAttribute('r', '6');
+            connector.setAttribute('fill', '#714b67');
+            connector.setAttribute('stroke', 'white');
+            connector.setAttribute('stroke-width', '2');
+            connector.setAttribute('class', 'dependency-connector');
+            connector.style.cursor = 'crosshair';
+            connector.style.opacity = '0';
+            connector.style.transition = 'opacity 0.2s';
+
+            wrapper.appendChild(connector);
+
+            // Show connector on hover
+            wrapper.addEventListener('mouseenter', () => {
+                connector.style.opacity = '1';
+            });
+            wrapper.addEventListener('mouseleave', () => {
+                if (!this.arrowDragState.isDragging) {
+                    connector.style.opacity = '0';
+                }
+            });
+
+            // Start dragging from connector
+            connector.addEventListener('mousedown', (e) => {
+                e.stopPropagation();
+                e.preventDefault();
+
+                const svgEl = container.querySelector('svg.gantt');
+                const pt = svgEl.createSVGPoint();
+                pt.x = e.clientX;
+                pt.y = e.clientY;
+                const svgP = pt.matrixTransform(svgEl.getScreenCTM().inverse());
+
+                this.arrowDragState = {
+                    isDragging: true,
+                    sourceTaskId: taskId,
+                    startX: svgP.x,
+                    startY: svgP.y,
+                    svgEl: svgEl,
+                };
+
+                // Create temporary line
+                const tempLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                tempLine.setAttribute('x1', svgP.x);
+                tempLine.setAttribute('y1', svgP.y);
+                tempLine.setAttribute('x2', svgP.x);
+                tempLine.setAttribute('y2', svgP.y);
+                tempLine.setAttribute('stroke', '#714b67');
+                tempLine.setAttribute('stroke-width', '2');
+                tempLine.setAttribute('stroke-dasharray', '5,5');
+                tempLine.setAttribute('marker-end', 'url(#arrowhead)');
+                svgEl.appendChild(tempLine);
+                this.arrowDragState.tempLine = tempLine;
+
+                // Add arrowhead marker if not exists
+                this.ensureArrowMarker(svgEl);
+
+                document.addEventListener('mousemove', this.handleArrowDrag);
+                document.addEventListener('mouseup', this.handleArrowDragEnd);
+
+                console.log('[Gantt] Started dependency drag from task:', taskId);
+            });
+        });
+    }
+
+    ensureArrowMarker(svgEl) {
+        if (svgEl.querySelector('#arrowhead')) return;
+
+        const defs = svgEl.querySelector('defs') || document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+        if (!svgEl.querySelector('defs')) {
+            svgEl.insertBefore(defs, svgEl.firstChild);
+        }
+
+        const marker = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
+        marker.setAttribute('id', 'arrowhead');
+        marker.setAttribute('markerWidth', '10');
+        marker.setAttribute('markerHeight', '7');
+        marker.setAttribute('refX', '9');
+        marker.setAttribute('refY', '3.5');
+        marker.setAttribute('orient', 'auto');
+
+        const polygon = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+        polygon.setAttribute('points', '0 0, 10 3.5, 0 7');
+        polygon.setAttribute('fill', '#714b67');
+        marker.appendChild(polygon);
+        defs.appendChild(marker);
+    }
+
+    handleArrowDrag(e) {
+        if (!this.arrowDragState.isDragging) return;
+
+        const { svgEl, tempLine } = this.arrowDragState;
+
+        const pt = svgEl.createSVGPoint();
+        pt.x = e.clientX;
+        pt.y = e.clientY;
+        const svgP = pt.matrixTransform(svgEl.getScreenCTM().inverse());
+
+        tempLine.setAttribute('x2', svgP.x);
+        tempLine.setAttribute('y2', svgP.y);
+
+        // Highlight potential target
+        const container = this.ganttRef.el;
+        const barWrappers = container.querySelectorAll('.bar-wrapper');
+
+        barWrappers.forEach((wrapper) => {
+            const bar = wrapper.querySelector('.bar');
+            if (!bar) return;
+
+            const rect = bar.getBoundingClientRect();
+            if (
+                e.clientX >= rect.left &&
+                e.clientX <= rect.right &&
+                e.clientY >= rect.top &&
+                e.clientY <= rect.bottom &&
+                wrapper.getAttribute('data-id') !== this.arrowDragState.sourceTaskId
+            ) {
+                wrapper.style.outline = '2px solid #714b67';
+                this.arrowDragState.targetTaskId = wrapper.getAttribute('data-id');
+            } else {
+                wrapper.style.outline = '';
+            }
+        });
+    }
+
+    handleArrowDragEnd(e) {
+        if (!this.arrowDragState.isDragging) return;
+
+        const { sourceTaskId, targetTaskId, tempLine } = this.arrowDragState;
+
+        // Remove temp line
+        if (tempLine) {
+            tempLine.remove();
+        }
+
+        // Reset highlights
+        const container = this.ganttRef.el;
+        container.querySelectorAll('.bar-wrapper').forEach((wrapper) => {
+            wrapper.style.outline = '';
+        });
+
+        // Create dependency if valid target
+        if (targetTaskId && targetTaskId !== sourceTaskId) {
+            console.log('[Gantt] Creating dependency:', sourceTaskId, '->', targetTaskId);
+            this.createDependency(parseInt(sourceTaskId), parseInt(targetTaskId));
+        }
+
+        // Cleanup
+        document.removeEventListener('mousemove', this.handleArrowDrag);
+        document.removeEventListener('mouseup', this.handleArrowDragEnd);
+
+        this.arrowDragState = {
+            isDragging: false,
+            sourceTaskId: null,
+            tempLine: null,
+        };
+    }
+
+    cancelArrowDrag() {
+        if (this.arrowDragState.tempLine) {
+            this.arrowDragState.tempLine.remove();
+        }
+        document.removeEventListener('mousemove', this.handleArrowDrag);
+        document.removeEventListener('mouseup', this.handleArrowDragEnd);
+        this.arrowDragState = {
+            isDragging: false,
+            sourceTaskId: null,
+            tempLine: null,
+        };
+    }
+
+    async createDependency(sourceTaskId, targetTaskId) {
+        // Get current dependencies of the target task
+        const record = this.tasks.find(r => r.resId === targetTaskId);
+        if (!record) return;
+
+        const currentDeps = record.data.depend_on_ids || [];
+
+        // Check if dependency already exists
+        if (currentDeps.includes(sourceTaskId)) {
+            console.log('[Gantt] Dependency already exists');
+            return;
+        }
+
+        // Add new dependency
+        const newDeps = [...currentDeps, sourceTaskId];
+
+        await this.props.onTaskUpdate(targetTaskId, {
+            depend_on_ids: [[6, 0, newDeps]], // Odoo Many2many replace command
+        });
+
+        // Reload to refresh arrows
+        if (this.props.model && this.props.model.load) {
+            await this.props.model.load({});
+        }
+
+        console.log('[Gantt] Dependency created successfully');
     }
 
     async updateTaskSequences(newOrder) {

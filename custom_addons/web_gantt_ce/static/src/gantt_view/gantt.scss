@@ -235,6 +235,37 @@
     z-index: 1000;
 }
 
+/* Arrow interaction styles */
+.gantt {
+    g.arrow {
+        path {
+            cursor: pointer;
+            transition: stroke 0.2s, stroke-width 0.2s;
+            stroke-width: 2;
+
+            &:hover {
+                stroke: #714b67;
+                stroke-width: 3;
+            }
+        }
+    }
+
+    /* Dependency connector point */
+    .dependency-connector {
+        transition: opacity 0.2s, transform 0.2s;
+
+        &:hover {
+            transform: scale(1.2);
+            opacity: 1 !important;
+        }
+    }
+}
+
+/* Temporary dependency line while dragging */
+.gantt line[stroke-dasharray] {
+    pointer-events: none;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .o_gantt_view {
