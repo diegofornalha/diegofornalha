@@ -30486,3 +30486,488 @@ FileNotFoundError: [Errno 2] No such file or directory: '/Users/2a/Desktop/odoo1
 2025-12-03 19:21:33,359 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:21:33] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 35 0.025 0.027
 2025-12-03 19:21:33,389 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:21:33] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.012 0.015
 2025-12-03 19:21:33,413 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 19:21:33] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 11 0.010 0.012
+2025-12-03 20:02:25,981 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc="title or 'Odoo'" in template 184. Replace by @t-out 
+2025-12-03 20:02:25,982 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='request.csrf_token(None)' in template 184. Replace by @t-out 
+2025-12-03 20:02:25,982 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='debug' in template 184. Replace by @t-out 
+2025-12-03 20:02:25,985 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:02:25] "GET /odoo/project/3/tasks?view_type=gantt HTTP/1.1" 200 - 65 0.032 0.306
+2025-12-03 20:02:26,013 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:02:26] "GET /web/webclient/load_menus HTTP/1.1" 200 - 1 0.001 0.006
+2025-12-03 20:02:26,044 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:02:26] "GET /web/webclient/translations?hash=00877677c7b4d23b2a90ab91924efccdb9ca5cea&lang=pt_BR HTTP/1.1" 200 - 1 0.001 0.003
+2025-12-03 20:02:26,052 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:02:26] "GET /bus/websocket_worker_bundle?v=19.0-2 HTTP/1.1" 304 - 4 0.003 0.005
+2025-12-03 20:02:26,182 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:02:26] "POST /mail/data HTTP/1.1" 200 - 31 0.017 0.009
+2025-12-03 20:02:26,293 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:02:26] "GET /websocket?version=19.0-2 HTTP/1.1" 101 - 1 0.001 0.002
+2025-12-03 20:02:27,855 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:02:27] "GET /web/service-worker.js HTTP/1.1" 200 - 1 0.002 0.007
+2025-12-03 20:02:27,888 42818 INFO diegofornalha odoo.addons.base.models.assetsbundle: Generating a new asset bundle attachment /web/assets/6db3628/web.assets_web_print.min.css (id:989) 
+2025-12-03 20:02:27,889 42818 INFO diegofornalha odoo.addons.base.models.assetsbundle: Generating a new asset bundle attachment /web/assets/9523aaa/web.assets_web.min.css (id:988) 
+2025-12-03 20:02:27,889 42818 INFO diegofornalha odoo.addons.base.models.assetsbundle: Deleting attachments [987] (matching /web/assets/_______/web.assets_web_print.min.css) because it was replaced with /web/assets/6db3628/web.assets_web_print.min.css 
+2025-12-03 20:02:27,890 42818 INFO diegofornalha odoo.addons.base.models.assetsbundle: Deleting attachments [986] (matching /web/assets/_______/web.assets_web.min.css) because it was replaced with /web/assets/9523aaa/web.assets_web.min.css 
+2025-12-03 20:02:27,892 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:02:27] "GET /web/assets/6db3628/web.assets_web_print.min.css HTTP/1.1" 200 - 22 0.049 1.833
+2025-12-03 20:02:27,898 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:02:27] "GET /web/assets/9523aaa/web.assets_web.min.css HTTP/1.1" 200 - 25 0.048 1.847
+2025-12-03 20:02:27,927 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:02:27] "POST /web/dataset/call_kw/mail.push.device/register_devices#mail.push.device.register_devices HTTP/1.1" 200 - 6 0.003 0.003
+2025-12-03 20:02:27,934 42818 INFO diegofornalha odoo.addons.base.models.ir_attachment: _read_file reading /Users/2a/Desktop/odoo19framework/diegofornalha/filestore/filestore/diegofornalha/66/66ae48cdda39173a7c40302137fd7fe47b649b16 
+Traceback (most recent call last):
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/addons/base/models/ir_attachment.py", line 138, in _file_read
+    with open(full_path, 'rb') as f:
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/2a/Desktop/odoo19framework/diegofornalha/filestore/filestore/diegofornalha/66/66ae48cdda39173a7c40302137fd7fe47b649b16'
+2025-12-03 20:02:27,936 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:02:27] "GET /web/image?model=res.users&field=avatar_128&id=2 HTTP/1.1" 304 - 19 0.014 0.009
+2025-12-03 20:02:27,952 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:02:27] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.015 0.012
+2025-12-03 20:02:27,953 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:02:27] "GET /web/manifest.webmanifest HTTP/1.1" 200 - 9 0.007 0.003
+2025-12-03 20:02:28,081 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:02:28] "POST /web/dataset/call_kw/project.task/get_views#project.task.get_views HTTP/1.1" 200 - 78 0.055 0.110
+2025-12-03 20:02:35,613 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:02:35] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 36 0.036 0.052
+2025-12-03 20:02:35,648 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:02:35] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.013 0.018
+2025-12-03 20:02:35,680 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:02:35] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 11 0.008 0.020
+2025-12-03 20:02:41,356 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:02:41] "POST /web/dataset/call_kw/project.task/get_views#project.task.get_views HTTP/1.1" 200 - 20 0.011 0.040
+2025-12-03 20:02:41,407 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:02:41] "POST /web/dataset/call_kw/project.task/web_read#project.task.web_read HTTP/1.1" 200 - 62 0.050 0.042
+2025-12-03 20:02:41,437 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:02:41] "POST /web/dataset/call_kw/project.task.type/search_read#project.task.type.search_read HTTP/1.1" 200 - 6 0.004 0.003
+2025-12-03 20:02:41,473 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:02:41] "POST /html_editor/get_ice_servers HTTP/1.1" 200 - 2 0.001 0.002
+2025-12-03 20:02:41,500 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:02:41] "GET /web/image/res.users/5/avatar_128 HTTP/1.1" 304 - 20 0.011 0.013
+2025-12-03 20:02:41,539 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:02:41] "POST /mail/thread/messages HTTP/1.1" 200 - 28 0.025 0.017
+2025-12-03 20:02:41,562 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:02:41] "POST /mail/data HTTP/1.1" 200 - 57 0.044 0.025
+2025-12-03 20:02:41,574 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:02:41] "GET /web/bundle/web.assets_emoji?lang=pt_BR HTTP/1.1" 200 - 2 0.001 0.003
+2025-12-03 20:02:45,240 42818 INFO diegofornalha odoo.models.unlink: User #2 deleted mail.message records with IDs: [424, 422, 421, 420, 404, 403, 402, 401, 400, 389, 384, 383, 382] 
+2025-12-03 20:02:45,266 42818 INFO diegofornalha odoo.models.unlink: User #2 deleted project.task records with IDs: [50, 51] 
+2025-12-03 20:02:45,276 42818 INFO diegofornalha odoo.models.unlink: User #2 deleted mail.followers records with IDs: [72, 73, 74, 75] 
+2025-12-03 20:02:45,299 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:02:45] "POST /web/dataset/call_kw/project.task/unlink#project.task.unlink HTTP/1.1" 200 - 51 0.065 0.057
+2025-12-03 20:02:45,328 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:02:45] "POST /web/dataset/call_kw/project.task.type/search_read#project.task.type.search_read HTTP/1.1" 200 - 6 0.005 0.009
+2025-12-03 20:02:45,345 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:02:45] "POST /web/dataset/call_kw/project.task.type/search_read#project.task.type.search_read HTTP/1.1" 200 - 6 0.011 0.010
+2025-12-03 20:02:45,357 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:02:45] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.018 0.016
+2025-12-03 20:04:03,791 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc="title or 'Odoo'" in template 184. Replace by @t-out 
+2025-12-03 20:04:03,792 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='request.csrf_token(None)' in template 184. Replace by @t-out 
+2025-12-03 20:04:03,792 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='debug' in template 184. Replace by @t-out 
+2025-12-03 20:04:03,795 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:04:03] "GET /odoo/project/3/tasks?view_type=gantt HTTP/1.1" 200 - 65 0.037 0.353
+2025-12-03 20:04:03,848 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:04:03] "GET /web/webclient/load_menus HTTP/1.1" 200 - 1 0.001 0.033
+2025-12-03 20:04:03,896 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:04:03] "GET /web/webclient/translations?hash=00877677c7b4d23b2a90ab91924efccdb9ca5cea&lang=pt_BR HTTP/1.1" 200 - 1 0.001 0.002
+2025-12-03 20:04:03,905 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:04:03] "GET /web/manifest.webmanifest HTTP/1.1" 200 - 9 0.012 0.005
+2025-12-03 20:04:03,907 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:04:03] "GET /bus/websocket_worker_bundle?v=19.0-2 HTTP/1.1" 304 - 4 0.003 0.005
+2025-12-03 20:04:04,090 42818 INFO diegofornalha odoo.addons.base.models.ir_attachment: _read_file reading /Users/2a/Desktop/odoo19framework/diegofornalha/filestore/filestore/diegofornalha/66/66ae48cdda39173a7c40302137fd7fe47b649b16 
+Traceback (most recent call last):
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/addons/base/models/ir_attachment.py", line 138, in _file_read
+    with open(full_path, 'rb') as f:
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/2a/Desktop/odoo19framework/diegofornalha/filestore/filestore/diegofornalha/66/66ae48cdda39173a7c40302137fd7fe47b649b16'
+2025-12-03 20:04:04,096 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:04:04] "GET /web/image?model=res.users&field=avatar_128&id=2 HTTP/1.1" 304 - 19 0.025 0.018
+2025-12-03 20:04:04,103 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:04:04] "POST /web/dataset/call_kw/project.task/read_progress_bar#project.task.read_progress_bar HTTP/1.1" 200 - 8 0.021 0.010
+2025-12-03 20:04:04,120 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:04:04] "POST /web/dataset/call_kw/project.project/get_template_tasks#project.project.get_template_tasks HTTP/1.1" 200 - 7 0.026 0.015
+2025-12-03 20:04:04,133 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:04:04] "POST /mail/data HTTP/1.1" 200 - 31 0.056 0.020
+2025-12-03 20:04:04,163 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:04:04] "POST /web/dataset/call_kw/project.task/web_read_group#project.task.web_read_group HTTP/1.1" 200 - 43 0.057 0.034
+2025-12-03 20:04:04,184 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:04:04] "POST /web/dataset/call_kw/res.users/has_group#res.users.has_group HTTP/1.1" 200 - 1 0.002 0.003
+2025-12-03 20:04:04,254 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:04:04] "POST /web/dataset/call_kw/project.task/get_views#project.task.get_views HTTP/1.1" 200 - 78 0.077 0.123
+2025-12-03 20:04:04,259 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:04:04] "GET /web/image/res.users/5/avatar_128 HTTP/1.1" 304 - 20 0.028 0.009
+2025-12-03 20:04:04,261 42818 INFO diegofornalha odoo.addons.base.models.ir_attachment: _read_file reading /Users/2a/Desktop/odoo19framework/diegofornalha/filestore/filestore/diegofornalha/66/66ae48cdda39173a7c40302137fd7fe47b649b16 
+Traceback (most recent call last):
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/addons/base/models/ir_attachment.py", line 138, in _file_read
+    with open(full_path, 'rb') as f:
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/2a/Desktop/odoo19framework/diegofornalha/filestore/filestore/diegofornalha/66/66ae48cdda39173a7c40302137fd7fe47b649b16'
+2025-12-03 20:04:04,263 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:04:04] "GET /web/image/res.users/2/avatar_128 HTTP/1.1" 304 - 19 0.025 0.009
+2025-12-03 20:04:04,279 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:04:04] "GET /websocket?version=19.0-2 HTTP/1.1" 101 - 1 0.005 0.003
+2025-12-03 20:04:04,282 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:04:04] "POST /web/dataset/call_kw/mail.push.device/register_devices#mail.push.device.register_devices HTTP/1.1" 200 - 6 0.007 0.003
+2025-12-03 20:04:05,780 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:04:05] "GET /web/service-worker.js HTTP/1.1" 200 - 1 0.001 0.005
+2025-12-03 20:04:07,894 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:04:07] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.018 0.024
+2025-12-03 20:04:08,039 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:04:08] "POST /web/dataset/call_kw/project.task/get_views#project.task.get_views HTTP/1.1" 200 - 78 0.061 0.136
+2025-12-03 20:04:17,750 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:04:17] "POST /web/dataset/call_kw/project.task/get_views#project.task.get_views HTTP/1.1" 200 - 20 0.016 0.040
+2025-12-03 20:04:17,801 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:04:17] "POST /web/dataset/call_kw/project.task/web_read#project.task.web_read HTTP/1.1" 200 - 63 0.063 0.033
+2025-12-03 20:04:17,836 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:04:17] "POST /web/dataset/call_kw/project.task.type/search_read#project.task.type.search_read HTTP/1.1" 200 - 6 0.010 0.003
+2025-12-03 20:04:17,866 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:04:17] "POST /html_editor/get_ice_servers HTTP/1.1" 200 - 2 0.001 0.002
+2025-12-03 20:04:17,939 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:04:17] "POST /mail/thread/messages HTTP/1.1" 200 - 28 0.032 0.019
+2025-12-03 20:04:17,966 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:04:17] "POST /mail/data HTTP/1.1" 200 - 57 0.054 0.023
+2025-12-03 20:04:17,991 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:04:17] "GET /web/bundle/web.assets_emoji?lang=pt_BR HTTP/1.1" 200 - 2 0.001 0.003
+2025-12-03 20:04:20,610 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:04:20] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.010 0.009
+2025-12-03 20:04:20,615 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:04:20] "POST /web/action/load HTTP/1.1" 200 - 24 0.021 0.008
+2025-12-03 20:05:31,085 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:05:31] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 30 0.044 0.043
+2025-12-03 20:05:31,106 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:05:31] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.006 0.009
+2025-12-03 20:05:38,021 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:05:38] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 30 0.034 0.037
+2025-12-03 20:05:38,029 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:05:38] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 32 0.044 0.033
+2025-12-03 20:05:38,048 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:05:38] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.011 0.014
+2025-12-03 20:05:38,059 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:05:38] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.018 0.011
+2025-12-03 20:05:49,119 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:05:49] "POST /web/dataset/call_kw/project.task/web_read#project.task.web_read HTTP/1.1" 200 - 44 0.060 0.034
+2025-12-03 20:05:49,141 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:05:49] "POST /web/dataset/call_kw/project.task.type/search_read#project.task.type.search_read HTTP/1.1" 200 - 6 0.005 0.003
+2025-12-03 20:05:49,265 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:05:49] "POST /mail/thread/messages HTTP/1.1" 200 - 28 0.047 0.025
+2025-12-03 20:05:49,271 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:05:49] "POST /mail/data HTTP/1.1" 200 - 57 0.044 0.029
+2025-12-03 20:06:14,907 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:06:14] "POST /web/dataset/call_kw/project.task/web_save#project.task.web_save HTTP/1.1" 200 - 57 0.056 0.068
+2025-12-03 20:06:14,940 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:06:14] "POST /mail/thread/messages HTTP/1.1" 200 - 28 0.016 0.014
+2025-12-03 20:06:14,991 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:06:14] "POST /mail/data HTTP/1.1" 200 - 57 0.037 0.023
+2025-12-03 20:06:20,106 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:06:20] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.017 0.017
+2025-12-03 20:06:23,466 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:06:23] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 32 0.028 0.037
+2025-12-03 20:06:23,498 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:06:23] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.016 0.013
+2025-12-03 20:06:30,972 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:06:30] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 30 0.029 0.041
+2025-12-03 20:06:31,008 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:06:31] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.013 0.018
+2025-12-03 20:06:34,693 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:06:34] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 30 0.034 0.027
+2025-12-03 20:06:34,694 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:06:34] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 27 0.036 0.025
+2025-12-03 20:06:34,722 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:06:34] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.015 0.011
+2025-12-03 20:06:34,723 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:06:34] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.016 0.010
+2025-12-03 20:06:38,790 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:06:38] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 30 0.034 0.024
+2025-12-03 20:06:38,791 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:06:38] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 32 0.030 0.027
+2025-12-03 20:06:38,817 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:06:38] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.014 0.010
+2025-12-03 20:06:38,818 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:06:38] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.015 0.009
+2025-12-03 20:07:02,314 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:07:02] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 27 0.044 0.029
+2025-12-03 20:07:02,315 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:07:02] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 30 0.036 0.040
+2025-12-03 20:07:02,342 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:07:02] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.011 0.010
+2025-12-03 20:07:02,343 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:07:02] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.012 0.010
+2025-12-03 20:07:20,503 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:07:20] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 27 0.029 0.052
+2025-12-03 20:07:20,531 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:07:20] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.012 0.012
+2025-12-03 20:07:30,002 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:07:30] "POST /web/dataset/call_kw/project.task/web_read#project.task.web_read HTTP/1.1" 200 - 42 0.091 0.022
+2025-12-03 20:07:30,024 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:07:30] "POST /web/dataset/call_kw/project.task.type/search_read#project.task.type.search_read HTTP/1.1" 200 - 6 0.005 0.003
+2025-12-03 20:07:30,124 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:07:30] "POST /mail/thread/messages HTTP/1.1" 200 - 27 0.027 0.019
+2025-12-03 20:07:30,136 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:07:30] "POST /mail/data HTTP/1.1" 200 - 45 0.036 0.018
+2025-12-03 20:07:47,313 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:07:47] "POST /web/dataset/call_kw/project.task/web_save#project.task.web_save HTTP/1.1" 200 - 54 0.053 0.055
+2025-12-03 20:07:47,353 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:07:47] "POST /mail/thread/messages HTTP/1.1" 200 - 27 0.021 0.015
+2025-12-03 20:07:47,375 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:07:47] "POST /mail/data HTTP/1.1" 200 - 45 0.029 0.019
+2025-12-03 20:07:48,065 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:07:48] "POST /web/dataset/call_kw/project.project/search_read#project.project.search_read HTTP/1.1" 200 - 8 0.011 0.017
+2025-12-03 20:07:48,068 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:07:48] "POST /web/action/load HTTP/1.1" 200 - 12 0.044 0.010
+2025-12-03 20:07:48,096 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:07:48] "POST /web/dataset/call_kw/project.project/web_search_read#project.project.web_search_read HTTP/1.1" 200 - 29 0.034 0.032
+2025-12-03 20:07:48,108 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:07:48] "POST /web/dataset/call_kw/project.project/get_views#project.project.get_views HTTP/1.1" 200 - 36 0.030 0.058
+2025-12-03 20:07:48,987 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:07:48] "POST /web/dataset/call_button/project.project/action_view_tasks#project.project.action_view_tasks HTTP/1.1" 200 - 26 0.018 0.020
+2025-12-03 20:07:49,018 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:07:49] "POST /web/dataset/call_kw/project.project/get_template_tasks#project.project.get_template_tasks HTTP/1.1" 200 - 7 0.009 0.011
+2025-12-03 20:07:49,021 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:07:49] "POST /web/dataset/call_kw/project.task/read_progress_bar#project.task.read_progress_bar HTTP/1.1" 200 - 8 0.014 0.010
+2025-12-03 20:07:49,061 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:07:49] "POST /web/dataset/call_kw/project.task/web_read_group#project.task.web_read_group HTTP/1.1" 200 - 43 0.037 0.027
+2025-12-03 20:07:51,451 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:07:51] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.015 0.017
+2025-12-03 20:07:55,556 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:07:55] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 30 0.035 0.027
+2025-12-03 20:07:55,558 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:07:55] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 32 0.036 0.028
+2025-12-03 20:07:55,585 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:07:55] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.015 0.012
+2025-12-03 20:07:55,586 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:07:55] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.017 0.010
+2025-12-03 20:08:33,585 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:08:33] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 30 0.025 0.036
+2025-12-03 20:08:33,610 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:08:33] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.012 0.010
+2025-12-03 20:08:39,596 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:08:39] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 30 0.014 0.056
+2025-12-03 20:08:39,624 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:08:39] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.009 0.014
+2025-12-03 20:08:49,733 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:08:49] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 30 0.034 0.032
+2025-12-03 20:08:49,736 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:08:49] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 27 0.039 0.028
+2025-12-03 20:08:49,763 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:08:49] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.013 0.013
+2025-12-03 20:08:49,765 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:08:49] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.017 0.010
+2025-12-03 20:08:51,959 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:08:51] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 30 0.028 0.022
+2025-12-03 20:08:51,961 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:08:51] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 27 0.029 0.022
+2025-12-03 20:08:51,988 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:08:51] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.015 0.012
+2025-12-03 20:08:51,989 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:08:51] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.017 0.011
+2025-12-03 20:09:21,746 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:09:21] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 30 0.041 0.040
+2025-12-03 20:09:21,746 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:09:21] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 32 0.052 0.027
+2025-12-03 20:09:21,777 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:09:21] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.014 0.014
+2025-12-03 20:09:21,778 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:09:21] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.018 0.011
+2025-12-03 20:09:23,225 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:09:23] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 30 0.033 0.029
+2025-12-03 20:09:23,228 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:09:23] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 32 0.034 0.029
+2025-12-03 20:09:23,256 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:09:23] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.015 0.014
+2025-12-03 20:09:23,258 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:09:23] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.016 0.011
+2025-12-03 20:09:30,213 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:09:30] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 30 0.033 0.033
+2025-12-03 20:09:30,214 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:09:30] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 32 0.039 0.027
+2025-12-03 20:09:30,241 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:09:30] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.015 0.011
+2025-12-03 20:09:30,243 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:09:30] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.017 0.010
+2025-12-03 20:10:59,118 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc="title or 'Odoo'" in template 184. Replace by @t-out 
+2025-12-03 20:10:59,118 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='request.csrf_token(None)' in template 184. Replace by @t-out 
+2025-12-03 20:10:59,118 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='debug' in template 184. Replace by @t-out 
+2025-12-03 20:10:59,131 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:10:59] "GET /odoo/project/3/tasks?view_type=gantt HTTP/1.1" 200 - 65 0.043 0.369
+2025-12-03 20:11:08,773 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc="title or 'Odoo'" in template 184. Replace by @t-out 
+2025-12-03 20:11:08,774 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='request.csrf_token(None)' in template 184. Replace by @t-out 
+2025-12-03 20:11:08,774 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='debug' in template 184. Replace by @t-out 
+2025-12-03 20:11:08,776 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:11:08] "GET /odoo/project/3/tasks?view_type=gantt HTTP/1.1" 200 - 65 0.030 0.299
+2025-12-03 20:11:08,796 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:11:08] "GET /web/webclient/load_menus HTTP/1.1" 200 - 1 0.001 0.002
+2025-12-03 20:11:08,881 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:11:08] "GET /web/webclient/translations?hash=00877677c7b4d23b2a90ab91924efccdb9ca5cea&lang=pt_BR HTTP/1.1" 200 - 1 0.001 0.005
+2025-12-03 20:11:08,890 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:11:08] "GET /bus/websocket_worker_bundle?v=19.0-2 HTTP/1.1" 304 - 4 0.004 0.004
+2025-12-03 20:11:08,891 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:11:08] "GET /web/manifest.webmanifest HTTP/1.1" 200 - 9 0.013 0.007
+2025-12-03 20:11:08,976 42818 INFO diegofornalha odoo.addons.base.models.ir_attachment: _read_file reading /Users/2a/Desktop/odoo19framework/diegofornalha/filestore/filestore/diegofornalha/66/66ae48cdda39173a7c40302137fd7fe47b649b16 
+Traceback (most recent call last):
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/addons/base/models/ir_attachment.py", line 138, in _file_read
+    with open(full_path, 'rb') as f:
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/2a/Desktop/odoo19framework/diegofornalha/filestore/filestore/diegofornalha/66/66ae48cdda39173a7c40302137fd7fe47b649b16'
+2025-12-03 20:11:08,981 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:11:08] "GET /web/image?model=res.users&field=avatar_128&id=2 HTTP/1.1" 304 - 19 0.015 0.016
+2025-12-03 20:11:09,004 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:11:09] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.018 0.018
+2025-12-03 20:11:09,016 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:11:09] "POST /mail/data HTTP/1.1" 200 - 31 0.039 0.019
+2025-12-03 20:11:09,125 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:11:09] "POST /web/dataset/call_kw/project.task/get_views#project.task.get_views HTTP/1.1" 200 - 78 0.053 0.119
+2025-12-03 20:11:09,143 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:11:09] "GET /websocket?version=19.0-2 HTTP/1.1" 101 - 1 0.001 0.004
+2025-12-03 20:11:09,146 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:11:09] "POST /web/dataset/call_kw/mail.push.device/register_devices#mail.push.device.register_devices HTTP/1.1" 200 - 6 0.003 0.002
+2025-12-03 20:11:10,589 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:11:10] "GET /web/service-worker.js HTTP/1.1" 200 - 1 0.001 0.006
+2025-12-03 20:11:15,803 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:11:15] "POST /web/dataset/call_kw/project.task/get_views#project.task.get_views HTTP/1.1" 200 - 20 0.012 0.034
+2025-12-03 20:11:15,829 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:11:15] "POST /web/dataset/call_kw/project.task/web_read#project.task.web_read HTTP/1.1" 200 - 37 0.040 0.022
+2025-12-03 20:11:15,858 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:11:15] "POST /web/dataset/call_kw/project.task.type/search_read#project.task.type.search_read HTTP/1.1" 200 - 6 0.002 0.003
+2025-12-03 20:11:15,892 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:11:15] "POST /html_editor/get_ice_servers HTTP/1.1" 200 - 2 0.002 0.001
+2025-12-03 20:11:15,935 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:11:15] "POST /mail/thread/messages HTTP/1.1" 200 - 11 0.017 0.006
+2025-12-03 20:11:15,957 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:11:15] "POST /mail/data HTTP/1.1" 200 - 43 0.026 0.016
+2025-12-03 20:11:23,519 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:11:23] "POST /web/dataset/call_kw/project.task/web_save#project.task.web_save HTTP/1.1" 200 - 44 0.052 0.050
+2025-12-03 20:11:23,560 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:11:23] "POST /mail/thread/messages HTTP/1.1" 200 - 27 0.020 0.016
+2025-12-03 20:11:23,582 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:11:23] "GET /web/bundle/web.assets_emoji?lang=pt_BR HTTP/1.1" 200 - 2 0.001 0.003
+2025-12-03 20:11:23,592 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:11:23] "POST /mail/data HTTP/1.1" 200 - 45 0.034 0.020
+2025-12-03 20:11:27,482 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:11:27] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.012 0.014
+2025-12-03 20:11:33,535 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:11:33] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 29 0.028 0.034
+2025-12-03 20:11:33,570 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:11:33] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.012 0.019
+2025-12-03 20:11:37,364 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:11:37] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 29 0.014 0.014
+2025-12-03 20:11:37,386 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:11:37] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.011 0.009
+2025-12-03 20:11:39,660 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:11:39] "POST /web/dataset/call_kw/project.task/web_read#project.task.web_read HTTP/1.1" 200 - 37 0.028 0.026
+2025-12-03 20:11:39,672 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:11:39] "POST /web/dataset/call_kw/project.task.type/search_read#project.task.type.search_read HTTP/1.1" 200 - 6 0.003 0.003
+2025-12-03 20:11:39,739 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:11:39] "POST /mail/thread/messages HTTP/1.1" 200 - 11 0.010 0.004
+2025-12-03 20:11:39,755 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:11:39] "POST /mail/data HTTP/1.1" 200 - 43 0.033 0.015
+2025-12-03 20:11:43,837 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:11:43] "POST /web/dataset/call_kw/project.task/web_save#project.task.web_save HTTP/1.1" 200 - 44 0.041 0.050
+2025-12-03 20:11:43,874 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:11:43] "POST /mail/thread/messages HTTP/1.1" 200 - 27 0.021 0.012
+2025-12-03 20:11:43,895 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:11:43] "POST /mail/data HTTP/1.1" 200 - 45 0.026 0.020
+2025-12-03 20:11:44,483 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:11:44] "POST /web/dataset/call_kw/res.users/has_group#res.users.has_group HTTP/1.1" 200 - 1 0.003 0.006
+2025-12-03 20:11:44,491 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:11:44] "POST /web/action/load HTTP/1.1" 200 - 12 0.021 0.012
+2025-12-03 20:11:44,504 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:11:44] "POST /web/dataset/call_kw/project.project/search_read#project.project.search_read HTTP/1.1" 200 - 8 0.007 0.005
+2025-12-03 20:11:44,514 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:11:44] "POST /web/dataset/call_kw/project.project/web_search_read#project.project.web_search_read HTTP/1.1" 200 - 29 0.025 0.015
+2025-12-03 20:11:44,559 42818 INFO diegofornalha odoo.addons.base.models.ir_attachment: _read_file reading /Users/2a/Desktop/odoo19framework/diegofornalha/filestore/filestore/diegofornalha/66/66ae48cdda39173a7c40302137fd7fe47b649b16 
+Traceback (most recent call last):
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/addons/base/models/ir_attachment.py", line 138, in _file_read
+    with open(full_path, 'rb') as f:
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/2a/Desktop/odoo19framework/diegofornalha/filestore/filestore/diegofornalha/66/66ae48cdda39173a7c40302137fd7fe47b649b16'
+2025-12-03 20:11:44,561 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:11:44] "GET /web/image/res.users/2/avatar_128 HTTP/1.1" 304 - 19 0.029 0.010
+2025-12-03 20:11:44,561 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:11:44] "POST /web/dataset/call_kw/project.project/get_views#project.project.get_views HTTP/1.1" 200 - 36 0.024 0.076
+2025-12-03 20:11:45,601 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:11:45] "POST /web/dataset/call_button/project.project/action_view_tasks#project.project.action_view_tasks HTTP/1.1" 200 - 26 0.017 0.024
+2025-12-03 20:11:45,639 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:11:45] "POST /web/dataset/call_kw/project.task/read_progress_bar#project.task.read_progress_bar HTTP/1.1" 200 - 8 0.012 0.012
+2025-12-03 20:11:45,642 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:11:45] "POST /web/dataset/call_kw/project.project/get_template_tasks#project.project.get_template_tasks HTTP/1.1" 200 - 7 0.013 0.008
+2025-12-03 20:11:45,674 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:11:45] "POST /web/dataset/call_kw/project.task/web_read_group#project.task.web_read_group HTTP/1.1" 200 - 43 0.027 0.030
+2025-12-03 20:11:45,717 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:11:45] "GET /web/image/res.users/5/avatar_128 HTTP/1.1" 304 - 20 0.015 0.007
+2025-12-03 20:11:46,962 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:11:46] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.014 0.017
+2025-12-03 20:11:50,255 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:11:50] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 29 0.026 0.038
+2025-12-03 20:11:50,290 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:11:50] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.012 0.019
+2025-12-03 20:11:52,335 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:11:52] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 29 0.027 0.035
+2025-12-03 20:11:52,359 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:11:52] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.008 0.013
+2025-12-03 20:11:53,849 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:11:53] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 29 0.023 0.036
+2025-12-03 20:11:53,879 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:11:53] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.009 0.017
+2025-12-03 20:11:59,214 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:11:59] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 34 0.029 0.044
+2025-12-03 20:11:59,250 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:11:59] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.012 0.019
+2025-12-03 20:11:59,278 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:11:59] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 11 0.010 0.015
+2025-12-03 20:12:07,250 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:12:07] "POST /web/dataset/call_kw/project.task/web_read#project.task.web_read HTTP/1.1" 200 - 40 0.023 0.028
+2025-12-03 20:12:07,266 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:12:07] "POST /web/dataset/call_kw/project.task.type/search_read#project.task.type.search_read HTTP/1.1" 200 - 6 0.003 0.003
+2025-12-03 20:12:07,347 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:12:07] "POST /mail/thread/messages HTTP/1.1" 200 - 28 0.022 0.017
+2025-12-03 20:12:07,355 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:12:07] "POST /mail/data HTTP/1.1" 200 - 53 0.039 0.023
+2025-12-03 20:12:14,924 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:12:14] "POST /web/dataset/call_kw/project.task/web_save#project.task.web_save HTTP/1.1" 200 - 48 0.044 0.049
+2025-12-03 20:12:14,957 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:12:14] "POST /mail/thread/messages HTTP/1.1" 200 - 28 0.015 0.015
+2025-12-03 20:12:15,012 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:12:15] "POST /mail/data HTTP/1.1" 200 - 53 0.034 0.020
+2025-12-03 20:12:16,134 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:12:16] "POST /web/dataset/call_kw/project.project/search_read#project.project.search_read HTTP/1.1" 200 - 8 0.011 0.008
+2025-12-03 20:12:16,159 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:12:16] "POST /web/dataset/call_kw/project.project/web_search_read#project.project.web_search_read HTTP/1.1" 200 - 29 0.024 0.021
+2025-12-03 20:12:17,124 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:12:17] "POST /web/dataset/call_button/project.project/action_view_tasks#project.project.action_view_tasks HTTP/1.1" 200 - 26 0.026 0.025
+2025-12-03 20:12:17,155 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:12:17] "POST /web/dataset/call_kw/project.project/get_template_tasks#project.project.get_template_tasks HTTP/1.1" 200 - 7 0.012 0.008
+2025-12-03 20:12:17,157 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:12:17] "POST /web/dataset/call_kw/project.task/read_progress_bar#project.task.read_progress_bar HTTP/1.1" 200 - 8 0.012 0.010
+2025-12-03 20:12:17,210 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:12:17] "POST /web/dataset/call_kw/project.task/web_read_group#project.task.web_read_group HTTP/1.1" 200 - 43 0.035 0.040
+2025-12-03 20:12:19,071 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:12:19] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.012 0.016
+2025-12-03 20:12:38,447 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:12:38] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 22 0.020 0.042
+2025-12-03 20:12:38,478 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:12:38] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.013 0.015
+2025-12-03 20:12:38,511 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:12:38] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 21 0.014 0.016
+2025-12-03 20:12:38,547 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:12:38] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.007 0.011
+2025-12-03 20:12:38,580 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:12:38] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 23 0.016 0.015
+2025-12-03 20:12:38,608 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:12:38] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.011 0.009
+2025-12-03 20:12:38,635 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:12:38] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 22 0.014 0.011
+2025-12-03 20:12:38,673 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:12:38] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.010 0.011
+2025-12-03 20:12:38,708 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:12:38] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 24 0.014 0.017
+2025-12-03 20:12:38,739 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:12:38] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.012 0.009
+2025-12-03 20:12:38,766 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:12:38] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 22 0.014 0.011
+2025-12-03 20:12:38,787 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:12:38] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.009 0.010
+2025-12-03 20:12:38,817 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:12:38] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 23 0.016 0.013
+2025-12-03 20:12:38,842 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:12:38] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.007 0.011
+2025-12-03 20:12:38,871 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:12:38] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 22 0.014 0.012
+2025-12-03 20:12:38,906 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:12:38] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.012 0.009
+2025-12-03 20:12:38,927 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:12:38] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 11 0.010 0.009
+2025-12-03 20:12:50,954 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:12:50] "POST /web/dataset/call_kw/project.task/web_read#project.task.web_read HTTP/1.1" 200 - 44 0.040 0.028
+2025-12-03 20:12:50,971 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:12:50] "POST /web/dataset/call_kw/project.task.type/search_read#project.task.type.search_read HTTP/1.1" 200 - 6 0.004 0.004
+2025-12-03 20:12:51,038 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:12:51] "POST /mail/thread/messages HTTP/1.1" 200 - 28 0.020 0.024
+2025-12-03 20:12:51,063 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:12:51] "POST /mail/data HTTP/1.1" 200 - 57 0.043 0.023
+2025-12-03 20:12:58,294 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:12:58] "POST /web/dataset/call_kw/project.task/web_save#project.task.web_save HTTP/1.1" 200 - 58 0.047 0.054
+2025-12-03 20:12:58,329 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:12:58] "POST /mail/thread/messages HTTP/1.1" 200 - 28 0.017 0.014
+2025-12-03 20:12:58,364 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:12:58] "POST /mail/data HTTP/1.1" 200 - 57 0.030 0.024
+2025-12-03 20:12:59,918 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:12:59] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.016 0.014
+2025-12-03 20:13:17,992 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:13:17] "POST /web/dataset/call_kw/project.task/web_read#project.task.web_read HTTP/1.1" 200 - 40 0.025 0.028
+2025-12-03 20:13:18,004 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:13:18] "POST /web/dataset/call_kw/project.task.type/search_read#project.task.type.search_read HTTP/1.1" 200 - 6 0.003 0.003
+2025-12-03 20:13:18,038 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:13:18] "POST /mail/thread/messages HTTP/1.1" 200 - 12 0.004 0.005
+2025-12-03 20:13:18,159 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:13:18] "POST /mail/data HTTP/1.1" 200 - 53 0.036 0.019
+2025-12-03 20:13:20,477 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:13:20] "POST /web/dataset/call_kw/project.task/onchange#project.task.onchange HTTP/1.1" 200 - 30 0.018 0.020
+2025-12-03 20:13:23,543 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:13:23] "POST /web/dataset/call_kw/project.task/onchange#project.task.onchange HTTP/1.1" 200 - 44 0.035 0.031
+2025-12-03 20:13:23,598 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:13:23] "POST /web/dataset/call_kw/project.task/onchange#project.task.onchange HTTP/1.1" 200 - 33 0.015 0.028
+2025-12-03 20:13:27,494 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:13:27] "POST /web/dataset/call_kw/project.task/onchange#project.task.onchange HTTP/1.1" 200 - 11 0.010 0.016
+2025-12-03 20:13:27,558 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:13:27] "POST /web/dataset/call_kw/project.task/onchange#project.task.onchange HTTP/1.1" 200 - 43 0.031 0.028
+2025-12-03 20:13:28,037 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:13:28] "POST /web/dataset/call_kw/res.users/web_name_search#res.users.web_name_search HTTP/1.1" 200 - 11 0.008 0.010
+2025-12-03 20:13:28,102 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:13:28] "GET /web/image/res.users/6/avatar_128 HTTP/1.1" 304 - 20 0.013 0.013
+2025-12-03 20:13:28,841 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:13:28] "POST /web/dataset/call_kw/res.users/web_name_search#res.users.web_name_search HTTP/1.1" 200 - 16 0.016 0.011
+2025-12-03 20:13:29,520 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:13:29] "POST /web/dataset/call_kw/res.users/web_name_search#res.users.web_name_search HTTP/1.1" 200 - 17 0.014 0.016
+2025-12-03 20:13:29,984 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:13:29] "POST /web/dataset/call_kw/res.users/web_name_search#res.users.web_name_search HTTP/1.1" 200 - 17 0.013 0.018
+2025-12-03 20:13:31,011 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:13:31] "POST /web/dataset/call_kw/res.users/web_read#res.users.web_read HTTP/1.1" 200 - 11 0.013 0.010
+2025-12-03 20:13:31,040 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:13:31] "POST /web/dataset/call_kw/project.task/onchange#project.task.onchange HTTP/1.1" 200 - 20 0.013 0.013
+2025-12-03 20:13:31,103 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:13:31] "POST /web/dataset/call_kw/project.task/onchange#project.task.onchange HTTP/1.1" 200 - 45 0.033 0.026
+2025-12-03 20:13:33,060 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='assignee_name' in template 2810. Replace by @t-out 
+2025-12-03 20:13:33,060 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc="model_description or 'document'" in template 2810. Replace by @t-out 
+2025-12-03 20:13:33,060 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='object.display_name' in template 2810. Replace by @t-out 
+2025-12-03 20:13:33,192 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:13:33] "POST /web/dataset/call_kw/project.task/web_save#project.task.web_save HTTP/1.1" 200 - 145 0.099 0.104
+2025-12-03 20:13:33,219 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:13:33] "POST /mail/thread/messages HTTP/1.1" 200 - 12 0.016 0.007
+2025-12-03 20:13:33,274 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:13:33] "POST /mail/data HTTP/1.1" 200 - 53 0.028 0.019
+2025-12-03 20:13:34,587 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:13:34] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.012 0.016
+2025-12-03 20:13:38,190 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:13:38] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 30 0.025 0.042
+2025-12-03 20:13:38,227 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:13:38] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.012 0.020
+2025-12-03 20:13:50,806 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:13:50] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 38 0.028 0.043
+2025-12-03 20:13:50,841 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:13:50] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.012 0.019
+2025-12-03 20:13:50,867 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:13:50] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 11 0.010 0.013
+2025-12-03 20:13:56,853 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:13:56] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 22 0.017 0.033
+2025-12-03 20:13:56,890 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:13:56] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.013 0.019
+2025-12-03 20:13:56,920 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:13:56] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 21 0.012 0.015
+2025-12-03 20:13:56,954 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:13:56] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.019 0.012
+2025-12-03 20:13:56,989 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:13:56] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 23 0.017 0.016
+2025-12-03 20:13:57,033 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:13:57] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.010 0.016
+2025-12-03 20:13:57,059 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:13:57] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 22 0.011 0.013
+2025-12-03 20:13:57,087 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:13:57] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.011 0.009
+2025-12-03 20:13:57,114 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:13:57] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 22 0.014 0.011
+2025-12-03 20:13:57,133 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:13:57] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.009 0.009
+2025-12-03 20:13:57,163 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:13:57] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 24 0.015 0.012
+2025-12-03 20:13:57,189 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:13:57] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.012 0.009
+2025-12-03 20:13:57,216 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:13:57] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 22 0.015 0.010
+2025-12-03 20:13:57,237 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:13:57] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.009 0.010
+2025-12-03 20:13:57,265 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:13:57] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 23 0.015 0.012
+2025-12-03 20:13:57,290 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:13:57] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.010 0.009
+2025-12-03 20:13:57,316 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:13:57] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 22 0.014 0.010
+2025-12-03 20:13:57,336 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:13:57] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.008 0.011
+2025-12-03 20:13:57,360 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:13:57] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 11 0.008 0.014
+2025-12-03 20:14:18,379 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:14:18] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 30 0.037 0.046
+2025-12-03 20:14:18,382 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:14:18] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 32 0.036 0.047
+2025-12-03 20:14:18,405 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:14:18] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.014 0.009
+2025-12-03 20:14:18,406 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:14:18] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.014 0.009
+2025-12-03 20:14:33,785 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:14:33] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 30 0.032 0.026
+2025-12-03 20:14:33,786 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:14:33] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 32 0.029 0.027
+2025-12-03 20:14:33,815 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:14:33] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.013 0.012
+2025-12-03 20:14:33,818 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:14:33] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.017 0.011
+2025-12-03 20:14:36,296 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:14:36] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 30 0.027 0.020
+2025-12-03 20:14:36,297 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:14:36] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 32 0.026 0.022
+2025-12-03 20:14:36,323 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:14:36] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.013 0.011
+2025-12-03 20:14:36,324 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:14:36] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.015 0.010
+2025-12-03 20:15:08,988 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:15:08] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 32 0.030 0.045
+2025-12-03 20:15:09,018 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:15:09] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.012 0.014
+2025-12-03 20:15:18,103 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:15:18] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 30 0.036 0.031
+2025-12-03 20:15:18,107 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:15:18] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 32 0.040 0.029
+2025-12-03 20:15:18,134 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:15:18] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.016 0.012
+2025-12-03 20:15:18,135 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:15:18] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.015 0.012
+2025-12-03 20:15:21,048 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:15:21] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 30 0.033 0.031
+2025-12-03 20:15:21,051 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:15:21] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 32 0.036 0.030
+2025-12-03 20:15:21,078 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:15:21] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.014 0.014
+2025-12-03 20:15:21,080 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:15:21] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.016 0.011
+2025-12-03 20:15:23,298 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:15:23] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 30 0.046 0.058
+2025-12-03 20:15:23,298 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:15:23] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 32 0.038 0.064
+2025-12-03 20:15:23,329 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:15:23] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.013 0.014
+2025-12-03 20:15:23,331 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:15:23] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.016 0.011
+2025-12-03 20:15:43,145 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:15:43] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 34 0.044 0.063
+2025-12-03 20:15:43,180 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:15:43] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.010 0.020
+2025-12-03 20:15:43,209 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:15:43] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 11 0.008 0.017
+2025-12-03 20:15:56,972 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:15:56] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 22 0.017 0.022
+2025-12-03 20:15:57,000 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:15:57] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.009 0.016
+2025-12-03 20:15:57,033 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:15:57] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 21 0.013 0.017
+2025-12-03 20:15:57,076 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:15:57] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.010 0.011
+2025-12-03 20:15:57,106 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:15:57] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 22 0.015 0.013
+2025-12-03 20:15:57,149 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:15:57] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.012 0.017
+2025-12-03 20:15:57,186 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:15:57] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 23 0.016 0.014
+2025-12-03 20:15:57,214 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:15:57] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.016 0.010
+2025-12-03 20:15:57,237 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:15:57] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 22 0.009 0.012
+2025-12-03 20:15:57,266 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:15:57] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.010 0.009
+2025-12-03 20:15:57,298 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:15:57] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 24 0.016 0.013
+2025-12-03 20:15:57,338 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:15:57] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.012 0.013
+2025-12-03 20:15:57,364 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:15:57] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 22 0.013 0.011
+2025-12-03 20:15:57,402 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:15:57] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.012 0.009
+2025-12-03 20:15:57,432 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:15:57] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 23 0.013 0.015
+2025-12-03 20:15:57,467 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:15:57] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.010 0.009
+2025-12-03 20:15:57,491 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:15:57] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 22 0.011 0.011
+2025-12-03 20:15:57,510 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:15:57] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.008 0.009
+2025-12-03 20:15:57,531 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:15:57] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 11 0.008 0.008
+2025-12-03 20:15:59,346 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:15:59] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 22 0.018 0.024
+2025-12-03 20:15:59,374 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:15:59] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.011 0.013
+2025-12-03 20:15:59,406 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:15:59] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 22 0.014 0.016
+2025-12-03 20:15:59,440 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:15:59] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.011 0.010
+2025-12-03 20:15:59,468 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:15:59] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 21 0.014 0.012
+2025-12-03 20:15:59,502 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:15:59] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.011 0.010
+2025-12-03 20:15:59,534 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:15:59] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 23 0.015 0.015
+2025-12-03 20:15:59,565 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:15:59] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.008 0.009
+2025-12-03 20:15:59,595 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:15:59] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 22 0.015 0.012
+2025-12-03 20:15:59,615 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:15:59] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.010 0.009
+2025-12-03 20:15:59,644 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:15:59] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 24 0.015 0.012
+2025-12-03 20:15:59,669 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:15:59] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.011 0.008
+2025-12-03 20:15:59,696 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:15:59] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 22 0.015 0.010
+2025-12-03 20:15:59,719 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:15:59] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.010 0.012
+2025-12-03 20:15:59,758 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:15:59] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 23 0.017 0.020
+2025-12-03 20:15:59,789 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:15:59] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.014 0.015
+2025-12-03 20:15:59,818 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:15:59] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 22 0.012 0.012
+2025-12-03 20:15:59,840 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:15:59] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.011 0.009
+2025-12-03 20:15:59,860 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:15:59] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 11 0.011 0.008
+2025-12-03 20:16:17,012 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:16:17] "POST /web/dataset/call_kw/project.task/write#project.task.write HTTP/1.1" 200 - 37 0.027 0.036
+2025-12-03 20:16:17,043 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:16:17] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.011 0.016
+2025-12-03 20:16:17,071 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 20:16:17] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 11 0.010 0.015
+2025-12-03 20:46:22,004 42818 INFO diegofornalha odoo.addons.base.models.res_device: User 2 inserts device log (-CGlYnqUasqOJLtr6vMFEH1r0nCSGZeiVYnYyOBH1_) 
+2025-12-03 20:46:59,208 42818 INFO diegofornalha odoo.addons.base.models.ir_cron: Job 'Notification: Notify scheduled messages' (36) starting 
+2025-12-03 20:46:59,282 42818 INFO diegofornalha odoo.addons.base.models.ir_cron: Job 'Notification: Notify scheduled messages' (36) fully done (#loop 1; done 0; remaining 0; duration 0.07s) 
+2025-12-03 20:46:59,295 42818 INFO diegofornalha odoo.addons.base.models.ir_cron: Job 'Mail: Email Queue Manager' (31) starting 
+2025-12-03 20:46:59,313 42818 INFO diegofornalha odoo.addons.base.models.ir_cron: Job 'Mail: Email Queue Manager' (31) fully done (#loop 1; done 0; remaining 0; duration 0.02s) 
+2025-12-03 21:10:39,523 42818 INFO diegofornalha odoo.addons.base.models.res_device: User 2 inserts device log (A-szGJ6K164nFuUVGjW7ouO_gPlmu0Nj1gfhyTnc2G) 
+2025-12-03 21:10:39,545 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 21:10:39] "GET /websocket?version=19.0-2 HTTP/1.1" 101 - 2 0.120 0.076
+2025-12-03 21:10:39,629 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 21:10:39] "POST /bus/has_missed_notifications HTTP/1.1" 200 - 2 0.007 0.003
+2025-12-03 21:10:39,823 42818 INFO diegofornalha odoo.addons.base.models.res_device: User 2 inserts device log (-CGlYnqUasqOJLtr6vMFEH1r0nCSGZeiVYnYyOBH1_) 
+2025-12-03 21:10:40,566 42818 INFO diegofornalha odoo.addons.base.models.res_device: User 2 inserts device log (-CGlYnqUasqOJLtr6vMFEH1r0nCSGZeiVYnYyOBH1_) 
+2025-12-03 21:20:11,306 42818 INFO diegofornalha odoo.addons.base.models.res_device: User 2 inserts device log (-CGlYnqUasqOJLtr6vMFEH1r0nCSGZeiVYnYyOBH1_) 
+2025-12-03 21:20:11,315 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 21:20:11] "GET /websocket?version=19.0-2 HTTP/1.1" 101 - 2 0.004 0.014
+2025-12-03 21:20:11,517 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 21:20:11] "POST /bus/has_missed_notifications HTTP/1.1" 200 - 2 0.010 0.002
+2025-12-03 21:24:52,918 42818 ERROR diegofornalha odoo.sql_db: bad query: b' UPDATE "mail_presence"\n                    SET "status" = "__tmp"."status"::VARCHAR\n                    FROM (VALUES (1, \'offline\')) AS "__tmp"("id", "status")\n                    WHERE "mail_presence"."id" = "__tmp"."id"\n                '
+ERROR: could not serialize access due to concurrent update
+ 
+2025-12-03 21:24:53,043 42818 ERROR diegofornalha werkzeug: Error on request:
+Traceback (most recent call last):
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/addons/bus/websocket.py", line 352, in get_messages
+    message = self._process_next_message()
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/addons/bus/websocket.py", line 483, in _process_next_message
+    frame = self._get_next_frame()
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/addons/bus/websocket.py", line 444, in _get_next_frame
+    first_byte, second_byte = recv_bytes(2)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/addons/bus/websocket.py", line 423, in recv_bytes
+    raise ConnectionClosed()
+odoo.addons.bus.websocket.ConnectionClosed
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/2a/.pyenv/versions/3.10.18/lib/python3.10/site-packages/werkzeug/serving.py", line 370, in run_wsgi
+    execute(self.server.app)
+  File "/Users/2a/.pyenv/versions/3.10.18/lib/python3.10/site-packages/werkzeug/serving.py", line 367, in execute
+    application_iter.close()
+  File "/Users/2a/.pyenv/versions/3.10.18/lib/python3.10/site-packages/werkzeug/wsgi.py", line 260, in close
+    callback()
+  File "/Users/2a/.pyenv/versions/3.10.18/lib/python3.10/site-packages/werkzeug/wrappers/response.py", line 405, in close
+    func()
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/addons/bus/websocket.py", line 995, in <lambda>
+    response.call_on_close(lambda: cls._serve_forever(
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/addons/bus/websocket.py", line 1109, in _serve_forever
+    for message in websocket.get_messages():
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/addons/bus/websocket.py", line 356, in get_messages
+    self._handle_transport_error(exc)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/addons/bus/websocket.py", line 672, in _handle_transport_error
+    self._disconnect(code, reason)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/addons/bus/websocket.py", line 600, in _disconnect
+    self._terminate()
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/addons/bus/websocket.py", line 622, in _terminate
+    with acquire_cursor(self._db) as cr:
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/sql_db.py", line 236, in __exit__
+    self.commit()
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/sql_db.py", line 549, in commit
+    self.flush()
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/sql_db.py", line 179, in flush
+    self.transaction.flush()
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/orm/environments.py", line 592, in flush
+    self.default_env.flush_all()
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/orm/environments.py", line 388, in flush_all
+    self[model_name].flush_model()
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/orm/models.py", line 6356, in flush_model
+    self._flush()
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/orm/models.py", line 6424, in _flush
+    model.browse(some_ids)._write_multi(vals_list)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/orm/models.py", line 4591, in _write_multi
+    self.env.execute_query(SQL(
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/orm/environments.py", line 534, in execute_query
+    self.cr.execute(query)
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/sql_db.py", line 426, in execute
+    self._obj.execute(query, params)
+psycopg2.errors.SerializationFailure: could not serialize access due to concurrent update - - -
+2025-12-03 21:24:59,270 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc="title or 'Odoo'" in template 184. Replace by @t-out 
+2025-12-03 21:24:59,273 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='request.csrf_token(None)' in template 184. Replace by @t-out 
+2025-12-03 21:24:59,273 42818 WARNING diegofornalha odoo.addons.base.models.ir_qweb: Found deprecated directive @t-esc='debug' in template 184. Replace by @t-out 
+2025-12-03 21:24:59,282 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 21:24:59] "GET /odoo/project/3/tasks?view_type=gantt HTTP/1.1" 200 - 65 0.498 1.322
+2025-12-03 21:24:59,334 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 21:24:59] "GET /web/assets/9523aaa/web.assets_web.min.css HTTP/1.1" 200 - 3 0.008 0.028
+2025-12-03 21:24:59,361 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 21:24:59] "GET /web/webclient/load_menus HTTP/1.1" 200 - 1 0.025 0.023
+2025-12-03 21:24:59,368 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 21:24:59] "GET /web/assets/6db3628/web.assets_web_print.min.css HTTP/1.1" 200 - 3 0.007 0.007
+2025-12-03 21:24:59,368 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 21:24:59] "GET /web/assets/caf1c4d/web.assets_web.min.js HTTP/1.1" 200 - 3 0.061 0.008
+2025-12-03 21:24:59,598 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 21:24:59] "GET /web/webclient/translations?hash=00877677c7b4d23b2a90ab91924efccdb9ca5cea&lang=pt_BR HTTP/1.1" 200 - 1 0.003 0.006
+2025-12-03 21:24:59,624 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 21:24:59] "GET /bus/websocket_worker_bundle?v=19.0-2 HTTP/1.1" 304 - 4 0.007 0.014
+2025-12-03 21:24:59,734 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 21:24:59] "GET /websocket?version=19.0-2 HTTP/1.1" 101 - 1 0.007 0.020
+2025-12-03 21:24:59,995 42818 INFO diegofornalha odoo.addons.base.models.ir_attachment: _read_file reading /Users/2a/Desktop/odoo19framework/diegofornalha/filestore/filestore/diegofornalha/66/66ae48cdda39173a7c40302137fd7fe47b649b16 
+Traceback (most recent call last):
+  File "/Users/2a/Desktop/odoo19framework/diegofornalha/odoo_source/odoo/addons/base/models/ir_attachment.py", line 138, in _file_read
+    with open(full_path, 'rb') as f:
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/2a/Desktop/odoo19framework/diegofornalha/filestore/filestore/diegofornalha/66/66ae48cdda39173a7c40302137fd7fe47b649b16'
+2025-12-03 21:25:00,002 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 21:25:00] "GET /web/image?model=res.users&field=avatar_128&id=2 HTTP/1.1" 304 - 19 0.284 0.044
+2025-12-03 21:25:00,025 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 21:25:00] "POST /web/action/load_breadcrumbs HTTP/1.1" 200 - 20 0.307 0.050
+2025-12-03 21:25:00,530 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 21:25:00] "POST /web/action/load HTTP/1.1" 200 - 24 0.462 0.038
+2025-12-03 21:25:01,366 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 21:25:01] "POST /web/dataset/call_kw/project.task/search_read#project.task.search_read HTTP/1.1" 200 - 12 0.904 0.417
+2025-12-03 21:25:01,506 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 21:25:01] "POST /mail/data HTTP/1.1" 200 - 31 1.770 0.053
+2025-12-03 21:25:02,143 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 21:25:02] "POST /web/dataset/call_kw/project.task/get_views#project.task.get_views HTTP/1.1" 200 - 78 1.716 0.389
+2025-12-03 21:25:02,988 42818 INFO diegofornalha werkzeug: 127.0.0.1 - - [03/Dec/2025 21:25:02] "GET /web/service-worker.js HTTP/1.1" 200 - 1 0.004 0.008
