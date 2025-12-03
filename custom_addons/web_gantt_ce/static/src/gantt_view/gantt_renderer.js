@@ -530,11 +530,27 @@ export class GanttRenderer extends Component {
 
             wrapper.appendChild(connector);
 
+            // Track if mouse is over connector
+            let isOverConnector = false;
+
             // Show connector on hover
             wrapper.addEventListener('mouseenter', () => {
                 connector.style.opacity = '1';
             });
-            wrapper.addEventListener('mouseleave', () => {
+            wrapper.addEventListener('mouseleave', (e) => {
+                // Don't hide if mouse moved to connector or if dragging
+                if (!this.arrowDragState.isDragging && !isOverConnector) {
+                    connector.style.opacity = '0';
+                }
+            });
+
+            // Keep connector visible when hovering over it
+            connector.addEventListener('mouseenter', () => {
+                isOverConnector = true;
+                connector.style.opacity = '1';
+            });
+            connector.addEventListener('mouseleave', () => {
+                isOverConnector = false;
                 if (!this.arrowDragState.isDragging) {
                     connector.style.opacity = '0';
                 }
