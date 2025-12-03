@@ -250,11 +250,18 @@
         }
     }
 
-    /* Dependency connector point */
-    .dependency-connector {
-        transition: opacity 0.2s, transform 0.2s;
+    /* Dependency connector point - show on bar-wrapper hover */
+    .bar-wrapper {
+        .dependency-connector {
+            opacity: 0;
+            transition: opacity 0.2s, transform 0.2s;
+        }
 
-        &:hover {
+        &:hover .dependency-connector {
+            opacity: 1;
+        }
+
+        .dependency-connector:hover {
             transform: scale(1.2);
             opacity: 1 !important;
         }
