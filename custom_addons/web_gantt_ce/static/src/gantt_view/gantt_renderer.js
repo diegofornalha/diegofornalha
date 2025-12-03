@@ -373,15 +373,20 @@ export class GanttRenderer extends Component {
             const userIds = record.data.user_ids || [];
             const userNames = record.data._userNames || {};
 
-            // Get first user's name if available
+            // Get first user's name and ID if available
             let userName = 'Não atribuído';
-            if (userIds.length > 0 && userNames[userIds[0]]) {
-                userName = userNames[userIds[0]];
+            let userId = null;
+            if (userIds.length > 0) {
+                userId = userIds[0];
+                if (userNames[userId]) {
+                    userName = userNames[userId];
+                }
             }
 
             userMap[String(record.resId)] = {
                 name: userName,
                 initials: this.getInitials(userName),
+                userId: userId,
             };
         });
         return userMap;
@@ -451,8 +456,16 @@ export class GanttRenderer extends Component {
     addUserAvatars(container, userMap) {
         setTimeout(() => {
             const barWrappers = container.querySelectorAll('.bar-wrapper');
+            const svg = container.querySelector('svg.gantt');
 
-            barWrappers.forEach(wrapper => {
+            // Create defs for clip paths if not exists
+            let defs = svg.querySelector('defs');
+            if (!defs) {
+                defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+                svg.insertBefore(defs, svg.firstChild);
+            }
+
+            barWrappers.forEach((wrapper, index) => {
                 const taskId = wrapper.getAttribute('data-id');
                 const userData = userMap[taskId];
                 if (!userData) return;
@@ -463,6 +476,7 @@ export class GanttRenderer extends Component {
                 const barRect = bar.getBBox();
                 const cx = barRect.x - 15;
                 const cy = barRect.y + barRect.height / 2;
+                const radius = 10;
 
                 // Create avatar group
                 const avatarGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
@@ -476,35 +490,74 @@ export class GanttRenderer extends Component {
                 hitArea.setAttribute('fill', 'transparent');
                 hitArea.style.cursor = 'pointer';
 
-                // Avatar circle (visible)
-                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-                circle.setAttribute('cx', cx);
-                circle.setAttribute('cy', cy);
-                circle.setAttribute('r', '10');
-                circle.setAttribute('fill', '#714b67');
-                circle.setAttribute('class', 'avatar-circle');
-                circle.style.pointerEvents = 'none'; // Events on hitArea only
-
-                // Avatar text (initials)
-                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                text.setAttribute('x', cx);
-                text.setAttribute('y', cy + 4);
-                text.setAttribute('text-anchor', 'middle');
-                text.setAttribute('fill', 'white');
-                text.setAttribute('font-size', '9');
-                text.setAttribute('font-weight', 'bold');
-                text.textContent = userData.initials;
-                text.style.pointerEvents = 'none'; // Events on hitArea only
-
                 // Add tooltip to hitArea
                 const title = document.createElementNS('http://www.w3.org/2000/svg', 'title');
                 title.textContent = userData.name;
                 hitArea.appendChild(title);
 
-                avatarGroup.appendChild(circle);
-                avatarGroup.appendChild(text);
-                avatarGroup.appendChild(hitArea);
+                // Check if user has an ID (for avatar image)
+                if (userData.userId) {
+                    // Create unique clip path for this avatar
+                    const clipId = `avatar-clip-${taskId}-${index}`;
+                    const clipPath = document.createElementNS('http://www.w3.org/2000/svg', 'clipPath');
+                    clipPath.setAttribute('id', clipId);
 
+                    const clipCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                    clipCircle.setAttribute('cx', cx);
+                    clipCircle.setAttribute('cy', cy);
+                    clipCircle.setAttribute('r', radius);
+                    clipPath.appendChild(clipCircle);
+                    defs.appendChild(clipPath);
+
+                    // Create image element with user avatar
+                    const image = document.createElementNS('http://www.w3.org/2000/svg', 'image');
+                    image.setAttribute('x', cx - radius);
+                    image.setAttribute('y', cy - radius);
+                    image.setAttribute('width', radius * 2);
+                    image.setAttribute('height', radius * 2);
+                    image.setAttribute('href', `/web/image/res.users/${userData.userId}/avatar_128`);
+                    image.setAttribute('clip-path', `url(#${clipId})`);
+                    image.setAttribute('preserveAspectRatio', 'xMidYMid slice');
+                    image.style.pointerEvents = 'none';
+
+                    // Add border circle
+                    const borderCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                    borderCircle.setAttribute('cx', cx);
+                    borderCircle.setAttribute('cy', cy);
+                    borderCircle.setAttribute('r', radius);
+                    borderCircle.setAttribute('fill', 'none');
+                    borderCircle.setAttribute('stroke', '#714b67');
+                    borderCircle.setAttribute('stroke-width', '1.5');
+                    borderCircle.style.pointerEvents = 'none';
+
+                    avatarGroup.appendChild(image);
+                    avatarGroup.appendChild(borderCircle);
+                } else {
+                    // Fallback: Avatar circle with initials (visible)
+                    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                    circle.setAttribute('cx', cx);
+                    circle.setAttribute('cy', cy);
+                    circle.setAttribute('r', radius);
+                    circle.setAttribute('fill', '#714b67');
+                    circle.setAttribute('class', 'avatar-circle');
+                    circle.style.pointerEvents = 'none';
+
+                    // Avatar text (initials)
+                    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                    text.setAttribute('x', cx);
+                    text.setAttribute('y', cy + 4);
+                    text.setAttribute('text-anchor', 'middle');
+                    text.setAttribute('fill', 'white');
+                    text.setAttribute('font-size', '9');
+                    text.setAttribute('font-weight', 'bold');
+                    text.textContent = userData.initials;
+                    text.style.pointerEvents = 'none';
+
+                    avatarGroup.appendChild(circle);
+                    avatarGroup.appendChild(text);
+                }
+
+                avatarGroup.appendChild(hitArea);
                 wrapper.appendChild(avatarGroup);
             });
         }, 100);
