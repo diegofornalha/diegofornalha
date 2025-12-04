@@ -5,32 +5,30 @@
             <t t-set-slot="control-panel-additional-actions">
                 <div class="d-flex gap-2 align-items-center">
                     <!-- Filtro por responsável -->
-                    <div class="o_gantt_user_dropdown dropdown">
-                        <button class="o_gantt_user_btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" title="Filtrar por responsável">
+                    <Dropdown class="'o_gantt_user_dropdown'">
+                        <button class="o_gantt_user_btn dropdown-toggle" title="Filtrar por responsável">
                             <span class="user-icon">👥</span>
                         </button>
-                        <div class="dropdown-menu o_gantt_user_menu">
-                            <div class="dropdown-item user-option"
-                                 t-att-class="!state.filterUserId ? 'active' : ''"
-                                 t-on-click="() => this.onUserFilterChange(null)">
+                        <t t-set-slot="content">
+                            <DropdownItem class="'user-option ' + (!state.filterUserId ? 'active' : '')"
+                                          onSelected="() => this.onUserFilterChange(null)">
                                 <span>👥 Todos</span>
                                 <t t-if="!state.filterUserId">
                                     <span class="ms-auto">✓</span>
                                 </t>
-                            </div>
+                            </DropdownItem>
                             <div class="dropdown-divider"/>
                             <t t-foreach="assignedUsers" t-as="user" t-key="user.id">
-                                <div class="dropdown-item user-option"
-                                     t-att-class="state.filterUserId === user.id ? 'active' : ''"
-                                     t-on-click="() => this.onUserFilterChange(user.id)">
+                                <DropdownItem class="'user-option ' + (state.filterUserId === user.id ? 'active' : '')"
+                                              onSelected="() => this.onUserFilterChange(user.id)">
                                     <span t-esc="user.name"/>
                                     <t t-if="state.filterUserId === user.id">
                                         <span class="ms-auto">✓</span>
                                     </t>
-                                </div>
+                                </DropdownItem>
                             </t>
-                        </div>
-                    </div>
+                        </t>
+                    </Dropdown>
                     <select class="o_gantt_scale_selector form-select" t-on-change="onScaleChange">
                         <t t-foreach="scales" t-as="scale" t-key="scale">
                             <option t-att-value="scale" t-att-selected="scale === state.scale">
@@ -43,30 +41,29 @@
                     </button>
                     <!-- Dropdown de cores - só aparece quando há tarefa selecionada -->
                     <t t-if="state.selectedTask">
-                        <div class="o_gantt_colors_dropdown dropdown">
-                            <button class="o_gantt_colors_btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" title="Alterar cor/prioridade da tarefa">
+                        <Dropdown class="'o_gantt_colors_dropdown'">
+                            <button class="o_gantt_colors_btn dropdown-toggle" title="Alterar cor/prioridade da tarefa">
                                 <span class="colors-icon">🎨</span>
                                 <span class="selected-task-indicator" t-att-style="'background-color: ' + getPriorityColor(state.selectedTask.priority)"></span>
                             </button>
-                            <div class="dropdown-menu o_gantt_colors_menu">
+                            <t t-set-slot="content">
                                 <div class="selected-task-header clickable" t-on-click="onOpenSelectedTask" title="Clique para abrir a tarefa">
                                     <span class="task-name" t-esc="state.selectedTask.name"/>
                                     <span class="open-task-icon">→</span>
                                 </div>
                                 <div class="dropdown-header priority-subheader">Alterar prioridade:</div>
                                 <t t-foreach="priorities" t-as="priority" t-key="priority.value">
-                                    <div class="dropdown-item priority-option d-flex align-items-center gap-2"
-                                         t-att-class="state.selectedTask.priority === priority.value ? 'active' : ''"
-                                         t-on-click="() => this.onPriorityChange(priority.value)">
+                                    <DropdownItem class="'priority-option d-flex align-items-center gap-2 ' + (state.selectedTask.priority === priority.value ? 'active' : '')"
+                                                  onSelected="() => this.onPriorityChange(priority.value)">
                                         <span class="priority-color-dot" t-att-style="'background-color: ' + priority.color + ';'"></span>
                                         <span t-esc="priority.label"/>
                                         <t t-if="state.selectedTask.priority === priority.value">
                                             <span class="ms-auto">✓</span>
                                         </t>
-                                    </div>
+                                    </DropdownItem>
                                 </t>
-                            </div>
-                        </div>
+                            </t>
+                        </Dropdown>
                     </t>
                 </div>
             </t>

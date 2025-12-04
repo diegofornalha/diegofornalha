@@ -30,6 +30,9 @@ export class GanttRenderer extends Component {
         };
         this.isFullscreen = false;
         this.pendingDeleteArrow = null;
+        this.dateChangeTimeout = null; // Debounce timer for date changes
+        this.progressChangeTimeout = null; // Debounce timer for progress changes
+        this.isDraggingTask = false; // Flag to prevent re-render during drag
 
         // Load saved preferences
         this.loadPreferences();
@@ -40,6 +43,10 @@ export class GanttRenderer extends Component {
         });
 
         onPatched(() => {
+            // Skip re-render if user is dragging a task (prevents flickering)
+            if (this.isDraggingTask) {
+                return;
+            }
             this.renderGantt();
         });
 
@@ -55,6 +62,35 @@ export class GanttRenderer extends Component {
     setupKeyboardHandler() {
         this.handleKeyDown = this.handleKeyDown.bind(this);
         document.addEventListener('keydown', this.handleKeyDown);
+    }
+
+    // Detect when Frappe Gantt drag starts/ends to prevent flickering
+    setupDragDetection(container) {
+        setTimeout(() => {
+            const svg = container.querySelector('svg.gantt');
+            if (!svg) return;
+
+            // Listen for mousedown on bars and handles (drag start)
+            svg.addEventListener('mousedown', (e) => {
+                const isBar = e.target.closest('.bar') || e.target.closest('.bar-wrapper');
+                const isHandle = e.target.closest('.handle') || e.target.classList.contains('handle');
+                const isProgress = e.target.closest('.bar-progress');
+
+                if (isBar || isHandle || isProgress) {
+                    this.isDraggingTask = true;
+                }
+            }, true); // Use capture to get event before Frappe
+
+            // Listen for mouseup anywhere (drag end)
+            document.addEventListener('mouseup', () => {
+                if (this.isDraggingTask) {
+                    // Delay resetting the flag to allow debounced save to complete
+                    setTimeout(() => {
+                        this.isDraggingTask = false;
+                    }, 500);
+                }
+            });
+        }, 100);
     }
 
     cleanupArrowHandlers() {
@@ -234,6 +270,9 @@ export class GanttRenderer extends Component {
                 this.onProgressChange(task, progress);
             },
         });
+
+        // Setup drag detection on bar elements to prevent flickering during drag
+        this.setupDragDetection(container);
 
         // Setup vertical drag detection on bars
         this.setupVerticalDrag(container);
@@ -1109,21 +1148,38 @@ export class GanttRenderer extends Component {
     }
 
     onDateChange(task, start, end) {
+        // Debounce: cancel previous pending save
+        if (this.dateChangeTimeout) {
+            clearTimeout(this.dateChangeTimeout);
+        }
+
         const recordId = parseInt(task.id);
         const dateStartField = this.props.model.meta?.dateStartField || "date_assign";
         const dateStopField = this.props.model.meta?.dateStopField || "date_deadline";
 
-        this.props.onTaskUpdate(recordId, {
-            [dateStartField]: this.formatDate(start),
-            [dateStopField]: this.formatDate(end),
-        });
+        // Wait 300ms after last drag event before saving
+        this.dateChangeTimeout = setTimeout(() => {
+            this.props.onTaskUpdate(recordId, {
+                [dateStartField]: this.formatDate(start),
+                [dateStopField]: this.formatDate(end),
+            }, { skipReload: true });
+        }, 300);
     }
 
     onProgressChange(task, progress) {
+        // Debounce: cancel previous pending save
+        if (this.progressChangeTimeout) {
+            clearTimeout(this.progressChangeTimeout);
+        }
+
         const recordId = parseInt(task.id);
-        this.props.onTaskUpdate(recordId, {
-            progress: progress,
-        });
+
+        // Wait 300ms after last progress change before saving
+        this.progressChangeTimeout = setTimeout(() => {
+            this.props.onTaskUpdate(recordId, {
+                progress: progress,
+            }, { skipReload: true });
+        }, 300);
     }
 
     changeViewMode(mode) {

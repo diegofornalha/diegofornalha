@@ -103,12 +103,19 @@ export class GanttController extends Component {
         });
     }
 
-    async onTaskUpdate(recordId, changes) {
+    async onTaskUpdate(recordId, changes, options = {}) {
+        const { skipReload = false } = options;
+
         await this.model.updateRecord(recordId, changes);
-        await this.model.load({
-            domain: this.props.domain,
-            context: this.props.context,
-        });
+
+        // Optimistic update: skip reload to prevent flickering
+        // The visual state is already correct from the drag
+        if (!skipReload) {
+            await this.model.load({
+                domain: this.props.domain,
+                context: this.props.context,
+            });
+        }
     }
 
     onScaleChange(ev) {
