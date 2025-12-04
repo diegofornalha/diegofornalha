@@ -206,46 +206,10 @@
         position: relative;
     }
 
-    /* Create a pseudo-sticky header by using clip-path and transforms */
+    /* Gantt SVG in fullscreen */
     svg.gantt {
         display: block;
         flex-shrink: 0;
-    }
-
-    /* Sticky header container (when JS creates it) */
-    .gantt-sticky-header {
-        position: fixed;
-        top: 60px;
-        left: 0;
-        right: 0;
-        z-index: 101;
-        background: #ffffff;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        overflow-x: hidden;
-
-        .gantt-sticky-svg {
-            display: block;
-
-            .grid-header {
-                fill: #f8f9fa;
-                stroke: #dee2e6;
-            }
-
-            .upper-text, .lower-text {
-                fill: #555;
-                font-size: 12px;
-            }
-        }
-    }
-
-    .gantt-scroll-wrapper {
-        flex: 1;
-        overflow: auto !important;
-        min-height: 0;
-
-        svg.gantt {
-            display: block;
-        }
     }
 }
 
