@@ -255,6 +255,9 @@ export class GanttRenderer extends Component {
 
         // Setup click on empty area to create task
         this.setupEmptyAreaClick(container);
+
+        // Add extra row at the bottom for drag target
+        this.addDropZoneRow(container);
     }
 
     setupContextMenu(container) {
@@ -735,9 +738,10 @@ export class GanttRenderer extends Component {
 
             if (moveCount !== 0) {
                 let newIndex = initialIndex + moveCount;
-                newIndex = Math.max(0, Math.min(barWrappers.length - 1, newIndex));
+                // Allow dropping at the end (barWrappers.length = after last item)
+                newIndex = Math.max(0, Math.min(barWrappers.length, newIndex));
 
-                // Highlight target row
+                // Highlight target row or drop zone
                 barWrappers.forEach((wrapper, index) => {
                     if (index === newIndex && wrapper !== draggedRow) {
                         wrapper.style.outline = '2px dashed #714b67';
@@ -746,6 +750,22 @@ export class GanttRenderer extends Component {
                         wrapper.style.outline = '';
                     }
                 });
+
+                // Highlight drop zone if targeting the end
+                const dropZone = this.ganttRef.el?.querySelector('.drop-zone-bg');
+                if (dropZone) {
+                    if (newIndex === barWrappers.length) {
+                        dropZone.setAttribute('fill', 'rgba(113, 75, 103, 0.15)');
+                        dropZone.setAttribute('stroke', '#714b67');
+                        dropZone.setAttribute('stroke-width', '2');
+                        dropZone.setAttribute('stroke-dasharray', '5,5');
+                    } else {
+                        dropZone.setAttribute('fill', 'transparent');
+                        dropZone.removeAttribute('stroke');
+                        dropZone.removeAttribute('stroke-width');
+                        dropZone.removeAttribute('stroke-dasharray');
+                    }
+                }
 
                 this.dragState.targetIndex = newIndex;
             }
@@ -766,6 +786,15 @@ export class GanttRenderer extends Component {
         barWrappers?.forEach((wrapper) => {
             wrapper.style.outline = '';
         });
+
+        // Reset drop zone visual
+        const dropZone = this.ganttRef.el?.querySelector('.drop-zone-bg');
+        if (dropZone) {
+            dropZone.setAttribute('fill', 'transparent');
+            dropZone.removeAttribute('stroke');
+            dropZone.removeAttribute('stroke-width');
+            dropZone.removeAttribute('stroke-dasharray');
+        }
 
         // If was a vertical drag and position changed, update sequence
         if (isVerticalDrag && targetIndex !== undefined && targetIndex !== initialIndex) {
@@ -1349,6 +1378,47 @@ export class GanttRenderer extends Component {
         if (this.gantt) {
             this.gantt.change_view_mode(mode);
         }
+    }
+
+    // Add an extra row at the bottom as a drop zone for reordering
+    addDropZoneRow(container) {
+        setTimeout(() => {
+            const svg = container.querySelector('svg.gantt');
+            if (!svg) return;
+
+            const barWrappers = container.querySelectorAll('.bar-wrapper');
+            if (barWrappers.length === 0) return;
+
+            // Get the last bar position
+            const lastWrapper = barWrappers[barWrappers.length - 1];
+            const lastBar = lastWrapper.querySelector('.bar');
+            if (!lastBar) return;
+
+            const lastBarRect = lastBar.getBBox();
+            const rowHeight = 38;
+            const dropZoneY = lastBarRect.y + rowHeight;
+
+            // Create a drop zone row
+            const dropZone = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+            dropZone.setAttribute('class', 'drop-zone-row');
+            dropZone.setAttribute('data-id', '__drop_zone__');
+
+            // Background rect for the drop zone
+            const dropRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+            dropRect.setAttribute('x', '0');
+            dropRect.setAttribute('y', dropZoneY);
+            dropRect.setAttribute('width', svg.getAttribute('width') || svg.clientWidth);
+            dropRect.setAttribute('height', rowHeight);
+            dropRect.setAttribute('fill', 'transparent');
+            dropRect.setAttribute('class', 'drop-zone-bg');
+
+            dropZone.appendChild(dropRect);
+            svg.appendChild(dropZone);
+
+            // Increase SVG height to accommodate the drop zone
+            const currentHeight = parseFloat(svg.getAttribute('height') || svg.clientHeight);
+            svg.setAttribute('height', currentHeight + rowHeight);
+        }, 150);
     }
 
     // Setup double-click on empty area to create new task
