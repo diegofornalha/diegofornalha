@@ -137,4 +137,25 @@ export class GanttModel extends Model {
     get dateStopField() {
         return this.meta.dateStopField;
     }
+
+    /**
+     * Get list of unique users assigned to loaded tasks
+     * @returns {Array<{id: number, name: string}>}
+     */
+    getAssignedUsers() {
+        const users = new Map();
+        for (const record of this.data.records) {
+            const userIds = record.data.user_ids || [];
+            const userNames = record.data._userNames || {};
+            for (const userId of userIds) {
+                if (!users.has(userId)) {
+                    users.set(userId, userNames[userId] || `Usuário ${userId}`);
+                }
+            }
+        }
+        // Convert to array and sort by name
+        const result = Array.from(users, ([id, name]) => ({ id, name }));
+        result.sort((a, b) => a.name.localeCompare(b.name));
+        return result;
+    }
 }

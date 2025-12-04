@@ -36,6 +36,7 @@ export class GanttController extends Component {
             scale: this.props.archInfo.defaultScale || "Day",
             selectedTask: null,  // { id, name, priority }
             colorsDropdownOpen: false,
+            filterUserId: null,  // null = show all, number = filter by user
         });
 
         this.colorsDropdownRef = useRef("colorsDropdown");
@@ -77,7 +78,19 @@ export class GanttController extends Component {
             model: this.model,
             openRecord: this.openRecord.bind(this),
             onTaskUpdate: this.onTaskUpdate.bind(this),
+            filterUserId: this.state.filterUserId,
         };
+    }
+
+    get assignedUsers() {
+        return this.model.getAssignedUsers();
+    }
+
+    onUserFilterChange(ev) {
+        const value = ev.target.value;
+        this.state.filterUserId = value ? parseInt(value) : null;
+        // Force re-render
+        this.render(true);
     }
 
     async openRecord(params) {

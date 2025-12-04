@@ -2,7 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 {
     'name': 'Web Gantt CE',
-    'version': '19.0.1.8.0',
+    'version': '19.0.1.9.0',
     'category': 'Hidden/Tools',
     'summary': 'Gantt view for Odoo Community Edition',
     'description': """

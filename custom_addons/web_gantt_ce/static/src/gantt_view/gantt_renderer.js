@@ -8,6 +8,7 @@ export class GanttRenderer extends Component {
         model: Object,
         openRecord: Function,
         onTaskUpdate: Function,
+        filterUserId: { type: [Number, { value: null }], optional: true },
     };
 
     setup() {
@@ -1239,9 +1240,18 @@ export class GanttRenderer extends Component {
     }
 
     formatTasks() {
-        const records = this.tasks;
+        let records = this.tasks;
         const dateStartField = this.props.model.meta?.dateStartField || "date_assign";
         const dateStopField = this.props.model.meta?.dateStopField || "date_deadline";
+
+        // Apply user filter if set
+        if (this.props.filterUserId) {
+            records = records.filter(record => {
+                const userIds = record.data.user_ids || [];
+                return userIds.includes(this.props.filterUserId);
+            });
+            console.log("[Gantt] Filtered by user:", this.props.filterUserId, "- Tasks:", records.length);
+        }
 
         console.log("[Gantt] Records:", records.length, records);
         console.log("[Gantt] Fields:", dateStartField, dateStopField);

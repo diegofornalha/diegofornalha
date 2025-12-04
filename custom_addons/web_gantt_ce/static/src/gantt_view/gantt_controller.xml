@@ -4,6 +4,33 @@
         <Layout className="'o_gantt_view'" display="props.display">
             <t t-set-slot="control-panel-additional-actions">
                 <div class="d-flex gap-2 align-items-center">
+                    <!-- Filtro por responsável -->
+                    <div class="o_gantt_user_dropdown dropdown">
+                        <button class="o_gantt_user_btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" title="Filtrar por responsável">
+                            <span class="user-icon">👥</span>
+                        </button>
+                        <div class="dropdown-menu o_gantt_user_menu">
+                            <div class="dropdown-item user-option"
+                                 t-att-class="!state.filterUserId ? 'active' : ''"
+                                 t-on-click="() => this.onUserFilterChange(null)">
+                                <span>👥 Todos</span>
+                                <t t-if="!state.filterUserId">
+                                    <span class="ms-auto">✓</span>
+                                </t>
+                            </div>
+                            <div class="dropdown-divider"/>
+                            <t t-foreach="assignedUsers" t-as="user" t-key="user.id">
+                                <div class="dropdown-item user-option"
+                                     t-att-class="state.filterUserId === user.id ? 'active' : ''"
+                                     t-on-click="() => this.onUserFilterChange(user.id)">
+                                    <span t-esc="user.name"/>
+                                    <t t-if="state.filterUserId === user.id">
+                                        <span class="ms-auto">✓</span>
+                                    </t>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
                     <select class="o_gantt_scale_selector form-select" t-on-change="onScaleChange">
                         <t t-foreach="scales" t-as="scale" t-key="scale">
                             <option t-att-value="scale" t-att-selected="scale === state.scale">
