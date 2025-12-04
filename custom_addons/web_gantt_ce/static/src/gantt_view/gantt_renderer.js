@@ -78,18 +78,27 @@ export class GanttRenderer extends Component {
 
                 if (isBar || isHandle || isProgress) {
                     this.isDraggingTask = true;
+                    // Add visual class to prevent CSS transitions during drag
+                    svg.classList.add('dragging-active');
                 }
             }, true); // Use capture to get event before Frappe
 
             // Listen for mouseup anywhere (drag end)
-            document.addEventListener('mouseup', () => {
+            const handleMouseUp = () => {
                 if (this.isDraggingTask) {
+                    // Remove visual class
+                    svg.classList.remove('dragging-active');
                     // Delay resetting the flag to allow debounced save to complete
                     setTimeout(() => {
                         this.isDraggingTask = false;
-                    }, 500);
+                    }, 600); // Increased to 600ms to cover debounce + network
                 }
-            });
+            };
+
+            document.addEventListener('mouseup', handleMouseUp);
+
+            // Store reference for cleanup
+            this._dragMouseUpHandler = handleMouseUp;
         }, 100);
     }
 
@@ -616,6 +625,9 @@ export class GanttRenderer extends Component {
         if (isVerticalDrag && targetIndex !== undefined && targetIndex !== initialIndex) {
             const movedTaskId = parseInt(draggedTaskId);
 
+            // Block re-renders during sequence update
+            this.isDraggingTask = true;
+
             // Build new order array
             const newOrder = [];
             barWrappers.forEach((wrapper, index) => {
@@ -631,10 +643,67 @@ export class GanttRenderer extends Component {
                 newOrder.push(movedTaskId);
             }
 
-            this.updateTaskSequences(newOrder);
+            // Visual update: reorder SVG elements immediately
+            this.reorderBarsVisually(barWrappers, newOrder, initialIndex, targetIndex);
+
+            // Save sequences in background without reload
+            this.updateTaskSequences(newOrder).then(() => {
+                // Re-enable renders after save completes
+                setTimeout(() => {
+                    this.isDraggingTask = false;
+                }, 100);
+            });
         }
 
         this.cleanupDragState();
+    }
+
+    // Visually reorder bar elements in the SVG without re-rendering
+    reorderBarsVisually(barWrappers, newOrder, fromIndex, toIndex) {
+        const container = this.ganttRef.el;
+        if (!container) return;
+
+        const svg = container.querySelector('svg.gantt');
+        if (!svg) return;
+
+        const rowHeight = 38;
+        const baseY = 58; // Typical starting Y position for first bar
+
+        // Create a map of taskId to wrapper
+        const wrapperMap = new Map();
+        barWrappers.forEach(wrapper => {
+            const id = wrapper.getAttribute('data-id');
+            wrapperMap.set(parseInt(id), wrapper);
+        });
+
+        // Animate each bar to its new position
+        newOrder.forEach((taskId, newIndex) => {
+            const wrapper = wrapperMap.get(taskId);
+            if (!wrapper) return;
+
+            const bar = wrapper.querySelector('.bar');
+            const barProgress = wrapper.querySelector('.bar-progress');
+            const barLabel = wrapper.querySelector('.bar-label');
+            const avatarGroup = wrapper.querySelector('.task-avatar');
+            const handleGroup = wrapper.querySelector('.handle-group');
+            const connectorGroup = wrapper.querySelector('.connector-group');
+
+            if (!bar) return;
+
+            const currentRect = bar.getBBox();
+            const newY = baseY + (newIndex * rowHeight);
+            const deltaY = newY - currentRect.y;
+
+            // Apply smooth transition
+            wrapper.style.transition = 'transform 0.2s ease-out';
+            wrapper.style.transform = `translateY(${deltaY}px)`;
+
+            // Reset after animation
+            setTimeout(() => {
+                wrapper.style.transition = '';
+                wrapper.style.transform = '';
+            }, 250);
+        });
     }
 
     cleanupDragState() {
@@ -1060,16 +1129,16 @@ export class GanttRenderer extends Component {
     }
 
     async updateTaskSequences(newOrder) {
+        // Save sequences without reload - visual update is already done
         for (let i = 0; i < newOrder.length; i++) {
             const taskId = newOrder[i];
             await this.props.onTaskUpdate(taskId, {
                 sequence: i * 10,
-            });
+            }, { skipReload: true }); // Skip reload to prevent flickering
         }
 
-        if (this.props.model && this.props.model.load) {
-            await this.props.model.load({});
-        }
+        // Don't call model.load() - the visual order is already correct
+        // The next page reload or navigation will sync the data
     }
 
     formatTasks() {
