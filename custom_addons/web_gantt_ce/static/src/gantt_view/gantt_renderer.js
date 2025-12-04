@@ -222,9 +222,16 @@ export class GanttRenderer extends Component {
 
     renderGantt() {
         const container = this.ganttRef.el;
-        if (!container || !this.hasData) return;
+        if (!container) return;
 
         container.innerHTML = "";
+
+        // Check if we have tasks after filtering
+        if (!this.hasData) {
+            // Show "no data" message
+            container.innerHTML = '<div class="o_gantt_no_data">Nenhuma tarefa encontrada</div>';
+            return;
+        }
 
         const tasks = this.formatTasks();
 

@@ -5,10 +5,10 @@
             <t t-set-slot="control-panel-additional-actions">
                 <div class="d-flex gap-2 align-items-center">
                     <!-- Filtro por responsável -->
-                    <select class="o_gantt_user_selector form-select" t-on-change="onUserFilterSelectChange">
+                    <select class="o_gantt_user_selector form-select" t-on-change="onUserFilterSelectChange" t-att-value="state.filterUserId || ''">
                         <option value="">👥 Todos</option>
                         <t t-foreach="assignedUsers" t-as="user" t-key="user.id">
-                            <option t-att-value="user.id" t-att-selected="state.filterUserId === user.id">
+                            <option t-att-value="user.id">
                                 <t t-esc="user.name"/>
                             </option>
                         </t>
@@ -25,18 +25,18 @@
                     </button>
                     <!-- Seletor de prioridade - só aparece quando há tarefa selecionada -->
                     <t t-if="state.selectedTask">
-                        <div class="o_gantt_priority_group d-flex align-items-center gap-1">
-                            <span class="selected-task-name" t-att-title="state.selectedTask.name" t-on-click="onOpenSelectedTask">
-                                🎨 <t t-esc="state.selectedTask.name.substring(0, 15)"/><t t-if="state.selectedTask.name.length > 15">...</t>
-                            </span>
-                            <select class="o_gantt_priority_selector form-select" t-on-change="onPrioritySelectChange">
-                                <t t-foreach="priorities" t-as="priority" t-key="priority.value">
-                                    <option t-att-value="priority.value" t-att-selected="state.selectedTask.priority === priority.value">
-                                        <t t-esc="priority.label"/>
-                                    </option>
-                                </t>
-                            </select>
-                        </div>
+                        <!-- Nome da tarefa clicável (abre o formulário) -->
+                        <button class="o_gantt_task_name_btn btn btn-light" t-att-title="state.selectedTask.name" t-on-click="onOpenSelectedTask">
+                            🎨 <t t-esc="state.selectedTask.name.substring(0, 12)"/><t t-if="state.selectedTask.name.length > 12">...</t>
+                        </button>
+                        <!-- Dropdown de prioridade separado -->
+                        <select class="o_gantt_priority_selector form-select" t-on-change="onPrioritySelectChange" t-att-value="state.selectedTask.priority">
+                            <t t-foreach="priorities" t-as="priority" t-key="priority.value">
+                                <option t-att-value="priority.value">
+                                    <t t-esc="priority.label"/>
+                                </option>
+                            </t>
+                        </select>
                     </t>
                 </div>
             </t>

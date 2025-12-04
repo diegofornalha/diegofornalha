@@ -489,30 +489,31 @@ button[name="openEmbeddedActions"] {
     }
 }
 
-/* Priority selector group */
-.o_gantt_priority_group {
-    background-color: #f8f9fa;
+/* Task name button (opens form) */
+.o_gantt_task_name_btn {
+    font-size: 13px;
+    padding: 4px 10px;
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
     border: 1px solid #ced4da;
-    border-radius: 4px;
-    padding: 4px 8px;
 
-    .selected-task-name {
-        font-size: 13px;
-        color: #495057;
-        cursor: pointer;
-        max-width: 150px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
+    &:hover {
+        background-color: #e9ecef;
+        border-color: #714b67;
+        color: #714b67;
+    }
 
-        &:hover {
-            color: #714b67;
-        }
+    &:focus {
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(113, 75, 103, 0.2);
     }
 }
 
+/* Priority selector dropdown */
 .o_gantt_priority_selector {
-    min-width: 100px;
+    min-width: 110px;
     padding: 4px 8px;
     border: 1px solid #ced4da;
     border-radius: 4px;

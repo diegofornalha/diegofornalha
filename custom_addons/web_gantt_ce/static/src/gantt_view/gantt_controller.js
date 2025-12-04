@@ -88,8 +88,7 @@ export class GanttController extends Component {
 
     onUserFilterChange(userId) {
         this.state.filterUserId = userId;
-        // Force re-render
-        this.render(true);
+        // State change will trigger re-render automatically
     }
 
     onUserFilterSelectChange(ev) {
@@ -179,12 +178,13 @@ export class GanttController extends Component {
 
     // Handle clicks outside to deselect task
     onClickOutside(event) {
-        // Don't deselect if clicking on: task bar, dropdown, or controls
+        // Don't deselect if clicking on: task bar, priority selector, task name button, or control panel
         const isBarClick = event.target.closest('.bar-wrapper');
-        const isDropdownClick = event.target.closest('.o_gantt_colors_dropdown');
-        const isControlsClick = event.target.closest('.o_gantt_controls');
+        const isPriorityClick = event.target.closest('.o_gantt_priority_selector');
+        const isTaskNameClick = event.target.closest('.o_gantt_task_name_btn');
+        const isControlPanelClick = event.target.closest('.o_control_panel');
 
-        if (!isBarClick && !isDropdownClick && !isControlsClick && this.state.selectedTask) {
+        if (!isBarClick && !isPriorityClick && !isTaskNameClick && !isControlPanelClick && this.state.selectedTask) {
             this.state.selectedTask = null;
         }
     }
