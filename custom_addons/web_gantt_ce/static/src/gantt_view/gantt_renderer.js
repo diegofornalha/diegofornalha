@@ -607,101 +607,103 @@ export class GanttRenderer extends Component {
 
                 avatarGroup.appendChild(hitArea);
                 wrapper.appendChild(avatarGroup);
+
+                // Setup drag from avatar for vertical reordering
+                hitArea.style.cursor = 'grab';
+                hitArea.addEventListener('mousedown', (e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+
+                    const taskId = wrapper.getAttribute('data-id');
+                    const allBarWrappers = Array.from(container.querySelectorAll('.bar-wrapper'));
+                    const bar = wrapper.querySelector('.bar');
+                    const barRect = bar ? bar.getBBox() : { y: 0 };
+
+                    this.dragState = {
+                        isDragging: true,
+                        isVerticalDrag: true, // Start as vertical drag immediately
+                        draggedRow: wrapper,
+                        draggedTaskId: taskId,
+                        startX: e.clientX,
+                        startY: e.clientY,
+                        initialIndex: allBarWrappers.indexOf(wrapper),
+                        barWrappers: allBarWrappers,
+                        barY: barRect.y,
+                        rowHeight: 38,
+                        verticalThreshold: 5,
+                    };
+
+                    // Visual feedback
+                    wrapper.style.opacity = '0.5';
+                    hitArea.style.cursor = 'grabbing';
+
+                    document.addEventListener('mousemove', this.handleVerticalDrag);
+                    document.addEventListener('mouseup', this.handleVerticalDragEnd);
+                });
             });
         }, 100);
     }
 
     setupVerticalDrag(container) {
-        const barWrappers = container.querySelectorAll('.bar-wrapper');
-
         // Bind event handlers
         this.handleVerticalDrag = this.handleVerticalDrag.bind(this);
         this.handleVerticalDragEnd = this.handleVerticalDragEnd.bind(this);
 
-        barWrappers.forEach((wrapper) => {
-            const bar = wrapper.querySelector('.bar');
-            if (!bar) return;
-
-            // Listen for mousedown on the bar (not handles)
-            bar.addEventListener('mousedown', (e) => {
-                // Don't interfere with resize handles or other elements
-                if (e.target.classList.contains('handle')) return;
-                if (e.target.closest('.handle-group')) return;
-
-                const taskId = wrapper.getAttribute('data-id');
-                const barWrappers = Array.from(container.querySelectorAll('.bar-wrapper'));
-                const barRect = bar.getBBox();
-
-                this.dragState = {
-                    isDragging: true,
-                    isVerticalDrag: false,
-                    draggedRow: wrapper,
-                    draggedTaskId: taskId,
-                    startX: e.clientX,
-                    startY: e.clientY,
-                    initialIndex: barWrappers.indexOf(wrapper),
-                    barWrappers: barWrappers,
-                    barY: barRect.y,
-                    rowHeight: 38,
-                    verticalThreshold: 15, // Pixels to move before considering vertical drag
-                };
-
-                document.addEventListener('mousemove', this.handleVerticalDrag);
-                document.addEventListener('mouseup', this.handleVerticalDragEnd);
-            });
-        });
-
-        // Add tooltip hint
-        this.addDragHint(container);
+        // Note: Vertical drag is now initiated from the avatar (see addUserAvatars)
+        // This method just sets up the bound handlers
     }
 
     addDragHint(container) {
-        // Add a subtle tooltip on first hover
+        // Add a subtle tooltip on first avatar hover
         let hintShown = false;
-        const barWrappers = container.querySelectorAll('.bar-wrapper');
 
-        barWrappers.forEach((wrapper) => {
-            wrapper.addEventListener('mouseenter', () => {
-                if (!hintShown && !this.dragState.isDragging) {
-                    // Show hint only once per session
-                    const hint = document.createElement('div');
-                    hint.className = 'gantt-drag-hint';
-                    hint.innerHTML = 'Arraste para cima/baixo para reordenar';
-                    hint.style.cssText = `
-                        position: fixed;
-                        bottom: 20px;
-                        left: 50%;
-                        transform: translateX(-50%);
-                        background: rgba(113, 75, 103, 0.9);
-                        color: white;
-                        padding: 8px 16px;
-                        border-radius: 4px;
-                        font-size: 13px;
-                        z-index: 9999;
-                        animation: fadeInOut 3s ease forwards;
-                    `;
-                    document.body.appendChild(hint);
-                    hintShown = true;
+        // Wait for avatars to be rendered
+        setTimeout(() => {
+            const avatars = container.querySelectorAll('.task-avatar');
 
-                    // Add animation style if not exists
-                    if (!document.querySelector('#gantt-hint-style')) {
-                        const style = document.createElement('style');
-                        style.id = 'gantt-hint-style';
-                        style.textContent = `
-                            @keyframes fadeInOut {
-                                0% { opacity: 0; }
-                                10% { opacity: 1; }
-                                80% { opacity: 1; }
-                                100% { opacity: 0; }
-                            }
+            avatars.forEach((avatar) => {
+                avatar.addEventListener('mouseenter', () => {
+                    if (!hintShown && !this.dragState.isDragging) {
+                        // Show hint only once per session
+                        const hint = document.createElement('div');
+                        hint.className = 'gantt-drag-hint';
+                        hint.innerHTML = 'Arraste o avatar para reordenar';
+                        hint.style.cssText = `
+                            position: fixed;
+                            bottom: 20px;
+                            left: 50%;
+                            transform: translateX(-50%);
+                            background: rgba(113, 75, 103, 0.9);
+                            color: white;
+                            padding: 8px 16px;
+                            border-radius: 4px;
+                            font-size: 13px;
+                            z-index: 9999;
+                            animation: fadeInOut 3s ease forwards;
                         `;
-                        document.head.appendChild(style);
-                    }
+                        document.body.appendChild(hint);
+                        hintShown = true;
 
-                    setTimeout(() => hint.remove(), 3000);
-                }
+                        // Add animation style if not exists
+                        if (!document.querySelector('#gantt-hint-style')) {
+                            const style = document.createElement('style');
+                            style.id = 'gantt-hint-style';
+                            style.textContent = `
+                                @keyframes fadeInOut {
+                                    0% { opacity: 0; }
+                                    10% { opacity: 1; }
+                                    80% { opacity: 1; }
+                                    100% { opacity: 0; }
+                                }
+                            `;
+                            document.head.appendChild(style);
+                        }
+
+                        setTimeout(() => hint.remove(), 3000);
+                    }
+                });
             });
-        });
+        }, 200);
     }
 
     handleVerticalDrag(e) {
@@ -1403,16 +1405,35 @@ export class GanttRenderer extends Component {
             dropZone.setAttribute('class', 'drop-zone-row');
             dropZone.setAttribute('data-id', '__drop_zone__');
 
-            // Background rect for the drop zone
+            // Background rect for the drop zone - visible line
             const dropRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
             dropRect.setAttribute('x', '0');
             dropRect.setAttribute('y', dropZoneY);
             dropRect.setAttribute('width', svg.getAttribute('width') || svg.clientWidth);
             dropRect.setAttribute('height', rowHeight);
-            dropRect.setAttribute('fill', 'transparent');
+            dropRect.setAttribute('fill', '#f8f9fa');
             dropRect.setAttribute('class', 'drop-zone-bg');
 
+            // Add a subtle line at the top of the drop zone
+            const dropLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            dropLine.setAttribute('x1', '0');
+            dropLine.setAttribute('y1', dropZoneY);
+            dropLine.setAttribute('x2', svg.getAttribute('width') || svg.clientWidth);
+            dropLine.setAttribute('y2', dropZoneY);
+            dropLine.setAttribute('stroke', '#e9ecef');
+            dropLine.setAttribute('stroke-width', '1');
+            dropZone.appendChild(dropLine);
             dropZone.appendChild(dropRect);
+
+            // Double-click on drop zone to create task
+            dropRect.style.cursor = 'pointer';
+            dropRect.addEventListener('dblclick', (e) => {
+                const date = this.getDateFromClick(e, svg);
+                if (date) {
+                    this.emitCreateTask(date);
+                }
+            });
+
             svg.appendChild(dropZone);
 
             // Increase SVG height to accommodate the drop zone
