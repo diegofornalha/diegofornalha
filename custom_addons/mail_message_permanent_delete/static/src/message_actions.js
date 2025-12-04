@@ -8,6 +8,16 @@ import { Deferred } from "@web/core/utils/concurrency";
 import { rpc } from "@web/core/network/rpc";
 import { toRaw } from "@odoo/owl";
 
+// Remove a ação padrão "delete" (Excluir) do registro
+// Usando try/catch caso a ação ainda não exista
+try {
+    if (messageActionsRegistry.contains("delete")) {
+        messageActionsRegistry.remove("delete");
+    }
+} catch (e) {
+    console.warn("Não foi possível remover ação delete:", e);
+}
+
 registerMessageAction("permanent-delete", {
     condition: ({ message }) => message.editable,
     icon: "fa fa-times text-danger",
