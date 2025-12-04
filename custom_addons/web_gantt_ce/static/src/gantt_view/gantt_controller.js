@@ -86,9 +86,8 @@ export class GanttController extends Component {
         return this.model.getAssignedUsers();
     }
 
-    onUserFilterChange(ev) {
-        const value = ev.target.value;
-        this.state.filterUserId = value ? parseInt(value) : null;
+    onUserFilterChange(userId) {
+        this.state.filterUserId = userId;
         // Force re-render
         this.render(true);
     }

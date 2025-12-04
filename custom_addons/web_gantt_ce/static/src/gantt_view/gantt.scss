@@ -457,25 +457,62 @@ button[name="openEmbeddedActions"] {
 }
 
 /* User filter dropdown */
-.o_gantt_user_filter {
-    min-width: auto;
-    width: auto;
-    max-width: 180px;
-    font-size: 14px;
-    padding: 6px 10px;
-    border: 1px solid #ced4da;
-    border-radius: 4px;
-    background-color: #ffffff;
-    cursor: pointer;
+.o_gantt_user_dropdown {
+    .o_gantt_user_btn {
+        padding: 6px 10px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        background-color: #ffffff;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 14px;
+        color: #495057;
+        transition: all 0.2s ease;
 
-    &:focus {
-        outline: none;
-        border-color: #714b67;
-        box-shadow: 0 0 0 2px rgba(113, 75, 103, 0.2);
+        &:hover {
+            background-color: #f8f9fa;
+            border-color: #714b67;
+            color: #714b67;
+        }
+
+        &::after {
+            font-size: 10px;
+            margin-left: 2px;
+        }
+
+        .user-icon {
+            font-size: 14px;
+        }
     }
 
-    &:hover {
-        border-color: #714b67;
+    .o_gantt_user_menu {
+        min-width: 180px;
+        padding: 8px 0;
+
+        .user-option {
+            padding: 8px 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            transition: background-color 0.15s ease;
+
+            &:hover {
+                background-color: #f8f9fa;
+            }
+
+            &.active {
+                background-color: #f0e8ee;
+                color: #714b67;
+                font-weight: 500;
+            }
+        }
+
+        .dropdown-divider {
+            margin: 4px 0;
+        }
     }
 }
 
