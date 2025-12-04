@@ -5,24 +5,14 @@
             <t t-set-slot="control-panel-additional-actions">
                 <div class="d-flex gap-2 align-items-center">
                     <!-- Filtro por responsável -->
-                    <Dropdown class="'o_gantt_user_dropdown'" togglerClass="'o_gantt_user_btn'">
-                        <t t-set-slot="toggler">
-                            <span class="user-icon">👥</span>
-                        </t>
-                        <div class="dropdown-item user-option d-flex align-items-center"
-                             t-att-class="!state.filterUserId ? 'active' : ''"
-                             t-on-click="() => this.onUserFilterChange(null)">
-                            <span>Todos</span>
-                        </div>
-                        <div class="dropdown-divider"/>
+                    <select class="o_gantt_user_selector form-select" t-on-change="onUserFilterSelectChange">
+                        <option value="">👥 Todos</option>
                         <t t-foreach="assignedUsers" t-as="user" t-key="user.id">
-                            <div class="dropdown-item user-option d-flex align-items-center"
-                                 t-att-class="state.filterUserId === user.id ? 'active' : ''"
-                                 t-on-click="() => this.onUserFilterChange(user.id)">
-                                <span t-esc="user.name"/>
-                            </div>
+                            <option t-att-value="user.id" t-att-selected="state.filterUserId === user.id">
+                                <t t-esc="user.name"/>
+                            </option>
                         </t>
-                    </Dropdown>
+                    </select>
                     <select class="o_gantt_scale_selector form-select" t-on-change="onScaleChange">
                         <t t-foreach="scales" t-as="scale" t-key="scale">
                             <option t-att-value="scale" t-att-selected="scale === state.scale">
@@ -33,27 +23,20 @@
                     <button class="o_gantt_fullscreen_btn" t-on-click="onFullscreenClick" title="Tela cheia">
                         <span class="fullscreen-icon">⛶</span>
                     </button>
-                    <!-- Dropdown de cores - só aparece quando há tarefa selecionada -->
+                    <!-- Seletor de prioridade - só aparece quando há tarefa selecionada -->
                     <t t-if="state.selectedTask">
-                        <Dropdown class="'o_gantt_colors_dropdown'" togglerClass="'o_gantt_colors_btn'">
-                            <t t-set-slot="toggler">
-                                <span class="colors-icon">🎨</span>
-                                <span class="selected-task-indicator" t-att-style="'background-color: ' + getPriorityColor(state.selectedTask.priority)"></span>
-                            </t>
-                            <div class="selected-task-header clickable" t-on-click="onOpenSelectedTask" title="Clique para abrir a tarefa">
-                                <span class="task-name" t-esc="state.selectedTask.name"/>
-                                <span class="open-task-icon">→</span>
-                            </div>
-                            <div class="dropdown-header priority-subheader">Alterar prioridade:</div>
-                            <t t-foreach="priorities" t-as="priority" t-key="priority.value">
-                                <div class="dropdown-item priority-option d-flex align-items-center gap-2"
-                                     t-att-class="state.selectedTask.priority === priority.value ? 'active' : ''"
-                                     t-on-click="() => this.onPriorityChange(priority.value)">
-                                    <span class="priority-color-dot" t-att-style="'background-color: ' + priority.color + ';'"></span>
-                                    <span t-esc="priority.label"/>
-                                </div>
-                            </t>
-                        </Dropdown>
+                        <div class="o_gantt_priority_group d-flex align-items-center gap-1">
+                            <span class="selected-task-name" t-att-title="state.selectedTask.name" t-on-click="onOpenSelectedTask">
+                                🎨 <t t-esc="state.selectedTask.name.substring(0, 15)"/><t t-if="state.selectedTask.name.length > 15">...</t>
+                            </span>
+                            <select class="o_gantt_priority_selector form-select" t-on-change="onPrioritySelectChange">
+                                <t t-foreach="priorities" t-as="priority" t-key="priority.value">
+                                    <option t-att-value="priority.value" t-att-selected="state.selectedTask.priority === priority.value">
+                                        <t t-esc="priority.label"/>
+                                    </option>
+                                </t>
+                            </select>
+                        </div>
                     </t>
                 </div>
             </t>

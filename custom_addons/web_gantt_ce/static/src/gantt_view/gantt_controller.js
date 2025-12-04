@@ -92,6 +92,17 @@ export class GanttController extends Component {
         this.render(true);
     }
 
+    onUserFilterSelectChange(ev) {
+        const value = ev.target.value;
+        const userId = value ? parseInt(value) : null;
+        this.onUserFilterChange(userId);
+    }
+
+    onPrioritySelectChange(ev) {
+        const priority = ev.target.value;
+        this.onPriorityChange(priority);
+    }
+
     async openRecord(params) {
         const { resId } = params;
         await this.actionService.doAction({
