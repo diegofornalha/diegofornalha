@@ -138,7 +138,7 @@ export class GanttRenderer extends Component {
         try {
             localStorage.setItem('gantt_preferences', JSON.stringify(this.preferences));
         } catch (e) {
-            console.warn('[Gantt] Could not save preferences');
+            // Silently ignore
         }
     }
 
@@ -244,9 +244,6 @@ export class GanttRenderer extends Component {
         // Setup dependency creation (drag from task edge)
         this.setupDependencyCreation(container);
 
-        // Highlight weekends
-        this.highlightWeekends(container);
-
         // Add user avatars to bars
         this.addUserAvatars(container, userMap);
 
@@ -323,52 +320,6 @@ export class GanttRenderer extends Component {
             bubbles: true,
         });
         document.dispatchEvent(event);
-        console.log('[GanttRenderer] Emitted task selected event:', task.id, task.name, priority);
-    }
-
-    highlightWeekends(container) {
-        // Wait for Gantt to render
-        setTimeout(() => {
-            const svg = container.querySelector('svg.gantt');
-            if (!svg) return;
-
-            const dates = svg.querySelectorAll('.upper-text, .lower-text');
-            const gridRows = svg.querySelector('.grid-rows');
-            if (!gridRows) return;
-
-            // Get the date columns from the header
-            const lowerTexts = svg.querySelectorAll('.lower-text');
-            lowerTexts.forEach((text, index) => {
-                const dateText = text.textContent;
-                // Parse date to check if weekend
-                const rect = text.getBoundingClientRect();
-                const svgRect = svg.getBoundingClientRect();
-                const x = rect.left - svgRect.left;
-
-                // Try to determine if this is a weekend column
-                // This is approximate - Frappe Gantt doesn't expose date info directly
-                const day = new Date();
-                day.setDate(day.getDate() + index - Math.floor(lowerTexts.length / 2));
-
-                if (day.getDay() === 0 || day.getDay() === 6) {
-                    // Create weekend highlight
-                    const highlight = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-                    const columnWidth = svg.clientWidth / lowerTexts.length;
-                    highlight.setAttribute('x', index * columnWidth);
-                    highlight.setAttribute('y', '0');
-                    highlight.setAttribute('width', columnWidth);
-                    highlight.setAttribute('height', svg.clientHeight);
-                    highlight.setAttribute('class', 'weekend-highlight');
-                    highlight.style.pointerEvents = 'none';
-
-                    // Insert at the beginning so it's behind everything
-                    const firstChild = gridRows.firstChild;
-                    if (firstChild) {
-                        gridRows.insertBefore(highlight, firstChild);
-                    }
-                }
-            });
-        }, 100);
     }
 
     addUserAvatars(container, userMap) {
@@ -523,59 +474,6 @@ export class GanttRenderer extends Component {
         // This method just sets up the bound handlers
     }
 
-    addDragHint(container) {
-        // Add a subtle tooltip on first avatar hover
-        let hintShown = false;
-
-        // Wait for avatars to be rendered
-        setTimeout(() => {
-            const avatars = container.querySelectorAll('.task-avatar');
-
-            avatars.forEach((avatar) => {
-                avatar.addEventListener('mouseenter', () => {
-                    if (!hintShown && !this.dragState.isDragging) {
-                        // Show hint only once per session
-                        const hint = document.createElement('div');
-                        hint.className = 'gantt-drag-hint';
-                        hint.innerHTML = 'Arraste o avatar para reordenar';
-                        hint.style.cssText = `
-                            position: fixed;
-                            bottom: 20px;
-                            left: 50%;
-                            transform: translateX(-50%);
-                            background: rgba(113, 75, 103, 0.9);
-                            color: white;
-                            padding: 8px 16px;
-                            border-radius: 4px;
-                            font-size: 13px;
-                            z-index: 9999;
-                            animation: fadeInOut 3s ease forwards;
-                        `;
-                        document.body.appendChild(hint);
-                        hintShown = true;
-
-                        // Add animation style if not exists
-                        if (!document.querySelector('#gantt-hint-style')) {
-                            const style = document.createElement('style');
-                            style.id = 'gantt-hint-style';
-                            style.textContent = `
-                                @keyframes fadeInOut {
-                                    0% { opacity: 0; }
-                                    10% { opacity: 1; }
-                                    80% { opacity: 1; }
-                                    100% { opacity: 0; }
-                                }
-                            `;
-                            document.head.appendChild(style);
-                        }
-
-                        setTimeout(() => hint.remove(), 3000);
-                    }
-                });
-            });
-        }, 200);
-    }
-
     handleVerticalDrag(e) {
         if (!this.dragState.isDragging) return;
 
@@ -687,7 +585,6 @@ export class GanttRenderer extends Component {
                 newOrder.push(movedTaskId);
             }
 
-            console.log('[Gantt] Vertical drag - updating task sequences:', newOrder);
             this.updateTaskSequences(newOrder);
         }
 
@@ -798,8 +695,6 @@ export class GanttRenderer extends Component {
 
         // Show hint
         this.showArrowHint('Pressione Delete para remover dependência');
-
-        console.log('[Gantt] Arrow selected:', this.selectedArrow.fromTask, '->', this.selectedArrow.toTask);
     }
 
     deselectArrow() {
@@ -817,11 +712,8 @@ export class GanttRenderer extends Component {
 
         const { fromTask, toTask } = this.selectedArrow;
         if (!fromTask || !toTask) {
-            console.warn('[Gantt] Cannot delete: missing task info');
             return;
         }
-
-        console.log('[Gantt] Deleting dependency:', fromTask, '->', toTask);
 
         // Get current dependencies of the target task
         const targetTaskId = parseInt(toTask);
@@ -987,8 +879,6 @@ export class GanttRenderer extends Component {
 
                 document.addEventListener('mousemove', this.handleArrowDrag);
                 document.addEventListener('mouseup', this.handleArrowDragEnd);
-
-                console.log('[Gantt] Started dependency drag from task:', taskId);
             });
         });
     }
@@ -1071,7 +961,6 @@ export class GanttRenderer extends Component {
 
         // Create dependency if valid target
         if (targetTaskId && targetTaskId !== sourceTaskId) {
-            console.log('[Gantt] Creating dependency:', sourceTaskId, '->', targetTaskId);
             this.createDependency(parseInt(sourceTaskId), parseInt(targetTaskId));
         }
 
@@ -1108,7 +997,6 @@ export class GanttRenderer extends Component {
 
         // Check if dependency already exists
         if (currentDeps.includes(sourceTaskId)) {
-            console.log('[Gantt] Dependency already exists');
             return;
         }
 
@@ -1123,8 +1011,6 @@ export class GanttRenderer extends Component {
         if (this.props.model && this.props.model.load) {
             await this.props.model.load({});
         }
-
-        console.log('[Gantt] Dependency created successfully');
     }
 
     async updateTaskSequences(newOrder) {
@@ -1151,17 +1037,11 @@ export class GanttRenderer extends Component {
                 const userIds = record.data.user_ids || [];
                 return userIds.includes(this.props.filterUserId);
             });
-            console.log("[Gantt] Filtered by user:", this.props.filterUserId, "- Tasks:", records.length);
         }
-
-        console.log("[Gantt] Records:", records.length, records);
-        console.log("[Gantt] Fields:", dateStartField, dateStopField);
 
         return records.map((record) => {
             const startDate = record.data[dateStartField] || record.data.create_date;
             const endDate = record.data[dateStopField] || this.addDays(startDate, 1);
-
-            console.log("[Gantt] Task:", record.data.display_name, "start:", startDate, "end:", endDate, "progress:", record.data.progress, "data:", JSON.stringify(Object.keys(record.data)));
 
             return {
                 id: String(record.resId),
@@ -1316,10 +1196,7 @@ export class GanttRenderer extends Component {
     setupEmptyAreaClick(container) {
         setTimeout(() => {
             const svg = container.querySelector('svg.gantt');
-            if (!svg) {
-                console.log('[Gantt] No SVG found');
-                return;
-            }
+            if (!svg) return;
 
             // Try different selectors for the grid area
             let gridArea = svg.querySelector('.grid-rows');
@@ -1331,21 +1208,15 @@ export class GanttRenderer extends Component {
                 gridArea = svg;
             }
 
-            console.log('[Gantt] Setting up double-click on:', gridArea.tagName, gridArea.className);
-
             // Double-click on grid to create task
             gridArea.addEventListener('dblclick', (e) => {
-                console.log('[Gantt] Double-click detected on:', e.target.tagName, e.target.className);
-
                 // Don't trigger if clicking on a task bar
                 if (e.target.closest('.bar-wrapper')) {
-                    console.log('[Gantt] Click was on a bar, ignoring');
                     return;
                 }
 
                 // Calculate the date from click position
                 const date = this.getDateFromClick(e, svg);
-                console.log('[Gantt] Calculated date:', date);
 
                 if (date) {
                     this.emitCreateTask(date);
@@ -1356,20 +1227,14 @@ export class GanttRenderer extends Component {
 
     // Calculate date from click position on the Gantt grid
     getDateFromClick(e, svg) {
-        console.log('[Gantt] getDateFromClick - gantt:', this.gantt);
-
         if (!this.gantt) return null;
 
         const svgRect = svg.getBoundingClientRect();
         const clickX = e.clientX - svgRect.left;
 
-        console.log('[Gantt] Click X position:', clickX);
-
         // Try to get dates from Frappe Gantt
         let ganttStart = this.gantt.gantt_start;
         let ganttEnd = this.gantt.gantt_end;
-
-        console.log('[Gantt] Gantt dates:', ganttStart, ganttEnd);
 
         // If not available, try to get from options or tasks
         if (!ganttStart || !ganttEnd) {
@@ -1388,7 +1253,6 @@ export class GanttRenderer extends Component {
         }
 
         if (!ganttStart || !ganttEnd) {
-            console.log('[Gantt] Could not determine date range');
             // Fallback: use current month
             ganttStart = new Date();
             ganttStart.setDate(1);
@@ -1404,8 +1268,6 @@ export class GanttRenderer extends Component {
         const totalMs = endDate - startDate;
         const totalDays = totalMs / (1000 * 60 * 60 * 24);
 
-        console.log('[Gantt] Total days:', totalDays, 'Grid width:', gridWidth);
-
         // Calculate pixels per day
         const pxPerDay = gridWidth / totalDays;
 
@@ -1415,8 +1277,6 @@ export class GanttRenderer extends Component {
         // Calculate the clicked date
         const clickedDate = new Date(startDate);
         clickedDate.setDate(clickedDate.getDate() + Math.floor(daysFromStart));
-
-        console.log('[Gantt] Clicked date:', clickedDate);
 
         return clickedDate;
     }

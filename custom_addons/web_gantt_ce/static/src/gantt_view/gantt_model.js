@@ -44,17 +44,12 @@ export class GanttModel extends Model {
             "create_date",
             "user_ids",  // For user avatars
         ]);
-        console.log("[GanttModel] _getFieldNames returning:", [...fieldNames]);
         return [...fieldNames];
     }
 
     async load(searchParams = {}) {
         const domain = searchParams.domain || [];
         const context = searchParams.context || {};
-
-        console.log("[GanttModel] load called with domain:", domain);
-        console.log("[GanttModel] resModel:", this.resModel);
-        console.log("[GanttModel] fieldNames:", this.meta.fieldNames);
 
         try {
             const result = await this.keepLast.add(
@@ -65,8 +60,6 @@ export class GanttModel extends Model {
                     { context, order: "sequence, id" }
                 )
             );
-
-            console.log("[GanttModel] searchRead result:", result);
 
             // Collect all user IDs to fetch their names
             const allUserIds = new Set();
@@ -88,9 +81,8 @@ export class GanttModel extends Model {
                     users.forEach(user => {
                         userNames[user.id] = user.name;
                     });
-                    console.log("[GanttModel] User names loaded:", userNames);
                 } catch (e) {
-                    console.warn("[GanttModel] Could not load user names:", e);
+                    // Silently ignore - avatars will use initials
                 }
             }
 
@@ -102,7 +94,6 @@ export class GanttModel extends Model {
                 },
             }));
         } catch (e) {
-            console.error("GanttModel load error:", e);
             this.data.records = [];
         }
 

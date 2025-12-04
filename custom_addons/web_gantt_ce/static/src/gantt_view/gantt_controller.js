@@ -141,7 +141,7 @@ export class GanttController extends Component {
             prefs[key] = value;
             localStorage.setItem('gantt_preferences', JSON.stringify(prefs));
         } catch (e) {
-            console.warn('[Gantt] Could not save preference');
+            // Silently ignore
         }
     }
 
@@ -186,7 +186,6 @@ export class GanttController extends Component {
         if (!this.state.selectedTask) return;
 
         const taskId = parseInt(this.state.selectedTask.id);
-        console.log('[GanttController] Changing priority of task', taskId, 'to', priority);
 
         await this.onTaskUpdate(taskId, { priority: String(priority) });
 
@@ -199,8 +198,6 @@ export class GanttController extends Component {
         if (!this.state.selectedTask) return;
 
         const taskId = parseInt(this.state.selectedTask.id);
-        console.log('[GanttController] Opening task form:', taskId);
-
         this.openRecord({ resId: taskId });
     }
 
