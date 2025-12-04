@@ -42,17 +42,21 @@ export class GanttController extends Component {
 
         this.onTaskSelectedBound = this.onTaskSelected.bind(this);
         this.onClickOutsideBound = this.onClickOutside.bind(this);
+        this.onCreateTaskBound = this.onCreateTask.bind(this);
 
         onMounted(() => {
             // Listen for custom event from renderer
             document.addEventListener('gantt-task-selected', this.onTaskSelectedBound);
             // Listen for clicks outside to deselect
             document.addEventListener('click', this.onClickOutsideBound);
+            // Listen for create task event (double-click on empty area)
+            document.addEventListener('gantt-create-task', this.onCreateTaskBound);
         });
 
         onWillUnmount(() => {
             document.removeEventListener('gantt-task-selected', this.onTaskSelectedBound);
             document.removeEventListener('click', this.onClickOutsideBound);
+            document.removeEventListener('gantt-create-task', this.onCreateTaskBound);
         });
     }
 
@@ -206,5 +210,54 @@ export class GanttController extends Component {
     getPriorityColor(priority) {
         const found = this.priorities.find(p => p.value === priority);
         return found ? found.color : '#714b67';
+    }
+
+    // Handle create task event (double-click on empty area)
+    async onCreateTask(event) {
+        const { date } = event.detail;
+
+        // Get the date fields from archInfo
+        const dateStartField = this.props.archInfo.dateStartField || "date_assign";
+        const dateStopField = this.props.archInfo.dateStopField || "date_deadline";
+
+        // Calculate end date (1 day after start)
+        const startDate = new Date(date);
+        const endDate = new Date(startDate);
+        endDate.setDate(endDate.getDate() + 1);
+
+        // Format dates
+        const formatDate = (d) => {
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        };
+
+        // Get project_id from context if available
+        const projectId = this.props.context?.default_project_id || this.props.context?.active_id;
+
+        // Build default values
+        const defaultValues = {
+            [dateStartField]: formatDate(startDate),
+            [dateStopField]: formatDate(endDate),
+        };
+
+        if (projectId) {
+            defaultValues.project_id = projectId;
+        }
+
+        // Open form to create new task with pre-filled dates
+        await this.actionService.doAction({
+            type: "ir.actions.act_window",
+            res_model: this.props.resModel,
+            views: [[false, "form"]],
+            target: "current",
+            context: {
+                ...this.props.context,
+                default_project_id: projectId,
+                [`default_${dateStartField}`]: formatDate(startDate),
+                [`default_${dateStopField}`]: formatDate(endDate),
+            },
+        });
     }
 }

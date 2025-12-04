@@ -251,6 +251,9 @@ export class GanttRenderer extends Component {
 
         // Setup context menu for quick editing
         this.setupContextMenu(container);
+
+        // Setup click on empty area to create task
+        this.setupEmptyAreaClick(container);
     }
 
     setupContextMenu(container) {
@@ -1336,5 +1339,127 @@ export class GanttRenderer extends Component {
         if (this.gantt) {
             this.gantt.change_view_mode(mode);
         }
+    }
+
+    // Setup double-click on empty area to create new task
+    setupEmptyAreaClick(container) {
+        setTimeout(() => {
+            const svg = container.querySelector('svg.gantt');
+            if (!svg) {
+                console.log('[Gantt] No SVG found');
+                return;
+            }
+
+            // Try different selectors for the grid area
+            let gridArea = svg.querySelector('.grid-rows');
+            if (!gridArea) {
+                gridArea = svg.querySelector('.grid');
+            }
+            if (!gridArea) {
+                // Fallback: use the SVG itself
+                gridArea = svg;
+            }
+
+            console.log('[Gantt] Setting up double-click on:', gridArea.tagName, gridArea.className);
+
+            // Double-click on grid to create task
+            gridArea.addEventListener('dblclick', (e) => {
+                console.log('[Gantt] Double-click detected on:', e.target.tagName, e.target.className);
+
+                // Don't trigger if clicking on a task bar
+                if (e.target.closest('.bar-wrapper')) {
+                    console.log('[Gantt] Click was on a bar, ignoring');
+                    return;
+                }
+
+                // Calculate the date from click position
+                const date = this.getDateFromClick(e, svg);
+                console.log('[Gantt] Calculated date:', date);
+
+                if (date) {
+                    this.emitCreateTask(date);
+                }
+            });
+        }, 200);
+    }
+
+    // Calculate date from click position on the Gantt grid
+    getDateFromClick(e, svg) {
+        console.log('[Gantt] getDateFromClick - gantt:', this.gantt);
+
+        if (!this.gantt) return null;
+
+        const svgRect = svg.getBoundingClientRect();
+        const clickX = e.clientX - svgRect.left;
+
+        console.log('[Gantt] Click X position:', clickX);
+
+        // Try to get dates from Frappe Gantt
+        let ganttStart = this.gantt.gantt_start;
+        let ganttEnd = this.gantt.gantt_end;
+
+        console.log('[Gantt] Gantt dates:', ganttStart, ganttEnd);
+
+        // If not available, try to get from options or tasks
+        if (!ganttStart || !ganttEnd) {
+            // Get from tasks
+            const tasks = this.formatTasks();
+            if (tasks.length > 0) {
+                const dates = tasks.map(t => new Date(t.start)).filter(d => !isNaN(d));
+                if (dates.length > 0) {
+                    ganttStart = new Date(Math.min(...dates));
+                    ganttEnd = new Date(Math.max(...dates));
+                    // Add some padding
+                    ganttStart.setDate(ganttStart.getDate() - 7);
+                    ganttEnd.setDate(ganttEnd.getDate() + 30);
+                }
+            }
+        }
+
+        if (!ganttStart || !ganttEnd) {
+            console.log('[Gantt] Could not determine date range');
+            // Fallback: use current month
+            ganttStart = new Date();
+            ganttStart.setDate(1);
+            ganttEnd = new Date();
+            ganttEnd.setMonth(ganttEnd.getMonth() + 1);
+        }
+
+        const gridWidth = svgRect.width;
+
+        // Calculate total days in view
+        const startDate = new Date(ganttStart);
+        const endDate = new Date(ganttEnd);
+        const totalMs = endDate - startDate;
+        const totalDays = totalMs / (1000 * 60 * 60 * 24);
+
+        console.log('[Gantt] Total days:', totalDays, 'Grid width:', gridWidth);
+
+        // Calculate pixels per day
+        const pxPerDay = gridWidth / totalDays;
+
+        // Calculate days from start based on click position
+        const daysFromStart = clickX / pxPerDay;
+
+        // Calculate the clicked date
+        const clickedDate = new Date(startDate);
+        clickedDate.setDate(clickedDate.getDate() + Math.floor(daysFromStart));
+
+        console.log('[Gantt] Clicked date:', clickedDate);
+
+        return clickedDate;
+    }
+
+    // Emit event to create new task with the given date
+    emitCreateTask(date) {
+        const formattedDate = this.formatDate(date);
+
+        const event = new CustomEvent('gantt-create-task', {
+            detail: {
+                date: formattedDate,
+            },
+            bubbles: true,
+        });
+        document.dispatchEvent(event);
     }
 }
