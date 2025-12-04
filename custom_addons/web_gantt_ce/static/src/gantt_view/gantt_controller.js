@@ -248,16 +248,6 @@ export class GanttController extends Component {
         // Get project_id from context if available
         const projectId = this.props.context?.default_project_id || this.props.context?.active_id;
 
-        // Build default values
-        const defaultValues = {
-            [dateStartField]: formatDate(startDate),
-            [dateStopField]: formatDate(endDate),
-        };
-
-        if (projectId) {
-            defaultValues.project_id = projectId;
-        }
-
         // Open form to create new task with pre-filled dates
         await this.actionService.doAction({
             type: "ir.actions.act_window",
