@@ -102,9 +102,9 @@ export class GanttController extends Component {
 
         if (btn) {
             if (isFullscreen) {
-                btn.innerHTML = '<span class="fullscreen-icon">✕</span> Sair';
+                btn.innerHTML = '<span class="fullscreen-icon">✕</span>';
             } else {
-                btn.innerHTML = '<span class="fullscreen-icon">⛶</span> Expandir';
+                btn.innerHTML = '<span class="fullscreen-icon">⛶</span>';
             }
         }
     }

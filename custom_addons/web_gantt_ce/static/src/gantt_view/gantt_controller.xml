@@ -12,11 +12,11 @@
                         </t>
                     </select>
                     <button class="o_gantt_fullscreen_btn" t-on-click="onFullscreenClick" title="Tela cheia">
-                        <span class="fullscreen-icon">⛶</span> Expandir
+                        <span class="fullscreen-icon">⛶</span>
                     </button>
                     <div class="o_gantt_colors_dropdown dropdown">
                         <button class="o_gantt_colors_btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" title="Alterar cor/prioridade da tarefa">
-                            <span class="colors-icon">🎨</span> Cores
+                            <span class="colors-icon">🎨</span>
                             <t t-if="state.selectedTask">
                                 <span class="selected-task-indicator" t-att-style="'background-color: ' + getPriorityColor(state.selectedTask.priority)"></span>
                             </t>
