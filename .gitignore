@@ -4,3 +4,4 @@ logs/odoo.log
 logs/startup.log
 .DS_Store
 .venv/
+odoo_source
