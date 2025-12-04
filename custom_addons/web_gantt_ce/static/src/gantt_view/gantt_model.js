@@ -37,12 +37,14 @@ export class GanttModel extends Model {
             archInfo.dateStartField || "date_assign",
             archInfo.dateStopField || "date_deadline",
             archInfo.dependencyField || "depend_on_ids",
+            archInfo.progressField || "progress",  // Progress field for bar fill
             "priority",
             "sequence",
             "parent_id",
             "create_date",
             "user_ids",  // For user avatars
         ]);
+        console.log("[GanttModel] _getFieldNames returning:", [...fieldNames]);
         return [...fieldNames];
     }
 

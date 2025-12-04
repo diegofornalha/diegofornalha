@@ -1206,7 +1206,7 @@ export class GanttRenderer extends Component {
             const startDate = record.data[dateStartField] || record.data.create_date;
             const endDate = record.data[dateStopField] || this.addDays(startDate, 1);
 
-            console.log("[Gantt] Task:", record.data.display_name, "start:", startDate, "end:", endDate);
+            console.log("[Gantt] Task:", record.data.display_name, "start:", startDate, "end:", endDate, "progress:", record.data.progress, "data:", JSON.stringify(Object.keys(record.data)));
 
             return {
                 id: String(record.resId),
