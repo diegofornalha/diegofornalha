@@ -2,7 +2,9 @@
 filestore*
 logs/odoo.log
 logs/startup.log
-.DS_Store
+.DS_Store*
 .venv/
 odoo_source/
 .venv*
+__pycache__/*
+
