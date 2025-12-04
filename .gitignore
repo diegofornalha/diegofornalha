@@ -1,4 +1,6 @@
 .env
-filestore*
 logs/odoo.log
 logs/startup.log
+community_addons/web
+odoo_source
+filestore/
