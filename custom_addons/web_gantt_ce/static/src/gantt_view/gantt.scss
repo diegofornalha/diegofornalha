@@ -460,7 +460,7 @@ button[name="openEmbeddedActions"] {
 .o_gantt_user_dropdown {
     .o_gantt_user_btn {
         padding: 6px 10px;
-        border: 1px solid #ced4da;
+        border: 1px solid #ced4da !important;
         border-radius: 4px;
         background-color: #ffffff;
         cursor: pointer;
@@ -473,13 +473,14 @@ button[name="openEmbeddedActions"] {
 
         &:hover {
             background-color: #f8f9fa;
-            border-color: #714b67;
+            border-color: #714b67 !important;
             color: #714b67;
         }
 
-        &::after {
-            font-size: 10px;
-            margin-left: 2px;
+        &:focus, &:focus-visible, &:active {
+            outline: none !important;
+            box-shadow: none !important;
+            border-color: #714b67 !important;
         }
 
         .user-icon {
@@ -535,7 +536,7 @@ button[name="openEmbeddedActions"] {
 .o_gantt_colors_dropdown {
     .o_gantt_colors_btn {
         padding: 6px 10px;
-        border: 1px solid #ced4da;
+        border: 1px solid #ced4da !important;
         border-radius: 4px;
         background-color: #ffffff;
         cursor: pointer;
@@ -548,12 +549,14 @@ button[name="openEmbeddedActions"] {
 
         &:hover {
             background-color: #f8f9fa;
-            border-color: #714b67;
+            border-color: #714b67 !important;
             color: #714b67;
         }
 
-        &::after {
-            margin-left: 4px;
+        &:focus, &:focus-visible, &:active {
+            outline: none !important;
+            box-shadow: none !important;
+            border-color: #714b67 !important;
         }
 
         .colors-icon {
@@ -672,5 +675,35 @@ button[name="openEmbeddedActions"] {
             flex-shrink: 0;
         }
     }
+}
+
+/* Priority color dot - works with Odoo Dropdown component */
+.priority-color-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: inline-block;
+}
+
+/* Remove Odoo Dropdown ::before checkmark from our custom dropdowns */
+.o_gantt_user_dropdown,
+.o_gantt_colors_dropdown {
+    .dropdown-item::before,
+    .dropdown-item::after,
+    .o-dropdown-item::before,
+    .o-dropdown-item::after {
+        display: none !important;
+        content: none !important;
+    }
+}
+
+/* Also target the dropdown menu which may be rendered outside the component */
+.o_gantt_view .user-option::before,
+.o_gantt_view .priority-option::before,
+.user-option::before,
+.priority-option::before {
+    display: none !important;
+    content: none !important;
 }
 
