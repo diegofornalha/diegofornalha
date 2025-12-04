@@ -1,16 +1,18 @@
 /** @odoo-module **/
 
-import { Component, useState } from "@odoo/owl";
+import { Component, useState, useRef, onMounted } from "@odoo/owl";
 import { useService, useBus } from "@web/core/utils/hooks";
 import { useModelWithSampleData } from "@web/model/model";
 import { Layout } from "@web/search/layout";
 import { useSetupAction } from "@web/search/action_hook";
 import { standardViewProps } from "@web/views/standard_view_props";
 import { GanttRenderer } from "./gantt_renderer";
+import { Dropdown } from "@web/core/dropdown/dropdown";
+import { DropdownItem } from "@web/core/dropdown/dropdown_item";
 
 export class GanttController extends Component {
     static template = "web_gantt_ce.GanttController";
-    static components = { Layout, GanttRenderer };
+    static components = { Layout, GanttRenderer, Dropdown, DropdownItem };
     static props = {
         ...standardViewProps,
         Model: Function,
@@ -32,6 +34,15 @@ export class GanttController extends Component {
 
         this.state = useState({
             scale: this.props.archInfo.defaultScale || "Day",
+            selectedTask: null,  // { id, name, priority }
+            colorsDropdownOpen: false,
+        });
+
+        this.colorsDropdownRef = useRef("colorsDropdown");
+
+        onMounted(() => {
+            // Listen for custom event from renderer
+            document.addEventListener('gantt-task-selected', this.onTaskSelected.bind(this));
         });
     }
 
@@ -106,5 +117,73 @@ export class GanttController extends Component {
         } catch (e) {
             console.warn('[Gantt] Could not save preference');
         }
+    }
+
+    // Handle task selection from renderer
+    onTaskSelected(event) {
+        const { taskId, taskName, taskPriority } = event.detail;
+        console.log('[GanttController] Task selected:', taskId, taskName, taskPriority);
+
+        this.state.selectedTask = {
+            id: taskId,
+            name: taskName,
+            priority: taskPriority,
+        };
+
+        // Open the colors dropdown programmatically
+        this.openColorsDropdown();
+    }
+
+    openColorsDropdown() {
+        // Find and click the colors dropdown button to open it
+        setTimeout(() => {
+            const dropdownBtn = document.querySelector('.o_gantt_colors_btn');
+            if (dropdownBtn && !dropdownBtn.classList.contains('show')) {
+                dropdownBtn.click();
+            }
+        }, 50);
+    }
+
+    // Change priority from the dropdown
+    async onPriorityChange(priority) {
+        if (!this.state.selectedTask) return;
+
+        const taskId = parseInt(this.state.selectedTask.id);
+        console.log('[GanttController] Changing priority of task', taskId, 'to', priority);
+
+        await this.onTaskUpdate(taskId, { priority: String(priority) });
+
+        // Update local state
+        this.state.selectedTask.priority = String(priority);
+    }
+
+    // Open the selected task form
+    onOpenSelectedTask() {
+        if (!this.state.selectedTask) return;
+
+        const taskId = parseInt(this.state.selectedTask.id);
+        console.log('[GanttController] Opening task form:', taskId);
+
+        this.openRecord({ resId: taskId });
+    }
+
+    // Get priority info for display
+    get priorities() {
+        return [
+            { value: '3', label: 'Urgente', color: '#28a745' },
+            { value: '2', label: 'Muito Alta', color: '#dc3545' },
+            { value: '1', label: 'Alta', color: '#fd7e14' },
+            { value: '0', label: 'Normal', color: '#714b67' },
+        ];
+    }
+
+    getPriorityLabel(priority) {
+        const found = this.priorities.find(p => p.value === priority);
+        return found ? found.label : 'Normal';
+    }
+
+    getPriorityColor(priority) {
+        const found = this.priorities.find(p => p.value === priority);
+        return found ? found.color : '#714b67';
     }
 }

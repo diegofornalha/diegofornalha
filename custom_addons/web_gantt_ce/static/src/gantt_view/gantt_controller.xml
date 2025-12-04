@@ -14,6 +14,59 @@
                     <button class="o_gantt_fullscreen_btn" t-on-click="onFullscreenClick" title="Tela cheia">
                         <span class="fullscreen-icon">⛶</span> Expandir
                     </button>
+                    <div class="o_gantt_colors_dropdown dropdown">
+                        <button class="o_gantt_colors_btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" title="Alterar cor/prioridade da tarefa">
+                            <span class="colors-icon">🎨</span> Cores
+                            <t t-if="state.selectedTask">
+                                <span class="selected-task-indicator" t-att-style="'background-color: ' + getPriorityColor(state.selectedTask.priority)"></span>
+                            </t>
+                        </button>
+                        <div class="dropdown-menu o_gantt_colors_menu">
+                            <!-- Se tem tarefa selecionada, mostra nome e opções clicáveis -->
+                            <t t-if="state.selectedTask">
+                                <div class="selected-task-header clickable" t-on-click="onOpenSelectedTask" title="Clique para abrir a tarefa">
+                                    <span class="task-name" t-esc="state.selectedTask.name"/>
+                                    <span class="open-task-icon">→</span>
+                                </div>
+                                <div class="dropdown-header priority-subheader">Alterar prioridade:</div>
+                                <t t-foreach="priorities" t-as="priority" t-key="priority.value">
+                                    <div class="dropdown-item priority-option d-flex align-items-center gap-2"
+                                         t-att-class="state.selectedTask.priority === priority.value ? 'active' : ''"
+                                         t-on-click="() => this.onPriorityChange(priority.value)">
+                                        <span class="priority-color-dot" t-att-style="'background-color: ' + priority.color + ';'"></span>
+                                        <span t-esc="priority.label"/>
+                                        <t t-if="state.selectedTask.priority === priority.value">
+                                            <span class="ms-auto">✓</span>
+                                        </t>
+                                    </div>
+                                </t>
+                            </t>
+                            <!-- Se não tem tarefa selecionada, mostra legenda -->
+                            <t t-else="">
+                                <div class="dropdown-header">Legenda de Prioridades</div>
+                                <div class="dropdown-item d-flex align-items-center gap-2">
+                                    <span class="priority-color-dot" style="background-color: #28a745;"></span>
+                                    <span>Urgente</span>
+                                </div>
+                                <div class="dropdown-item d-flex align-items-center gap-2">
+                                    <span class="priority-color-dot" style="background-color: #dc3545;"></span>
+                                    <span>Muito Alta</span>
+                                </div>
+                                <div class="dropdown-item d-flex align-items-center gap-2">
+                                    <span class="priority-color-dot" style="background-color: #fd7e14;"></span>
+                                    <span>Alta</span>
+                                </div>
+                                <div class="dropdown-item d-flex align-items-center gap-2">
+                                    <span class="priority-color-dot" style="background-color: #714b67;"></span>
+                                    <span>Normal</span>
+                                </div>
+                                <div class="dropdown-divider"></div>
+                                <div class="dropdown-item text-muted small">
+                                    <em>Clique numa tarefa para alterar</em>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
                 </div>
             </t>
             <t t-set-slot="layout-actions"/>

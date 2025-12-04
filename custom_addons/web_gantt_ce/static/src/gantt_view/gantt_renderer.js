@@ -322,7 +322,7 @@ export class GanttRenderer extends Component {
                         <p>👤 ${userName}</p>
                         <p>📅 ${startDate} → ${endDate}</p>
                         <p>📊 Progresso: ${task.progress}%</p>
-                        <p style="font-size: 10px; color: #aaa; margin-top: 8px;">Ctrl+Click para abrir em nova aba</p>
+                        <p style="font-size: 10px; color: #aaa; margin-top: 8px;">Click = Cores | Shift+Click = Editar | Ctrl+Click = Nova aba</p>
                     </div>
                 `;
             },
@@ -330,8 +330,12 @@ export class GanttRenderer extends Component {
                 // Ctrl+Click or Cmd+Click opens in new tab
                 if (e && (e.ctrlKey || e.metaKey)) {
                     this.openTaskInNewTab(task);
-                } else {
+                } else if (e && e.shiftKey) {
+                    // Shift+Click opens the form
                     this.onTaskClick(task);
+                } else {
+                    // Normal click - emit event to open colors dropdown in header
+                    this.emitTaskSelected(task);
                 }
             },
             on_date_change: (task, start, end) => {
@@ -356,6 +360,136 @@ export class GanttRenderer extends Component {
 
         // Add user avatars to bars
         this.addUserAvatars(container, userMap);
+
+        // Setup context menu for quick editing
+        this.setupContextMenu(container);
+    }
+
+    setupContextMenu(container) {
+        // Remove existing context menu if any
+        const existingMenu = document.getElementById('gantt-context-menu');
+        if (existingMenu) {
+            existingMenu.remove();
+        }
+
+        // Create context menu element
+        const menu = document.createElement('div');
+        menu.id = 'gantt-context-menu';
+        menu.className = 'gantt-context-menu';
+        menu.style.display = 'none';
+        menu.innerHTML = `
+            <div class="context-menu-header">Prioridade</div>
+            <div class="context-menu-item" data-priority="3">
+                <span class="priority-dot priority-urgent"></span>
+                Urgente
+            </div>
+            <div class="context-menu-item" data-priority="2">
+                <span class="priority-dot priority-very-high"></span>
+                Muito Alta
+            </div>
+            <div class="context-menu-item" data-priority="1">
+                <span class="priority-dot priority-high"></span>
+                Alta
+            </div>
+            <div class="context-menu-item" data-priority="0">
+                <span class="priority-dot priority-normal"></span>
+                Normal
+            </div>
+            <div class="context-menu-divider"></div>
+            <div class="context-menu-item" data-action="open">
+                <span class="context-menu-icon">📝</span>
+                Abrir Tarefa
+            </div>
+            <div class="context-menu-item" data-action="open-new-tab">
+                <span class="context-menu-icon">🔗</span>
+                Abrir em Nova Aba
+            </div>
+        `;
+        document.body.appendChild(menu);
+
+        // Store reference to current task for context menu actions
+        this.contextMenuTaskId = null;
+
+        // Add right-click handler to bar elements
+        container.addEventListener('contextmenu', (e) => {
+            const barWrapper = e.target.closest('.bar-wrapper');
+            if (barWrapper) {
+                e.preventDefault();
+                const taskId = barWrapper.getAttribute('data-id');
+                if (taskId) {
+                    this.contextMenuTaskId = taskId;
+                    this.showContextMenu(e.pageX, e.pageY);
+                }
+            }
+        });
+
+        // Handle menu item clicks
+        menu.addEventListener('click', (e) => {
+            const item = e.target.closest('.context-menu-item');
+            if (item) {
+                const priority = item.getAttribute('data-priority');
+                const action = item.getAttribute('data-action');
+
+                if (priority !== null) {
+                    this.updateTaskPriority(this.contextMenuTaskId, priority);
+                } else if (action === 'open') {
+                    this.onTaskClick({ id: this.contextMenuTaskId });
+                } else if (action === 'open-new-tab') {
+                    this.openTaskInNewTab({ id: this.contextMenuTaskId });
+                }
+
+                this.hideContextMenu();
+            }
+        });
+
+        // Hide menu on click outside
+        document.addEventListener('click', (e) => {
+            if (!menu.contains(e.target)) {
+                this.hideContextMenu();
+            }
+        });
+
+        // Hide menu on scroll
+        container.addEventListener('scroll', () => {
+            this.hideContextMenu();
+        });
+    }
+
+    showContextMenu(x, y) {
+        const menu = document.getElementById('gantt-context-menu');
+        if (menu) {
+            // Adjust position to keep menu within viewport
+            const menuWidth = 180;
+            const menuHeight = 280;
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+
+            if (x + menuWidth > viewportWidth) {
+                x = viewportWidth - menuWidth - 10;
+            }
+            if (y + menuHeight > viewportHeight) {
+                y = viewportHeight - menuHeight - 10;
+            }
+
+            menu.style.left = `${x}px`;
+            menu.style.top = `${y}px`;
+            menu.style.display = 'block';
+        }
+    }
+
+    hideContextMenu() {
+        const menu = document.getElementById('gantt-context-menu');
+        if (menu) {
+            menu.style.display = 'none';
+        }
+        this.contextMenuTaskId = null;
+    }
+
+    updateTaskPriority(taskId, priority) {
+        const recordId = parseInt(taskId);
+        this.props.onTaskUpdate(recordId, {
+            priority: priority,
+        });
     }
 
     formatDisplayDate(dateStr) {
@@ -406,6 +540,25 @@ export class GanttRenderer extends Component {
         const baseUrl = window.location.origin;
         const url = `${baseUrl}/odoo/project.task/${recordId}`;
         window.open(url, '_blank');
+    }
+
+    emitTaskSelected(task) {
+        // Get task priority from records
+        const recordId = parseInt(task.id);
+        const record = this.tasks.find(r => r.resId === recordId);
+        const priority = record?.data?.priority || '0';
+
+        // Dispatch custom event for controller to handle
+        const event = new CustomEvent('gantt-task-selected', {
+            detail: {
+                taskId: task.id,
+                taskName: task.name,
+                taskPriority: priority,
+            },
+            bubbles: true,
+        });
+        document.dispatchEvent(event);
+        console.log('[GanttRenderer] Emitted task selected event:', task.id, task.name, priority);
     }
 
     highlightWeekends(container) {
