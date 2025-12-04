@@ -1,6 +1,6 @@
 /** @odoo-module **/
 
-import { Component, useState, useRef, onMounted } from "@odoo/owl";
+import { Component, useState, useRef, onMounted, onWillUnmount } from "@odoo/owl";
 import { useService, useBus } from "@web/core/utils/hooks";
 import { useModelWithSampleData } from "@web/model/model";
 import { Layout } from "@web/search/layout";
@@ -40,9 +40,19 @@ export class GanttController extends Component {
 
         this.colorsDropdownRef = useRef("colorsDropdown");
 
+        this.onTaskSelectedBound = this.onTaskSelected.bind(this);
+        this.onClickOutsideBound = this.onClickOutside.bind(this);
+
         onMounted(() => {
             // Listen for custom event from renderer
-            document.addEventListener('gantt-task-selected', this.onTaskSelected.bind(this));
+            document.addEventListener('gantt-task-selected', this.onTaskSelectedBound);
+            // Listen for clicks outside to deselect
+            document.addEventListener('click', this.onClickOutsideBound);
+        });
+
+        onWillUnmount(() => {
+            document.removeEventListener('gantt-task-selected', this.onTaskSelectedBound);
+            document.removeEventListener('click', this.onClickOutsideBound);
         });
     }
 
@@ -122,7 +132,6 @@ export class GanttController extends Component {
     // Handle task selection from renderer
     onTaskSelected(event) {
         const { taskId, taskName, taskPriority } = event.detail;
-        console.log('[GanttController] Task selected:', taskId, taskName, taskPriority);
 
         this.state.selectedTask = {
             id: taskId,
@@ -132,6 +141,18 @@ export class GanttController extends Component {
 
         // Open the colors dropdown programmatically
         this.openColorsDropdown();
+    }
+
+    // Handle clicks outside to deselect task
+    onClickOutside(event) {
+        // Don't deselect if clicking on: task bar, dropdown, or controls
+        const isBarClick = event.target.closest('.bar-wrapper');
+        const isDropdownClick = event.target.closest('.o_gantt_colors_dropdown');
+        const isControlsClick = event.target.closest('.o_gantt_controls');
+
+        if (!isBarClick && !isDropdownClick && !isControlsClick && this.state.selectedTask) {
+            this.state.selectedTask = null;
+        }
     }
 
     openColorsDropdown() {
