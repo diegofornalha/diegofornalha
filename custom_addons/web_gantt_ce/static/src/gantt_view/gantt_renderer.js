@@ -80,6 +80,9 @@ export class GanttRenderer extends Component {
                     this.isDraggingTask = true;
                     // Add visual class to prevent CSS transitions during drag
                     svg.classList.add('dragging-active');
+
+                    // Start arrow update loop during drag
+                    this.startArrowUpdateLoop();
                 }
             }, true); // Use capture to get event before Frappe
 
@@ -113,8 +116,14 @@ export class GanttRenderer extends Component {
             e.preventDefault();
             this.confirmDeleteDependency();
         }
+        // Delete selected task when pressing Delete/Backspace
+        if ((e.key === 'Delete' || e.key === 'Backspace') && this.selectedTaskForDelete) {
+            e.preventDefault();
+            this.confirmDeleteTask();
+        }
         if (e.key === 'Escape') {
             this.deselectArrow();
+            this.deselectTask();
             this.cancelArrowDrag();
             this.closeConfirmDialog();
             if (this.isFullscreen) {
@@ -160,6 +169,105 @@ export class GanttRenderer extends Component {
         if (overlay) overlay.remove();
         if (dialog) dialog.remove();
         this.pendingDeleteArrow = null;
+        this.pendingDeleteTask = null;
+    }
+
+    // Task selection for delete
+    selectTaskForDelete(taskId, taskName, avatarElement) {
+        // Deselect previous
+        this.deselectTask();
+        this.deselectArrow();
+
+        this.selectedTaskForDelete = {
+            taskId,
+            taskName,
+            element: avatarElement,
+        };
+
+        // Visual feedback - highlight avatar
+        if (avatarElement) {
+            avatarElement.style.filter = 'drop-shadow(0 0 4px #dc3545)';
+            const circle = avatarElement.querySelector('.avatar-border');
+            if (circle) {
+                circle.setAttribute('stroke', '#dc3545');
+                circle.setAttribute('stroke-width', '3');
+            }
+        }
+    }
+
+    deselectTask() {
+        if (this.selectedTaskForDelete?.element) {
+            const el = this.selectedTaskForDelete.element;
+            el.style.filter = '';
+            const circle = el.querySelector('.avatar-border');
+            if (circle) {
+                circle.setAttribute('stroke', '#fff');
+                circle.setAttribute('stroke-width', '2');
+            }
+        }
+        this.selectedTaskForDelete = null;
+    }
+
+    confirmDeleteTask() {
+        if (!this.selectedTaskForDelete) return;
+
+        this.pendingDeleteTask = this.selectedTaskForDelete;
+
+        const overlay = document.createElement('div');
+        overlay.className = 'gantt-confirm-overlay';
+        overlay.id = 'gantt-confirm-overlay';
+
+        const dialog = document.createElement('div');
+        dialog.className = 'gantt-confirm-dialog';
+        dialog.id = 'gantt-confirm-dialog';
+        dialog.innerHTML = `
+            <h4>Remover Tarefa</h4>
+            <p>Tem certeza que deseja remover "<strong>${this.pendingDeleteTask.taskName}</strong>"?</p>
+            <div class="dialog-buttons">
+                <button class="btn-cancel">Cancelar</button>
+                <button class="btn-confirm" style="background: #dc3545;">Remover</button>
+            </div>
+        `;
+
+        document.body.appendChild(overlay);
+        document.body.appendChild(dialog);
+
+        overlay.addEventListener('click', () => this.closeConfirmDialog());
+        dialog.querySelector('.btn-cancel').addEventListener('click', () => this.closeConfirmDialog());
+        dialog.querySelector('.btn-confirm').addEventListener('click', () => {
+            this.deleteSelectedTask();
+            this.closeConfirmDialog();
+        });
+    }
+
+    async deleteSelectedTask() {
+        if (!this.pendingDeleteTask) return;
+
+        const taskId = this.pendingDeleteTask.taskId;
+
+        // Remove visually first (immediate feedback)
+        const container = this.ganttRef.el;
+        const wrapper = container?.querySelector(`.bar-wrapper[data-id="${taskId}"]`);
+        if (wrapper) {
+            wrapper.style.transition = 'opacity 0.3s';
+            wrapper.style.opacity = '0';
+            setTimeout(() => wrapper.remove(), 300);
+        }
+
+        // Remove any arrows connected to this task
+        const arrows = container?.querySelectorAll(`g.arrow path[data-from="${taskId}"], g.arrow path[data-to="${taskId}"]`);
+        arrows?.forEach(arrow => {
+            arrow.style.transition = 'opacity 0.3s';
+            arrow.style.opacity = '0';
+            setTimeout(() => arrow.remove(), 300);
+        });
+
+        // Delete from database (set active = false)
+        await this.props.onTaskUpdate(taskId, {
+            active: false,
+        }, { skipReload: true });
+
+        this.deselectTask();
     }
 
     // Preferences management
@@ -569,6 +677,22 @@ export class GanttRenderer extends Component {
                     document.addEventListener('mousemove', this.handleVerticalDrag);
                     document.addEventListener('mouseup', this.handleVerticalDragEnd);
                 });
+
+                // Click on avatar to select task for deletion
+                let clickStartTime = 0;
+                hitArea.addEventListener('mousedown', () => {
+                    clickStartTime = Date.now();
+                });
+                hitArea.addEventListener('mouseup', (e) => {
+                    const clickDuration = Date.now() - clickStartTime;
+                    // Only treat as click if it was a short press (not a drag)
+                    if (clickDuration < 200 && !this.dragState.isVerticalDrag) {
+                        const taskId = wrapper.getAttribute('data-id');
+                        const taskRecord = this.tasks.find(t => String(t.resId) === taskId);
+                        const taskName = taskRecord?.data?.name || taskRecord?.data?.display_name || 'Tarefa';
+                        this.selectTaskForDelete(taskId, taskName, avatarGroup);
+                    }
+                });
             });
         }, 100);
     }
@@ -617,6 +741,137 @@ export class GanttRenderer extends Component {
         }
     }
 
+    // Start arrow update loop during drag for real-time arrow updates
+    startArrowUpdateLoop() {
+        if (this._arrowUpdateRunning) return;
+        this._arrowUpdateRunning = true;
+
+        const updateLoop = () => {
+            if (this.isDraggingTask && this._arrowUpdateRunning) {
+                this.updateAllArrowPositions();
+                requestAnimationFrame(updateLoop);
+            } else {
+                this._arrowUpdateRunning = false;
+            }
+        };
+        requestAnimationFrame(updateLoop);
+    }
+
+    // Update all arrow positions based on current bar positions
+    updateAllArrowPositions() {
+        const container = this.ganttRef.el;
+        if (!container) return;
+
+        const arrowGroup = container.querySelector('g.arrow');
+        if (!arrowGroup) return;
+
+        const arrows = arrowGroup.querySelectorAll('path');
+        arrows.forEach(arrow => {
+            const fromTaskId = arrow.dataset.from || arrow.dataset.fromTask;
+            const toTaskId = arrow.dataset.to || arrow.dataset.toTask;
+
+            if (!fromTaskId || !toTaskId) return;
+
+            const fromWrapper = container.querySelector(`.bar-wrapper[data-id="${fromTaskId}"]`);
+            const toWrapper = container.querySelector(`.bar-wrapper[data-id="${toTaskId}"]`);
+            const fromBar = fromWrapper?.querySelector('.bar');
+            const toBar = toWrapper?.querySelector('.bar');
+
+            if (!fromBar || !toBar) return;
+
+            // Get current bar positions (base)
+            const fromRect = fromBar.getBBox();
+            const toRect = toBar.getBBox();
+
+            // Account for CSS transforms (used in vertical drag animation)
+            const fromTransform = this.getTransformY(fromWrapper);
+            const toTransform = this.getTransformY(toWrapper);
+
+            // Apply transforms to positions
+            const adjustedFromRect = {
+                x: fromRect.x,
+                y: fromRect.y + fromTransform,
+                width: fromRect.width,
+                height: fromRect.height,
+            };
+            const adjustedToRect = {
+                x: toRect.x,
+                y: toRect.y + toTransform,
+                width: toRect.width,
+                height: toRect.height,
+            };
+
+            // Recalculate arrow path
+            const newPath = this.calculateArrowPath(adjustedFromRect, adjustedToRect);
+            arrow.setAttribute('d', newPath);
+        });
+    }
+
+    // Get translateY value from CSS transform
+    getTransformY(element) {
+        if (!element) return 0;
+        const style = window.getComputedStyle(element);
+        const transform = style.transform;
+        if (!transform || transform === 'none') return 0;
+
+        // Parse matrix(a, b, c, d, tx, ty) or matrix3d(...)
+        const match = transform.match(/matrix.*\((.+)\)/);
+        if (match) {
+            const values = match[1].split(',').map(v => parseFloat(v.trim()));
+            // For 2D matrix, ty is at index 5
+            // For 3D matrix3d, ty is at index 13
+            return values.length === 6 ? values[5] : (values.length === 16 ? values[13] : 0);
+        }
+        return 0;
+    }
+
+    // Calculate arrow path between two bars (similar to Frappe Gantt logic)
+    calculateArrowPath(fromRect, toRect) {
+        const padding = 18;
+        const barHeight = 20;
+        const arrowCurve = 5;
+
+        // Start point: center-bottom of fromBar
+        let startX = fromRect.x + fromRect.width / 2;
+        const startY = fromRect.y + fromRect.height;
+
+        // End point: left-center of toBar
+        const endX = toRect.x - padding / 2;
+        const endY = toRect.y + toRect.height / 2;
+
+        // Determine if arrow goes up or down
+        const goesUp = fromRect.y > toRect.y;
+        const curveDir = goesUp ? 1 : 0;
+        const curveSign = goesUp ? -arrowCurve : arrowCurve;
+
+        // Intermediate point Y
+        const midY = goesUp ? endY + arrowCurve : endY - arrowCurve;
+
+        // Adjust startX if needed
+        if (endX < startX + padding && startX > fromRect.x + padding) {
+            startX -= 10;
+        }
+
+        // Calculate vertical drop from start
+        const dropY = 4;
+
+        // Build path
+        const path = `
+            M ${startX} ${startY}
+            v ${dropY}
+            a ${arrowCurve} ${arrowCurve} 0 0 1 -${arrowCurve} ${arrowCurve}
+            H ${endX + arrowCurve}
+            a ${arrowCurve} ${arrowCurve} 0 0 ${curveDir} -${arrowCurve} ${curveSign}
+            V ${midY}
+            a ${arrowCurve} ${arrowCurve} 0 0 ${curveDir} ${arrowCurve} ${curveSign}
+            L ${endX} ${endY}
+            m -5 -5
+            l 5 5
+            l -5 5`;
+
+        return path;
+    }
+
     setupVerticalDrag(container) {
         // Bind event handlers
         this.handleVerticalDrag = this.handleVerticalDrag.bind(this);
@@ -642,6 +897,10 @@ export class GanttRenderer extends Component {
                 // Visual feedback
                 draggedRow.style.opacity = '0.5';
                 draggedRow.style.transition = 'opacity 0.2s';
+
+                // Start arrow update loop for real-time arrow updates during vertical drag
+                this.isDraggingTask = true;
+                this.startArrowUpdateLoop();
 
                 // Stop Frappe Gantt's internal drag
                 e.stopPropagation();
@@ -698,6 +957,12 @@ export class GanttRenderer extends Component {
         if (!this.dragState.isDragging) return;
 
         const { draggedRow, draggedTaskId, initialIndex, targetIndex, barWrappers, isVerticalDrag } = this.dragState;
+
+        // Stop arrow update loop (but keep isDraggingTask for sequence update if needed)
+        if (!isVerticalDrag || targetIndex === undefined || targetIndex === initialIndex) {
+            // No position change - stop drag immediately
+            this.isDraggingTask = false;
+        }
 
         // Reset visual state
         if (draggedRow) {
@@ -863,10 +1128,13 @@ export class GanttRenderer extends Component {
                 });
             });
 
-            // Click outside to deselect
+            // Click outside to deselect arrows and tasks
             container.addEventListener('click', (e) => {
                 if (!e.target.closest('g.arrow')) {
                     this.deselectArrow();
+                }
+                if (!e.target.closest('.task-avatar')) {
+                    this.deselectTask();
                 }
             });
         }, 100);
@@ -1212,17 +1480,85 @@ export class GanttRenderer extends Component {
             return;
         }
 
+        // Immediately draw arrow visually (before saving to DB)
+        this.drawArrowImmediate(sourceTaskId, targetTaskId);
+
         // Add new dependency
         const newDeps = [...currentDeps, sourceTaskId];
 
         await this.props.onTaskUpdate(targetTaskId, {
             depend_on_ids: [[6, 0, newDeps]], // Odoo Many2many replace command
+        }, { skipReload: true }); // Skip reload - arrow already drawn
+
+        // Update local record data to keep in sync
+        record.data.depend_on_ids = newDeps;
+    }
+
+    // Draw arrow immediately without waiting for reload
+    drawArrowImmediate(fromTaskId, toTaskId) {
+        const container = this.ganttRef.el;
+        if (!container) return;
+
+        const fromBar = container.querySelector(`.bar-wrapper[data-id="${fromTaskId}"] .bar`);
+        const toBar = container.querySelector(`.bar-wrapper[data-id="${toTaskId}"] .bar`);
+
+        if (!fromBar || !toBar) return;
+
+        const fromRect = fromBar.getBBox();
+        const toRect = toBar.getBBox();
+
+        // Calculate arrow path
+        const pathD = this.calculateArrowPath(fromRect, toRect);
+
+        // Get or create arrow group
+        let arrowGroup = container.querySelector('g.arrow');
+        if (!arrowGroup) {
+            const svg = container.querySelector('svg.gantt');
+            if (!svg) return;
+            arrowGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+            arrowGroup.setAttribute('class', 'arrow');
+            svg.appendChild(arrowGroup);
+        }
+
+        // Create arrow path
+        const arrow = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        arrow.setAttribute('d', pathD);
+        arrow.setAttribute('data-from', fromTaskId);
+        arrow.setAttribute('data-to', toTaskId);
+        arrow.setAttribute('data-from-task', fromTaskId);
+        arrow.setAttribute('data-to-task', toTaskId);
+        arrow.style.fill = 'none';
+        arrow.style.stroke = '#666';
+        arrow.style.strokeWidth = '2';
+        arrow.style.cursor = 'pointer';
+        arrow.style.pointerEvents = 'stroke';
+
+        arrowGroup.appendChild(arrow);
+
+        // Setup interaction on new arrow
+        this.setupSingleArrowInteraction(arrow);
+    }
+
+    // Setup interaction for a single arrow
+    setupSingleArrowInteraction(arrow) {
+        arrow.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.selectArrow(arrow);
         });
 
-        // Reload to refresh arrows
-        if (this.props.model && this.props.model.load) {
-            await this.props.model.load({});
-        }
+        arrow.addEventListener('mouseenter', () => {
+            if (arrow !== this.selectedArrow?.element) {
+                arrow.style.stroke = '#714b67';
+                arrow.style.strokeWidth = '3';
+            }
+        });
+
+        arrow.addEventListener('mouseleave', () => {
+            if (arrow !== this.selectedArrow?.element) {
+                arrow.style.stroke = '#666';
+                arrow.style.strokeWidth = '2';
+            }
+        });
     }
 
     async updateTaskSequences(newOrder) {
