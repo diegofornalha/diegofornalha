@@ -20,9 +20,6 @@
                             </option>
                         </t>
                     </select>
-                    <button class="o_gantt_fullscreen_btn" t-on-click="onFullscreenClick" title="Tela cheia">
-                        <span class="fullscreen-icon">⛶</span>
-                    </button>
                     <!-- Seletor de prioridade - só aparece quando há tarefa selecionada -->
                     <t t-if="state.selectedTask">
                         <!-- Nome da tarefa clicável (abre o formulário) -->

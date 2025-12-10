@@ -402,6 +402,9 @@ export class GanttRenderer extends Component {
                 const cy = barRect.y + barRect.height / 2;
                 const radius = 10;
 
+                // Store initial offset from bar for dynamic positioning
+                const avatarOffset = -15; // Distance from bar start
+
                 // Create avatar group
                 const avatarGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
                 avatarGroup.setAttribute('class', 'task-avatar');
@@ -484,6 +487,56 @@ export class GanttRenderer extends Component {
                 avatarGroup.appendChild(hitArea);
                 wrapper.appendChild(avatarGroup);
 
+                // Store reference to avatar elements for position updates
+                avatarGroup._avatarElements = {
+                    hitArea,
+                    image: avatarGroup.querySelector('image'),
+                    borderCircle: avatarGroup.querySelector('circle[stroke="#714b67"]'),
+                    circle: avatarGroup.querySelector('.avatar-circle'),
+                    text: avatarGroup.querySelector('text'),
+                    clipCircle: defs.querySelector(`#avatar-clip-${taskId}-${index} circle`),
+                };
+                avatarGroup._avatarOffset = avatarOffset;
+
+                // Setup MutationObserver to track bar position changes during drag
+                const barObserver = new MutationObserver(() => {
+                    this.updateAvatarPosition(bar, avatarGroup, radius);
+                });
+                barObserver.observe(bar, { attributes: true, attributeFilter: ['x', 'width', 'transform'] });
+
+                // Also listen for transform changes on the bar-wrapper (Frappe uses transforms)
+                const wrapperObserver = new MutationObserver(() => {
+                    this.updateAvatarPosition(bar, avatarGroup, radius);
+                });
+                wrapperObserver.observe(wrapper, { attributes: true, attributeFilter: ['transform'] });
+
+                // Store observers for cleanup
+                avatarGroup._observers = [barObserver, wrapperObserver];
+
+                // Also use requestAnimationFrame during drag for smoother updates
+                // Frappe Gantt may update position via direct DOM manipulation not caught by MutationObserver
+                const updateDuringDrag = () => {
+                    if (this.isDraggingTask) {
+                        this.updateAvatarPosition(bar, avatarGroup, radius);
+                        requestAnimationFrame(updateDuringDrag);
+                    }
+                };
+
+                // Start the animation loop when dragging starts on this bar
+                bar.addEventListener('mousedown', () => {
+                    if (!this._avatarAnimationRunning) {
+                        this._avatarAnimationRunning = true;
+                        requestAnimationFrame(updateDuringDrag);
+                    }
+                });
+
+                // Stop animation loop when drag ends
+                document.addEventListener('mouseup', () => {
+                    setTimeout(() => {
+                        this._avatarAnimationRunning = false;
+                    }, 100);
+                }, { once: false });
+
                 // Setup drag from avatar for vertical reordering
                 hitArea.style.cursor = 'grab';
                 hitArea.addEventListener('mousedown', (e) => {
@@ -518,6 +571,50 @@ export class GanttRenderer extends Component {
                 });
             });
         }, 100);
+    }
+
+    // Update avatar position when bar moves (during drag)
+    updateAvatarPosition(bar, avatarGroup, radius) {
+        if (!bar || !avatarGroup) return;
+
+        const barRect = bar.getBBox();
+        const offset = avatarGroup._avatarOffset || -15;
+        const newCx = barRect.x + offset;
+        const newCy = barRect.y + barRect.height / 2;
+
+        const elements = avatarGroup._avatarElements;
+        if (!elements) return;
+
+        // Update all avatar elements positions
+        if (elements.hitArea) {
+            elements.hitArea.setAttribute('cx', newCx);
+            elements.hitArea.setAttribute('cy', newCy);
+        }
+
+        if (elements.image) {
+            elements.image.setAttribute('x', newCx - radius);
+            elements.image.setAttribute('y', newCy - radius);
+        }
+
+        if (elements.borderCircle) {
+            elements.borderCircle.setAttribute('cx', newCx);
+            elements.borderCircle.setAttribute('cy', newCy);
+        }
+
+        if (elements.circle) {
+            elements.circle.setAttribute('cx', newCx);
+            elements.circle.setAttribute('cy', newCy);
+        }
+
+        if (elements.text) {
+            elements.text.setAttribute('x', newCx);
+            elements.text.setAttribute('y', newCy + 4);
+        }
+
+        if (elements.clipCircle) {
+            elements.clipCircle.setAttribute('cx', newCx);
+            elements.clipCircle.setAttribute('cy', newCy);
+        }
     }
 
     setupVerticalDrag(container) {
